@@ -34,6 +34,53 @@ final class RuntimeTests: XCTestCase {
         
         XCTAssertTrue(val.isUndefined)
     }
+    
+    func testCustomEventObject() throws {
+        let contextId = "io.ionic.testCustomEventObject"
+        let runner = Runner()
+        _ = try runner.createContext(name: contextId)
+        _ = runner.execute(name: contextId, code: "const event = new CustomEvent('myEvent');")
+        guard let customEventObj = runner.execute(name: contextId, code: "event") else {
+            XCTFail("js value was nil")
+            return
+        }
+        
+        XCTAssertTrue(customEventObj.isObject)
+        
+        guard let type = customEventObj.objectForKeyedSubscript("type") else {
+            XCTFail("js value was nil")
+            return
+        }
+        
+        XCTAssertTrue(type.isString)
+        XCTAssertEqual("myEvent", type.toString())
+        
+        _ = runner.execute(name: contextId, code: "const eventWithDetails = new CustomEvent('myEventDetails', {detail: { name: 'cat' } });")
+        guard let customEventObj = runner.execute(name: contextId, code: "eventWithDetails") else {
+            XCTFail("js value was nil")
+            return
+        }
+        
+        XCTAssertTrue(customEventObj.isObject)
+        
+        _ = runner.execute(name: contextId, code: "console.log(eventWithDetails.detail.name);")
+        
+        guard let eventDetail = customEventObj.objectForKeyedSubscript("detail") else  {
+            XCTFail("js value was nil")
+            return
+        }
+        
+        XCTAssertTrue(eventDetail.isObject)
+        
+        guard let eventDetailName = eventDetail.objectForKeyedSubscript("name") else {
+            XCTFail("js value was nil")
+            return
+        }
+        
+        XCTAssertTrue(eventDetailName.isString)
+        XCTAssertEqual("cat", eventDetailName.toString())
+    }
+    
 //    func testConsole() throws {
 //        let runner = Runner()
 //        try runner.run(sourcePath: nil, source: "console.log('hello world')")

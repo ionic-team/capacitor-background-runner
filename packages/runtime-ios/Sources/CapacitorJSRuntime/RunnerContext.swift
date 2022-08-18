@@ -72,7 +72,7 @@ public class RunnerContext {
             return timer.hashValue
         }
         
-        let newCustomEvent: @convention(block) (String) -> JSCustomEvent = JSCustomEvent.init
+        let newCustomEvent: @convention(block) (String, [AnyHashable: Any]?) -> JSCustomEvent = JSCustomEvent.init
         
         self.context.setObject(JSConsole.self, forKeyedSubscript: "console" as NSString)
         self.context.setObject(addEventListener, forKeyedSubscript: "addEventListener" as NSString)
