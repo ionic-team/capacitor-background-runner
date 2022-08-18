@@ -81,26 +81,32 @@ final class RuntimeTests: XCTestCase {
         XCTAssertEqual("cat", eventDetailName.toString())
     }
     
+    func testEventListeners() throws {
+        let expectation = XCTestExpectation(description: "Run callback set on event listener")
+        
+        let testCallback: @convention(block) () -> Void = {
+            expectation.fulfill()
+        }
+        
+        let contextId = "io.ionic.testEventListeners"
+        let runner = Runner()
+        let context = try runner.createContext(name: contextId)
+        context.setGlobalObject(obj: testCallback, forName: "eventCallback")
+        _ = runner.execute(name: contextId, code: "addEventListener('push',  eventCallback);")
+        
+        
+        Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
+            context.emitEvent(event: "push")
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
+        
+    }
+    
 //    func testConsole() throws {
 //        let runner = Runner()
 //        try runner.run(sourcePath: nil, source: "console.log('hello world')")
 //        try runner.run(sourcePath: nil, source: "console.warn('hello world')")
 //        try runner.run(sourcePath: nil, source: "console.error('hello world')")
-//    }
-//
-//    func testCustomEvents() throws {
-//        let runner = Runner()
-//        try runner.run(sourcePath: nil, source: "const event = new CustomEvent('myEvent'); console.log(event.type)")
-//    }
-//
-//    func testEventListeners() throws {
-//        let runner = Runner()
-//        try runner.run(sourcePath: nil, source: "addEventListener('push', () => { console.log('push event triggered'); });")
-//
-//        runner.triggerEvent(event: "push")
-//    }
-//
-//    func testURL() throws {
-//
 //    }
 }

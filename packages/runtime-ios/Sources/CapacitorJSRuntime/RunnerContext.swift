@@ -3,6 +3,7 @@ import JavaScriptCore
 public class RunnerContext {
     private let context: JSContext
     private var eventListeners = Dictionary<String, JSValue>()
+    private var registeredEvents = Dictionary<String, [String]>()
     private var timers = Dictionary<Int, Timer>()
     
     public init(vm: JSVirtualMachine, name: String) throws {
@@ -27,20 +28,41 @@ public class RunnerContext {
         return context.objectForKeyedSubscript(obj)
     }
     
+    public func setGlobalObject(obj: Any, forName: String) {
+        context.setObject(obj, forKeyedSubscript: forName as NSString)
+    }
+    
     public func emitEvent(event: String) {
-        if let listener = self.eventListeners[event] {
-            listener.call(withArguments: [])
+        if let registrations = self.registeredEvents[event] {
+            registrations.forEach { listenerId in
+                if let listener = self.eventListeners[listenerId] {
+                    listener.call(withArguments: [])
+                }
+            }
         }
     }
     
     private func setupAPI() throws {
         let addEventListener: @convention(block)(String, JSValue) -> Void = { type, listener in
-            print("listener callback hash \(listener.hashValue)")
-            self.eventListeners[type] = listener
+            let listenerId = "\(type)_\(listener.hashValue)"
+            self.eventListeners[listenerId] = listener
+            
+            if var registrations = self.registeredEvents[type]{
+                registrations.append(listenerId)
+            } else {
+                self.registeredEvents[type] = [listenerId]
+            }
         }
         
         let removeEventListener: @convention(block) (String, JSValue) -> Void = { type, listener in
-            self.eventListeners.removeValue(forKey: type)
+            let listenerId = "\(type)_\(listener.hashValue)"
+            self.eventListeners.removeValue(forKey: listenerId)
+            
+            if var registrations = self.registeredEvents[type]{
+                if let index = registrations.firstIndex(of: listenerId) {
+                    registrations.remove(at: index)
+                }
+            }
         }
         
         let setTimeout: @convention(block) (JSValue, Int) -> Int = { callback, timeout in
