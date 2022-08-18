@@ -26,4 +26,18 @@ public class Runner {
         
         return context.run(source: code)
     }
+    
+    public func execute(name: String, sourcePath: String) -> JSValue? {
+        guard let context = self.contexts[name] else {
+            return nil
+        }
+        
+        return try? context.run(sourceFile: sourcePath)
+    }
+    
+    public func dispatchEvent(event: String) {
+        for (_, context) in self.contexts {
+            context.dispatchEvent(event: event)
+        }
+    }
 }

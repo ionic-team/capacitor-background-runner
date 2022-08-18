@@ -96,7 +96,7 @@ final class RuntimeTests: XCTestCase {
         
         
         Timer.scheduledTimer(withTimeInterval: 5, repeats: false) { _ in
-            context.emitEvent(event: "push")
+            context.dispatchEvent(event: "push")
         }
         
         wait(for: [expectation], timeout: 10.0)

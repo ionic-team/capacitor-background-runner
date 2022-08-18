@@ -24,6 +24,19 @@ public class RunnerContext {
         return context.evaluateScript(source)
     }
     
+    public func run (sourceFile: String) throws -> JSValue? {
+        guard let sourceURL = Bundle.main.url(forResource: sourceFile, withExtension: "js", subdirectory: "public") else {
+            throw RuntimeError.sourceNotFound
+        }
+        
+        do {
+            let source = try String(contentsOf: sourceURL)            
+            return context.evaluateScript(source)
+        } catch {
+            throw RuntimeError.sourceNotFound
+        }
+    }
+    
     public func getGlobalObject(obj: String) -> JSValue? {
         return context.objectForKeyedSubscript(obj)
     }
@@ -32,7 +45,7 @@ public class RunnerContext {
         context.setObject(obj, forKeyedSubscript: forName as NSString)
     }
     
-    public func emitEvent(event: String) {
+    public func dispatchEvent(event: String) {
         if let registrations = self.registeredEvents[event] {
             registrations.forEach { listenerId in
                 if let listener = self.eventListeners[listenerId] {
