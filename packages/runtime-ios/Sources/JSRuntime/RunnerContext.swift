@@ -108,6 +108,9 @@ public class RunnerContext {
         }
         
         let newCustomEvent: @convention(block) (String, [AnyHashable: Any]?) -> JSCustomEvent = JSCustomEvent.init
+        let newTextEncoder: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
+        let newTextDecoder: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
+//        let newPromise: @convention(block) (JSValue) -> JSPromise = JSPromise.init
         
         self.context.setObject(JSConsole.self, forKeyedSubscript: "console" as NSString)
         self.context.setObject(addEventListener, forKeyedSubscript: "addEventListener" as NSString)
@@ -117,5 +120,8 @@ public class RunnerContext {
         self.context.setObject(setInterval, forKeyedSubscript: "setInterval" as NSString)
         self.context.setObject(clearTimeout, forKeyedSubscript: "clearInterval" as NSString)
         self.context.setObject(newCustomEvent, forKeyedSubscript: "CustomEvent" as NSString)
+        self.context.setObject(newTextEncoder, forKeyedSubscript: "TextEncoder" as NSString)
+        self.context.setObject(newTextDecoder, forKeyedSubscript: "TextDecoder" as NSString)
+//        self.context.setObject(newPromise, forKeyedSubscript: "Promise" as NSString)
     }
 }
