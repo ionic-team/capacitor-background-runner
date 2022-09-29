@@ -107,6 +107,40 @@ public class RunnerContext {
             return timer.hashValue
         }
         
+        let fetch: @convention(block) (String) -> JSValue = { url in
+            return JSValue(newPromiseIn: self.context) { resolve, reject in
+                let timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { timer in
+                    timer.invalidate()
+                    self.timers.removeValue(forKey: timer.hashValue)
+                    
+                    guard let validURL = URL(string: url) else {
+                        return
+                    }
+                    
+                    let request = URLRequest(url: validURL)
+
+                    URLSession.shared.dataTask(with: request) { data, response, error in
+                        
+                        if let reject = reject, let err = error {
+                            reject.call(withArguments: [err.localizedDescription])
+                            return
+                        }
+                        
+                        if let resolve = resolve {
+                            let response = JSResponse(data: data, response: response as! HTTPURLResponse)
+                            resolve.call(withArguments: [response])
+                            return
+                        }
+                    }.resume()
+                }
+                
+                RunLoop.current.add(timer, forMode: .common)
+                
+                self.timers[timer.hashValue] = timer
+            }
+        }
+
+        
         let newCustomEvent: @convention(block) (String, [AnyHashable: Any]?) -> JSCustomEvent = JSCustomEvent.init
         let newTextEncoder: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoder: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
@@ -122,6 +156,8 @@ public class RunnerContext {
         self.context.setObject(newCustomEvent, forKeyedSubscript: "CustomEvent" as NSString)
         self.context.setObject(newTextEncoder, forKeyedSubscript: "TextEncoder" as NSString)
         self.context.setObject(newTextDecoder, forKeyedSubscript: "TextDecoder" as NSString)
+        self.context.setObject(JSCrypto.self, forKeyedSubscript: "crypto" as NSString)
+        self.context.setObject(fetch, forKeyedSubscript: "fetch" as NSString)
 //        self.context.setObject(newPromise, forKeyedSubscript: "Promise" as NSString)
     }
 }

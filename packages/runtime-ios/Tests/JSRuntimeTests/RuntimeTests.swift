@@ -218,6 +218,117 @@ final class RuntimeTests: XCTestCase {
         
     }
     
+    func testCryptoRandomUUID() throws {
+        let contextId = "io.ionic.testCryptoRandomUUID"
+        let runner = Runner()
+    
+        _ = try runner.createContext(name: contextId)
+        guard let generatedUUID = runner.execute(name: contextId, code: "crypto.randomUUID();") else {
+            XCTFail("generatedUUID result is nil")
+            return
+        }
+        
+        let uuid = generatedUUID.toString()
+        XCTAssertEqual(uuid?.count, 36)
+    }
+    
+    func testCryptoGetRandomValues() throws {
+        let contextId = "io.ionic.testCryptoGetRandomValues"
+        let runner = Runner()
+    
+        _ = try runner.createContext(name: contextId)
+        _ = runner.execute(name: contextId, code: "let array = new Uint8Array(10); crypto.getRandomValues(array);")
+        
+        guard let randomArrObj = runner.execute(name: contextId, code: "array") else {
+            XCTFail("array result is nil")
+            return
+        }
+        
+        guard let uInt8Arr = randomArrObj.toArray() as? [UInt8] else {
+            XCTFail("could not get uint 8 array from obj")
+            return
+        }
+        
+        let emptyUInt8Arr = [UInt8](repeating: 0, count: uInt8Arr.count)
+        
+        print(uInt8Arr)
+        
+        XCTAssertEqual(uInt8Arr.count, 10)
+        XCTAssertNotEqual(emptyUInt8Arr, uInt8Arr)
+        
+        
+        _ = runner.execute(name: contextId, code: "array = new Uint16Array(10); crypto.getRandomValues(array);")
+        
+        guard let randomArrObj = runner.execute(name: contextId, code: "array") else {
+            XCTFail("array result is nil")
+            return
+        }
+        
+        guard let uInt16Arr = randomArrObj.toArray() as? [UInt16] else {
+            XCTFail("could not get uint 16 array from obj")
+            return
+        }
+        
+        let emptyUInt16Arr = [UInt16](repeating: 0, count: uInt16Arr.count)
+        
+        print(uInt16Arr)
+        
+        XCTAssertEqual(uInt8Arr.count, 10)
+        XCTAssertNotEqual(emptyUInt16Arr, uInt16Arr)
+        
+        _ = runner.execute(name: contextId, code: "array = new Uint32Array(10); crypto.getRandomValues(array);")
+        
+        guard let randomArrObj = runner.execute(name: contextId, code: "array") else {
+            XCTFail("array result is nil")
+            return
+        }
+        
+        guard let uInt32Arr = randomArrObj.toArray() as? [UInt32] else {
+            XCTFail("could not get uint 32 array from obj")
+            return
+        }
+        
+        let emptyUInt32Arr = [UInt32](repeating: 0, count: uInt32Arr.count)
+        
+        print(uInt32Arr)
+        
+        XCTAssertEqual(uInt32Arr.count, 10)
+        XCTAssertNotEqual(emptyUInt32Arr, uInt32Arr)
+    }
+    
+    func testFetch() throws {
+        let expectation = XCTestExpectation(description: "Run callback set on event listener")
+        
+        let testCallback: @convention(block) () -> Void = {
+            expectation.fulfill()
+        }
+        
+        let code = """
+            const fetchTodo = async () => {
+                console.log("testing fetch");
+                return fetch("https://jsonplaceholder.typicode.com/todos/1");
+            }
+        
+            fetchTodo().then(async (res) => {
+                console.log(res.url);
+                console.log(await res.text());
+                const todo = await res.json();
+        
+                console.log(todo.title);
+                successCallback();
+            }).catch((err) => {
+                console.log("error");
+                console.log(err);
+            });
+        """
+        let contextId = "io.ionic.testFetch"
+        let runner = Runner()
+        let context = try runner.createContext(name: contextId)
+        context.setGlobalObject(obj: testCallback, forName: "successCallback")
+        _ = runner.execute(name: contextId, code: code)
+        
+        wait(for: [expectation], timeout: 10)        
+    }
 //    func testConsole() throws {
 //        let runner = Runner()
 //        try runner.run(sourcePath: nil, source: "console.log('hello world')")
