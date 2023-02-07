@@ -1,6 +1,41 @@
 #include <jni.h>
 #include <string.h>
+#include <android/log.h>
 #include "quickjs/quickjs.h"
+#include "quickjs/cutils.h"
+#include "api_console.h"
+
+//static const JSCFunctionListEntry console_funcs[] = {
+//        JS_CFUNC_DEF("log", 1, api_console_log),
+//};
+
+void init_api_console(JSContext* ctx) {
+    JSValue global_obj, console;
+
+    global_obj = JS_GetGlobalObject(ctx);
+    console = JS_NewObject(ctx);
+    JS_SetPropertyStr(ctx, console, "log", JS_NewCFunction(ctx, api_console_log, "log", 1));
+    JS_SetPropertyStr(ctx, console, "info", JS_NewCFunction(ctx, api_console_log, "info", 1));
+    JS_SetPropertyStr(ctx, console, "warn", JS_NewCFunction(ctx, api_console_warn, "warn", 1));
+    JS_SetPropertyStr(ctx, console, "error", JS_NewCFunction(ctx, api_console_error, "error", 1));
+    JS_SetPropertyStr(ctx, console, "debug", JS_NewCFunction(ctx, api_console_debug, "debug", 1));
+
+    JS_SetPropertyStr(ctx, global_obj, "console", console);
+
+    JS_FreeValue(ctx, global_obj);
+}
+
+jint throw_js_exception(JNIEnv *env, JSContext* ctx) {
+    jclass c = (*env).FindClass("io/ionic/backgroundrunner/android_engine/EngineErrors$JavaScriptException");
+
+    JSValue err_message = JS_GetPropertyStr(ctx, JS_GetException(ctx), "message");
+    const char* err_str = JS_ToCString(ctx, err_message);
+
+    auto ret = (*env).ThrowNew(c, err_str);
+    JS_FreeCString(ctx, err_str);
+
+    return ret;
+}
 
 jobject js_value_to_java_object(JNIEnv *env, JSContext* ctx, JSValue value) {
     jclass c = (*env).FindClass("io/ionic/backgroundrunner/android_engine/JSValue");
@@ -58,6 +93,8 @@ jobject js_value_to_java_object(JNIEnv *env, JSContext* ctx, JSValue value) {
         (*env).SetObjectField(obj, valueField, valueObj);
         (*env).SetBooleanField(obj, flagField, true);
 
+        JS_FreeCString(ctx, str);
+
         return obj;
     }
 
@@ -99,6 +136,8 @@ Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_initContex
     JSRuntime *rt = (JSRuntime *)runner_ptr;
     JSContext *ctx = JS_NewContext(rt);
 
+    init_api_console(ctx);
+
     return (jlong)(long)ctx;
 }
 extern "C"
@@ -119,8 +158,13 @@ Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_evaluate(J
 
     JSValue value = JS_Eval(ctx, c_code, strlen(c_code), "<code>", flags);
 
-    jobject obj = js_value_to_java_object(env, ctx, value);
+    if (JS_IsException(value)) {
+        throw_js_exception(env, ctx);
+        JS_FreeValue(ctx, value);
+        return nullptr;
+    }
 
+    jobject obj = js_value_to_java_object(env, ctx, value);
     JS_FreeValue(ctx, value);
 
     return obj;

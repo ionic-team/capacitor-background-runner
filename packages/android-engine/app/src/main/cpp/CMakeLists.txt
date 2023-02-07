@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.18.1)
 
 project("android_engine")
 
-add_library(${PROJECT_NAME} SHARED android_engine.cpp)
+add_library(${PROJECT_NAME} SHARED api_console.cpp android_engine.cpp)
 
 find_library(log-lib log)
 

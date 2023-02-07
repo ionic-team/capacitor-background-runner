@@ -89,6 +89,20 @@ class ExampleInstrumentedTest {
         runner.destroy()
     }
 
+    @Test
+    fun testAPI_Console() {
+        val runner = Runner()
+        val context = runner.createContext("io.backgroundrunner.ionic")
+
+        context.execute("console.log('hello world');")
+        context.execute("console.info('this message is for informational purposes');")
+        context.execute("console.warn('this is a warning message');")
+        context.execute("console.error('a problem has occurred');")
+        context.execute("console.debug('this is a debugging statement');")
+
+        runner.destroy()
+    }
+
 //    @Test
 //    fun useAppContext() {
 //        // Context of the app under test.
