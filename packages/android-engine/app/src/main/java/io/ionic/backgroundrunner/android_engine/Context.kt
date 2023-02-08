@@ -3,10 +3,11 @@ package io.ionic.backgroundrunner.android_engine
 class Context constructor(name: String, runnerPtr: Long) {
     private val ptr: Long?
     private val name: String
+    private val eventListeners: HashMap<String, Long> = HashMap()
 
     init {
         this.name = name
-        this.ptr = Context.initContext(runnerPtr)
+        this.ptr = Context.initContext(runnerPtr, name)
     }
 
     companion object {
@@ -14,9 +15,10 @@ class Context constructor(name: String, runnerPtr: Long) {
             System.loadLibrary("android_engine")
         }
 
-        external fun initContext(runnerPtr: Long): Long
+        external fun initContext(runnerPtr: Long, name: String): Long
         external fun destroyContext(ptr: Long)
         external fun evaluate(ptr: Long, code: String): JSValue
+        external fun dispatchEvent(ptr: Long, event: String)
     }
 
     fun execute(code: String): JSValue {
@@ -25,6 +27,14 @@ class Context constructor(name: String, runnerPtr: Long) {
         }
 
         return Context.evaluate(this.ptr, code)
+    }
+
+    fun dispatchEvent(event: String) {
+        if (this.ptr == null) {
+            throw Exception("runner pointer is null")
+        }
+
+        Context.dispatchEvent(this.ptr, event)
     }
 
     fun destroy() {

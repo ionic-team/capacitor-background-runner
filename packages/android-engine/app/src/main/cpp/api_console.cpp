@@ -1,5 +1,7 @@
 #include "api_console.h"
 
+#include "Context.h"
+
 #include <android/log.h>
 
 void write_to_logcat(android_LogPriority priority, const char * tag, const char * message) {
@@ -12,13 +14,16 @@ JSValue api_console_log(JSContext *ctx, JSValueConst this_val, int argc, JSValue
     const char *str;
     size_t len;
 
+    Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+    std::string tag = "[Runner Context " + parent_ctx->name + "]";
+
     for(i = 0; i < argc; i++) {
         str = JS_ToCStringLen(ctx, &len, argv[i]);
         if (!str) {
             return JS_EXCEPTION;
         }
 
-        write_to_logcat(ANDROID_LOG_INFO, "[JS CONTEXT]", str);
+        write_to_logcat(ANDROID_LOG_INFO, tag.c_str(), str);
 
         JS_FreeCString(ctx, str);
     }
@@ -32,13 +37,16 @@ JSValue api_console_warn(JSContext *ctx, JSValueConst this_val, int argc, JSValu
     const char *str;
     size_t len;
 
+    Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+    std::string tag = "[Runner Context " + parent_ctx->name + "]";
+
     for(i = 0; i < argc; i++) {
         str = JS_ToCStringLen(ctx, &len, argv[i]);
         if (!str) {
             return JS_EXCEPTION;
         }
 
-        write_to_logcat(ANDROID_LOG_WARN, "[JS CONTEXT]", str);
+        write_to_logcat(ANDROID_LOG_WARN, tag.c_str(), str);
 
         JS_FreeCString(ctx, str);
     }
@@ -52,13 +60,16 @@ JSValue api_console_error(JSContext *ctx, JSValueConst this_val, int argc, JSVal
     const char *str;
     size_t len;
 
+    Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+    std::string tag = "[Runner Context " + parent_ctx->name + "]";
+
     for(i = 0; i < argc; i++) {
         str = JS_ToCStringLen(ctx, &len, argv[i]);
         if (!str) {
             return JS_EXCEPTION;
         }
 
-        write_to_logcat(ANDROID_LOG_ERROR, "[JS CONTEXT]", str);
+        write_to_logcat(ANDROID_LOG_ERROR, tag.c_str() , str);
 
         JS_FreeCString(ctx, str);
     }
@@ -72,13 +83,16 @@ JSValue api_console_debug(JSContext *ctx, JSValueConst this_val, int argc, JSVal
     const char *str;
     size_t len;
 
+    Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+    std::string tag = "[Runner Context " + parent_ctx->name + "]";
+
     for(i = 0; i < argc; i++) {
         str = JS_ToCStringLen(ctx, &len, argv[i]);
         if (!str) {
             return JS_EXCEPTION;
         }
 
-        write_to_logcat(ANDROID_LOG_DEBUG, "[JS CONTEXT]", str);
+        write_to_logcat(ANDROID_LOG_DEBUG, tag.c_str(), str);
 
         JS_FreeCString(ctx, str);
     }

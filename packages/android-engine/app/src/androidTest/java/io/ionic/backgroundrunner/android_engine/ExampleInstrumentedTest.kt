@@ -103,6 +103,20 @@ class ExampleInstrumentedTest {
         runner.destroy()
     }
 
+    @Test
+    fun testAPI_EventListeners() {
+        val runner = Runner()
+        val context = runner.createContext("io.backgroundrunner.ionic")
+
+        var value = context.execute("addEventListener('myEvent', () => { console.log('event listener called'); });")
+
+        assertTrue(value.isUndefined)
+
+        context.dispatchEvent("myEvent")
+
+        runner.destroy()
+    }
+
 //    @Test
 //    fun useAppContext() {
 //        // Context of the app under test.

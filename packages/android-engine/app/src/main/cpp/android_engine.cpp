@@ -3,27 +3,13 @@
 #include <android/log.h>
 #include "quickjs/quickjs.h"
 #include "quickjs/cutils.h"
+#include "Context.h"
 #include "api_console.h"
+#include "api_events.h"
 
 //static const JSCFunctionListEntry console_funcs[] = {
 //        JS_CFUNC_DEF("log", 1, api_console_log),
 //};
-
-void init_api_console(JSContext* ctx) {
-    JSValue global_obj, console;
-
-    global_obj = JS_GetGlobalObject(ctx);
-    console = JS_NewObject(ctx);
-    JS_SetPropertyStr(ctx, console, "log", JS_NewCFunction(ctx, api_console_log, "log", 1));
-    JS_SetPropertyStr(ctx, console, "info", JS_NewCFunction(ctx, api_console_log, "info", 1));
-    JS_SetPropertyStr(ctx, console, "warn", JS_NewCFunction(ctx, api_console_warn, "warn", 1));
-    JS_SetPropertyStr(ctx, console, "error", JS_NewCFunction(ctx, api_console_error, "error", 1));
-    JS_SetPropertyStr(ctx, console, "debug", JS_NewCFunction(ctx, api_console_debug, "debug", 1));
-
-    JS_SetPropertyStr(ctx, global_obj, "console", console);
-
-    JS_FreeValue(ctx, global_obj);
-}
 
 jint throw_js_exception(JNIEnv *env, JSContext* ctx) {
     jclass c = (*env).FindClass("io/ionic/backgroundrunner/android_engine/EngineErrors$JavaScriptException");
@@ -130,42 +116,54 @@ Java_io_ionic_backgroundrunner_android_1engine_Runner_00024Companion_destroyRunn
     JSRuntime *rt = (JSRuntime *)ptr;
     JS_FreeRuntime(rt);
 }
+
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_initContext(JNIEnv *env, jobject thiz, jlong runner_ptr) {
+Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_initContext(JNIEnv *env, jobject thiz, jlong runner_ptr, jstring name) {
     JSRuntime *rt = (JSRuntime *)runner_ptr;
-    JSContext *ctx = JS_NewContext(rt);
 
-    init_api_console(ctx);
-
-    return (jlong)(long)ctx;
+    Context* context = new Context(env->GetStringUTFChars(name, 0), rt);
+    return (jlong)(long)context;
 }
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_destroyContext(JNIEnv *env, jobject thiz, jlong ptr) {
-    JSContext *ctx = (JSContext *)ptr;
-    JS_FreeContext(ctx);
+    Context *ctx = (Context *)ptr;
+    delete ctx;
 }
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_evaluate(JNIEnv *env, jobject thiz, jlong ptr, jstring code) {
-    JSContext *ctx = (JSContext *)ptr;
-
-    int flags = JS_EVAL_TYPE_GLOBAL;
-    flags |= JS_EVAL_FLAG_BACKTRACE_BARRIER;
+    Context *ctx = (Context *)ptr;
 
     const char *c_code = env->GetStringUTFChars(code, 0);
 
-    JSValue value = JS_Eval(ctx, c_code, strlen(c_code), "<code>", flags);
+    JSValue value = ctx->evaluate(c_code);
 
     if (JS_IsException(value)) {
-        throw_js_exception(env, ctx);
-        JS_FreeValue(ctx, value);
+        throw_js_exception(env, ctx->ctx);
+        JS_FreeValue(ctx->ctx, value);
         return nullptr;
     }
 
-    jobject obj = js_value_to_java_object(env, ctx, value);
-    JS_FreeValue(ctx, value);
+    jobject obj = js_value_to_java_object(env, ctx->ctx, value);
+
+    JS_FreeValue(ctx->ctx, value);
 
     return obj;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_dispatchEvent(JNIEnv *env, jobject thiz, jlong ptr, jstring event) {
+    Context *ctx = (Context *)ptr;
+
+    const char *c_event = env->GetStringUTFChars(event, 0);
+
+    JSValue value = ctx->dispatch_event(c_event);
+    if (JS_IsException(value)) {
+        throw_js_exception(env, ctx->ctx);
+        JS_FreeValue(ctx->ctx, value);
+    }
 }
