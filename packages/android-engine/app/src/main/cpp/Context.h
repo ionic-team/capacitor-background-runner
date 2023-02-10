@@ -10,15 +10,20 @@ class Context {
 public:
     std::string name;
     JSContext *ctx;
-    std::unordered_map<std::string, JSValue> event_listeners;
+    std::unordered_multimap<std::string, JSValue> event_listeners;
 
     Context(const std::string& name, JSRuntime* rt);
     ~Context();
 
     JSValue evaluate(const char* code);
-    JSValue dispatch_event(const std::string& event);
+    JSValue dispatch_event(const std::string& event, JSValue details);
+
+    JSValue parseJSON(const char* code);
+    const char * stringifyJSON(JSValue object);
 
 private:
+    JSValue global_json_obj;
+
     void init_api_console();
     void init_api_event_listeners();
 };

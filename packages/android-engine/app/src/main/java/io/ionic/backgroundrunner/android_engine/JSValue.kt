@@ -6,6 +6,7 @@ class JSValue {
     val isString: Boolean = false
     val isNull: Boolean = false
     val isUndefined: Boolean = false
+    val isFunction: Boolean = false
 
     private val doubleValue: Double? = null;
     private val boolValue: Boolean? = null;

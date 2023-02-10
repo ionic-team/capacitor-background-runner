@@ -156,14 +156,24 @@ Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_evaluate(J
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_dispatchEvent(JNIEnv *env, jobject thiz, jlong ptr, jstring event) {
+Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_dispatchEvent(JNIEnv *env, jobject thiz, jlong ptr, jstring event, jstring details) {
     Context *ctx = (Context *)ptr;
 
     const char *c_event = env->GetStringUTFChars(event, 0);
+    const char *c_details_json = env->GetStringUTFChars(details, 0);
 
-    JSValue value = ctx->dispatch_event(c_event);
+    JSValue details_obj = ctx->parseJSON(c_details_json);
+
+    JSValue value = ctx->dispatch_event(c_event, details_obj);
+    JS_FreeValue(ctx->ctx, details_obj);
+
+    env->ReleaseStringUTFChars(event, c_event);
+    env->ReleaseStringUTFChars(details, c_details_json);
+
     if (JS_IsException(value)) {
         throw_js_exception(env, ctx->ctx);
-        JS_FreeValue(ctx->ctx, value);
     }
+
+    JS_FreeValue(ctx->ctx, value);
+
 }

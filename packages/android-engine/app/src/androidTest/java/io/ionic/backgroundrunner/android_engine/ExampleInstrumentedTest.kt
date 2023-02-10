@@ -2,6 +2,7 @@ package io.ionic.backgroundrunner.android_engine
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.json.JSONObject
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -108,11 +109,39 @@ class ExampleInstrumentedTest {
         val runner = Runner()
         val context = runner.createContext("io.backgroundrunner.ionic")
 
+        // setting a basic event listener
         var value = context.execute("addEventListener('myEvent', () => { console.log('event listener called'); });")
-
         assertTrue(value.isUndefined)
 
-        context.dispatchEvent("myEvent")
+        context.dispatchEvent("myEvent", JSONObject())
+
+        // setting multiple event listeners for the same event
+        value = context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
+        assertTrue(value.isUndefined)
+
+        context.dispatchEvent("myEvent", JSONObject())
+
+        // basic event listener with details
+        value = context.execute("addEventListener('myEventDetails', (details) => { console.log('detailed passed: ' + details.name); });")
+        assertTrue(value.isUndefined)
+
+        val detailsObject = JSONObject()
+        detailsObject.put("name", "John Doe")
+
+        context.dispatchEvent("myEventDetails", detailsObject)
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testJSON() {
+        val runner = Runner()
+        val context = runner.createContext("io.backgroundrunner.ionic")
+
+        val json = "{\"name\":\"John Doe\",\"age\":55,\"active\":true,\"address\":{\"street\":\"123 Main Street\",\"state\":\"SD\"},\"arr\":[\"hello\",\"world\",\"test\"]}"
+
+        var value = context.execute("JSON.parse('$json');")
+
 
         runner.destroy()
     }

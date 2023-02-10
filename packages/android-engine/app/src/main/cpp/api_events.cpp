@@ -11,8 +11,10 @@ JSValue api_add_event_listener(JSContext *ctx, JSValueConst this_val, int argc, 
         return JS_EXCEPTION;
     }
 
+    callback = JS_DupValue(ctx, callback);
+
     Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
-    parent_ctx->event_listeners[std::string(event)] = JS_DupValue(ctx, callback);
+    parent_ctx->event_listeners.emplace(event, callback);
 
     return JS_UNDEFINED;
 }

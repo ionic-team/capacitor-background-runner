@@ -14,6 +14,10 @@ Context::Context(const std::string& name, JSRuntime *rt) {
     this->init_api_event_listeners();
 
     JS_SetContextOpaque(this->ctx, this);
+
+    JSValue global_obj = JS_GetGlobalObject(this->ctx);
+    this->global_json_obj = JS_GetPropertyStr(this->ctx, global_obj, "JSON");
+    JS_FreeValue(this->ctx, global_obj);
 }
 
 Context::~Context() {
@@ -21,7 +25,28 @@ Context::~Context() {
         JS_FreeValue(this->ctx, kv.second);
     }
 
+    JS_FreeValue(this->ctx, this->global_json_obj);
     JS_FreeContext(this->ctx);
+}
+
+JSValue Context::parseJSON(const char *json_string)
+{
+    JSValue ret_value = JS_UNDEFINED;
+
+    JSValue global_obj = JS_GetGlobalObject(this->ctx);
+    JSValue parse_func_obj = JS_GetPropertyStr(this->ctx, this->global_json_obj, "parse");
+
+    JSValue json = JS_NewString(this->ctx, json_string);
+
+    JSValue parsed = JS_Call(this->ctx, parse_func_obj, global_obj, 1, &json);
+    ret_value = JS_DupValue(this->ctx, parsed);
+
+    JS_FreeValue(this->ctx, parsed);
+    JS_FreeValue(this->ctx, json);
+    JS_FreeValue(this->ctx, parse_func_obj);
+    JS_FreeValue(this->ctx, global_obj);
+
+    return ret_value;
 }
 
 JSValue Context::evaluate(const char * code) {
@@ -31,17 +56,26 @@ JSValue Context::evaluate(const char * code) {
     return JS_Eval(this->ctx, code, strlen(code), "<code>", flags);
 }
 
-JSValue Context::dispatch_event(const std::string &event) {
+JSValue Context::dispatch_event(const std::string &event, JSValue details) {
+    JSValue ret_value = JS_UNDEFINED;
     JSValue global_obj = JS_GetGlobalObject(this->ctx);
-    JSValue callback = this->event_listeners[event];
 
-    JSValue value = JS_Call(this->ctx, callback, global_obj, 0, nullptr);
-    JSValue retValue = JS_DupValue(this->ctx, value);
+    auto range = this->event_listeners.equal_range(event);
+    for (auto itr = range.first; itr != range.second; ++itr) {
+        auto callback = (JSValue)itr->second;
 
-    JS_FreeValue(this->ctx, value);
+        JSValue value = JS_Call(this->ctx, callback, global_obj, 1, &details);
+        if (JS_IsException(value)) {
+            ret_value = JS_DupValue(this->ctx, value);
+            JS_FreeValue(this->ctx, value);
+            break;
+        }
+
+        JS_FreeValue(this->ctx, value);
+    }
+
     JS_FreeValue(this->ctx, global_obj);
-
-    return retValue;
+    return ret_value;
 }
 
 void Context::init_api_console()

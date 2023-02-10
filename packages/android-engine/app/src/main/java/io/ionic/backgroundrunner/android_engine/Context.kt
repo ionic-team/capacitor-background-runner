@@ -1,9 +1,10 @@
 package io.ionic.backgroundrunner.android_engine
 
+import org.json.JSONObject
+
 class Context constructor(name: String, runnerPtr: Long) {
     private val ptr: Long?
     private val name: String
-    private val eventListeners: HashMap<String, Long> = HashMap()
 
     init {
         this.name = name
@@ -18,7 +19,7 @@ class Context constructor(name: String, runnerPtr: Long) {
         external fun initContext(runnerPtr: Long, name: String): Long
         external fun destroyContext(ptr: Long)
         external fun evaluate(ptr: Long, code: String): JSValue
-        external fun dispatchEvent(ptr: Long, event: String)
+        external fun dispatchEvent(ptr: Long, event: String, details: String)
     }
 
     fun execute(code: String): JSValue {
@@ -29,12 +30,12 @@ class Context constructor(name: String, runnerPtr: Long) {
         return Context.evaluate(this.ptr, code)
     }
 
-    fun dispatchEvent(event: String) {
+    fun dispatchEvent(event: String, details: JSONObject) {
         if (this.ptr == null) {
             throw Exception("runner pointer is null")
         }
 
-        Context.dispatchEvent(this.ptr, event)
+        Context.dispatchEvent(this.ptr, event, details.toString(0))
     }
 
     fun destroy() {
