@@ -7,6 +7,7 @@ class JSValue {
     val isNull: Boolean = false
     val isUndefined: Boolean = false
     val isFunction: Boolean = false
+    val isArray: Boolean = false
 
     private val doubleValue: Double? = null;
     private val boolValue: Boolean? = null;
@@ -27,6 +28,4 @@ class JSValue {
     fun getBoolValue(): Boolean? {
         return boolValue;
     }
-
-
 }

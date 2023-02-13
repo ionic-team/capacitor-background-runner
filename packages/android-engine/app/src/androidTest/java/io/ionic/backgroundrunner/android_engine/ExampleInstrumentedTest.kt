@@ -8,6 +8,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
+import java.util.UUID
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -130,6 +131,20 @@ class ExampleInstrumentedTest {
 
         context.dispatchEvent("myEventDetails", detailsObject)
 
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_Crypto() {
+        val runner = Runner()
+        val context = runner.createContext("io.backgroundrunner.ionic")
+
+        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); for (const num of array) { console.log(num); } ")
+
+        value = context.execute("crypto.randomUUID();")
+        assertFalse(value.isUndefined)
+
+        assertEquals(36, value.getStringValue()?.length)
         runner.destroy()
     }
 

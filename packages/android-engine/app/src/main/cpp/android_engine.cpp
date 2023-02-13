@@ -64,6 +64,13 @@ jobject js_value_to_java_object(JNIEnv *env, JSContext* ctx, JSValue value) {
         return obj;
     }
 
+    if (JS_IsArray(ctx, value)) {
+        jfieldID flagField = (*env).GetFieldID(c, "isArray", "Z");
+        (*env).SetBooleanField(obj, flagField, true);
+
+        return obj;
+    }
+
     if(JS_IsString(value)) {
         jclass s = (*env).FindClass("java/lang/String");
         jmethodID s_constr = (*env).GetMethodID(s, "<init>", "(Ljava/lang/String;)V");
@@ -122,7 +129,7 @@ JNIEXPORT jlong JNICALL
 Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_initContext(JNIEnv *env, jobject thiz, jlong runner_ptr, jstring name) {
     JSRuntime *rt = (JSRuntime *)runner_ptr;
 
-    Context* context = new Context(env->GetStringUTFChars(name, 0), rt);
+    Context* context = new Context(env->GetStringUTFChars(name, 0), rt, env);
     return (jlong)(long)context;
 }
 

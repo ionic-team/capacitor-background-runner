@@ -5,13 +5,16 @@
 
 #include "api_events.h"
 #include "api_console.h"
+#include "api_crypto.h"
 
-Context::Context(const std::string& name, JSRuntime *rt) {
+Context::Context(const std::string& name, JSRuntime *rt, JNIEnv* env) {
     this->ctx = JS_NewContext(rt);
     this->name = name;
+    this->env = env;
 
     this->init_api_console();
     this->init_api_event_listeners();
+    this->init_api_crypto();
 
     JS_SetContextOpaque(this->ctx, this);
 
@@ -101,6 +104,22 @@ void Context::init_api_event_listeners()
     JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
     JS_SetPropertyStr(this->ctx, global_obj, "addEventListener", JS_NewCFunction(this->ctx, api_add_event_listener, "addEventListener", 2));
+
+    JS_FreeValue(this->ctx, global_obj);
+}
+
+void Context::init_api_crypto()
+{
+    JSValue global_obj, crypto;
+
+    global_obj = JS_GetGlobalObject(this->ctx);
+
+    crypto = JS_NewObject(this->ctx);
+
+    JS_SetPropertyStr(this->ctx, crypto, "getRandomValues", JS_NewCFunction(ctx, api_crypto_get_random_values, "getRandomValues", 1));
+    JS_SetPropertyStr(this->ctx, crypto, "randomUUID", JS_NewCFunction(ctx, api_crypto_random_uuid, "randomUUID", 0));
+
+    JS_SetPropertyStr(this->ctx, global_obj, "crypto", crypto);
 
     JS_FreeValue(this->ctx, global_obj);
 }

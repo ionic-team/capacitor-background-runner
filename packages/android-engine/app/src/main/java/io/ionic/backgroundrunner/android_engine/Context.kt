@@ -1,6 +1,8 @@
 package io.ionic.backgroundrunner.android_engine
 
 import org.json.JSONObject
+import java.security.SecureRandom
+import java.util.UUID
 
 class Context constructor(name: String, runnerPtr: Long) {
     private val ptr: Long?
@@ -20,6 +22,20 @@ class Context constructor(name: String, runnerPtr: Long) {
         external fun destroyContext(ptr: Long)
         external fun evaluate(ptr: Long, code: String): JSValue
         external fun dispatchEvent(ptr: Long, event: String, details: String)
+
+        @JvmStatic fun cryptoRandomUUID(): String {
+            val random = UUID.randomUUID()
+            return random.toString()
+        }
+
+        @JvmStatic fun cryptoGetRandom(size: Int): ByteArray {
+            val random = SecureRandom()
+            val arr = ByteArray(size)
+
+            random.nextBytes(arr)
+
+            return arr;
+        }
     }
 
     fun execute(code: String): JSValue {
