@@ -14,6 +14,5 @@ struct Timer {
 JSValue api_set_timeout(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 JSValue api_clear_timeout(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 JSValue api_set_interval(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
-JSValue api_clear_interval(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 
 #endif //ANDROID_ENGINE_API_TIMEOUT_H

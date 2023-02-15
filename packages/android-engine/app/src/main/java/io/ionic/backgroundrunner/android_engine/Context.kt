@@ -53,11 +53,7 @@ class Context constructor(name: String, runnerPtr: Long) {
             throw Exception("runner pointer is null")
         }
 
-        thread {
-            Log.d("Context", "run loop started")
-            Context.start(this.ptr)
-            Log.d("Context", "run loop stopped")
-        }
+        Context.start(this.ptr)
     }
 
     fun stop() {

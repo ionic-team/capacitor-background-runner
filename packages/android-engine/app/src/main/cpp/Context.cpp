@@ -23,6 +23,8 @@ Context::Context(const std::string& name, JSRuntime *rt, JNIEnv* env) {
 }
 
 Context::~Context() {
+    this->stop_run_loop();
+
     for(const auto& kv: this->event_listeners) {
         JS_FreeValue(this->ctx, kv.second);
     }
@@ -38,50 +40,65 @@ Context::~Context() {
 void Context::start_run_loop() {
     this->end_run_loop = false;
 
-    std::cout << "Starting Run Loop" << std::endl;
+    this->run_loop_thread = std::thread([this] {
+       run_loop();
+    });
 
+    this->run_loop_thread.detach();
+
+    this->run_loop_stopped = false;
+}
+
+void Context::stop_run_loop() {
+    if (this->end_run_loop) {
+        return;
+    }
+
+    this->run_loop_mutex.lock();
+    this->end_run_loop = true;
+    this->run_loop_mutex.unlock();
+
+    while(!this->run_loop_stopped) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+}
+
+void Context::run_loop()
+{
     for(;;) {
+        this->run_loop_mutex.lock();
         if (this->end_run_loop) {
             break;
         }
+        this->run_loop_mutex.unlock();
 
         if (!this->timers.empty()) {
+            this->timers_mutex.lock();
             JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
             for(const auto& kv: this->timers) {
                 auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - kv.second.start);
 
                 if (duration.count() >= kv.second.timeout) {
-                    this->timers.erase(kv.first);
+                    this->timers[kv.first].start = std::chrono::system_clock::now();
 
-                    auto callback =  (JSValue)kv.second.js_func;
-
-                    JSValue value = JS_Call(this->ctx, callback, global_obj, 0, nullptr);
+                    JSValue value = JS_Call(this->ctx, this->timers[kv.first].js_func, global_obj, 0, nullptr);
                     JS_FreeValue(this->ctx, value);
 
-                    if (kv.second.repeat) {
-                        Timer timer{};
-                        timer.js_func = callback;
-                        timer.timeout = kv.second.timeout;
-                        timer.start = std::chrono::system_clock::now();
-                        timer.repeat = false;
-
-                        this->timers[kv.first] = timer;
-                    } else {
-                        JS_FreeValue(this->ctx, callback);
+                    if (!this->timers[kv.first].repeat) {
+                        JS_FreeValue(this->ctx, this->timers[kv.first].js_func);
+                        this->timers.erase(kv.first);
                     }
                 }
             }
 
+            this->timers_mutex.unlock();
+
             JS_FreeValue(this->ctx, global_obj);
         }
     }
-
-    std::cout << "Stopping Run Loop" << std::endl;
-}
-
-void Context::stop_run_loop() {
-    this->end_run_loop = true;
+    
+    this->run_loop_stopped = true;
 }
 
 JSValue Context::parseJSON(const char *json_string)
@@ -182,6 +199,8 @@ void Context::init_api_timeout()
 
     JS_SetPropertyStr(this->ctx, global_obj, "setTimeout", JS_NewCFunction(this->ctx, api_set_timeout, "setTimeout", 2));
     JS_SetPropertyStr(this->ctx, global_obj, "clearTimeout", JS_NewCFunction(this->ctx, api_clear_timeout, "clearTimeout", 1));
+    JS_SetPropertyStr(this->ctx, global_obj, "setInterval", JS_NewCFunction(this->ctx, api_set_interval, "setInterval", 1));
+    JS_SetPropertyStr(this->ctx, global_obj, "clearInterval", JS_NewCFunction(this->ctx, api_clear_timeout, "clearInterval", 1));
 
     JS_FreeValue(this->ctx, global_obj);
 }

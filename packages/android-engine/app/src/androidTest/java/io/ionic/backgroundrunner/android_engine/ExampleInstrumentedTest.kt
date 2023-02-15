@@ -156,14 +156,31 @@ class ExampleInstrumentedTest {
         context.start()
 
         var value = context.execute("setTimeout(() => { console.log('timeout executed'); }, 2000)")
-        println(value.getIntValue() ?: 0)
         assertTrue((value.getIntValue()?: 0) > 0)
-
         Thread.sleep(3000)
 
         value = context.execute("setTimeout(() => { console.log('This timeout should not be executed'); }, 4000)")
         Thread.sleep(1000)
+
         context.execute("clearTimeout(${value.getIntValue()});")
+        Thread.sleep(3000)
+
+        context.stop()
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_SetInterval() {
+        var runner = Runner()
+        val context = runner.createContext(".io.backgroundrunner.ionic")
+        context.start()
+
+        var value = context.execute("setInterval(() => { console.log('timeout executed'); }, 2000)")
+        assertTrue((value.getIntValue()?: 0) > 0)
+
+        Thread.sleep(8000)
+        context.execute("clearInterval(${value.getIntValue()});")
+
         Thread.sleep(3000)
 
         context.stop()

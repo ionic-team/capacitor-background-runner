@@ -2,6 +2,7 @@
 #include <string>
 #include <unordered_map>
 #include <jni.h>
+#include <thread>
 
 #include "api_events.h"
 #include "api_console.h"
@@ -28,6 +29,8 @@ public:
     void start_run_loop();
     void stop_run_loop();
 
+    std::mutex timers_mutex;
+
     JSValue evaluate(const char* code);
     JSValue dispatch_event(const std::string& event, JSValue details);
 
@@ -36,7 +39,14 @@ public:
 
 private:
     JSValue global_json_obj;
+
+    std::thread run_loop_thread;
+    std::mutex run_loop_mutex;
+
+    bool run_loop_stopped;
     bool end_run_loop;
+
+    void run_loop();
 
     void init_api_console();
     void init_api_event_listeners();
