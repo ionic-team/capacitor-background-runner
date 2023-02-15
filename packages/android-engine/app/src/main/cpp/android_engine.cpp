@@ -130,6 +130,7 @@ Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_initContex
     JSRuntime *rt = (JSRuntime *)runner_ptr;
 
     Context* context = new Context(env->GetStringUTFChars(name, 0), rt, env);
+
     return (jlong)(long)context;
 }
 
@@ -183,4 +184,16 @@ Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_dispatchEv
 
     JS_FreeValue(ctx->ctx, value);
 
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_start(JNIEnv *env ,jobject thiz, jlong ptr) {
+    Context *ctx = (Context *)ptr;
+    ctx->start_run_loop();
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_stop(JNIEnv *env, jobject thiz, jlong ptr) {
+    Context *ctx = (Context *)ptr;
+    ctx->stop_run_loop();
 }

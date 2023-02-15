@@ -1,8 +1,12 @@
 package io.ionic.backgroundrunner.android_engine
 
+import android.util.Log
 import org.json.JSONObject
+import kotlin.math.abs
 import java.security.SecureRandom
-import java.util.UUID
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.concurrent.thread
 
 class Context constructor(name: String, runnerPtr: Long) {
     private val ptr: Long?
@@ -21,11 +25,17 @@ class Context constructor(name: String, runnerPtr: Long) {
         external fun initContext(runnerPtr: Long, name: String): Long
         external fun destroyContext(ptr: Long)
         external fun evaluate(ptr: Long, code: String): JSValue
+        external fun start(ptr: Long)
+        external fun stop(ptr: Long)
         external fun dispatchEvent(ptr: Long, event: String, details: String)
 
         @JvmStatic fun cryptoRandomUUID(): String {
             val random = UUID.randomUUID()
             return random.toString()
+        }
+
+        @JvmStatic fun randomHashCode(): Int {
+            return abs(cryptoRandomUUID().hashCode())
         }
 
         @JvmStatic fun cryptoGetRandom(size: Int): ByteArray {
@@ -36,6 +46,26 @@ class Context constructor(name: String, runnerPtr: Long) {
 
             return arr;
         }
+    }
+
+    fun start() {
+        if (this.ptr == null) {
+            throw Exception("runner pointer is null")
+        }
+
+        thread {
+            Log.d("Context", "run loop started")
+            Context.start(this.ptr)
+            Log.d("Context", "run loop stopped")
+        }
+    }
+
+    fun stop() {
+        if (this.ptr == null) {
+            throw Exception("runner pointer is null")
+        }
+
+        Context.stop(this.ptr)
     }
 
     fun execute(code: String): JSValue {
@@ -56,6 +86,7 @@ class Context constructor(name: String, runnerPtr: Long) {
 
     fun destroy() {
         if (this.ptr != null) {
+            this.stop();
             Context.destroyContext(this.ptr)
         }
     }

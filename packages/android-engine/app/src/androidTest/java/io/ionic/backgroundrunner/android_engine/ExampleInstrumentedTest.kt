@@ -2,6 +2,7 @@ package io.ionic.backgroundrunner.android_engine
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.delay
 import org.json.JSONObject
 
 import org.junit.Test
@@ -145,6 +146,27 @@ class ExampleInstrumentedTest {
         assertFalse(value.isUndefined)
 
         assertEquals(36, value.getStringValue()?.length)
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_SetTimeout() {
+        var runner = Runner()
+        val context = runner.createContext(".io.backgroundrunner.ionic")
+        context.start()
+
+        var value = context.execute("setTimeout(() => { console.log('timeout executed'); }, 2000)")
+        println(value.getIntValue() ?: 0)
+        assertTrue((value.getIntValue()?: 0) > 0)
+
+        Thread.sleep(3000)
+
+        value = context.execute("setTimeout(() => { console.log('This timeout should not be executed'); }, 4000)")
+        Thread.sleep(1000)
+        context.execute("clearTimeout(${value.getIntValue()});")
+        Thread.sleep(3000)
+
+        context.stop()
         runner.destroy()
     }
 
