@@ -2,6 +2,7 @@ package io.ionic.backgroundrunner.android_engine
 
 import android.util.Log
 import org.json.JSONObject
+import java.nio.charset.Charset
 import kotlin.math.abs
 import java.security.SecureRandom
 import java.util.*
@@ -45,6 +46,10 @@ class Context constructor(name: String, runnerPtr: Long) {
             random.nextBytes(arr)
 
             return arr;
+        }
+
+        @JvmStatic fun stringToByteArray(str: String): ByteArray {
+            return str.toByteArray(Charset.forName("UTF-8"))
         }
     }
 

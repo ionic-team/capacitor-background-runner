@@ -188,6 +188,24 @@ class ExampleInstrumentedTest {
     }
 
     @Test
+    fun testAPI_TextEncoder() {
+        var runner = Runner()
+        val context = runner.createContext(".io.backgroundrunner.ionic")
+        var value = context.execute("const encoder = new TextEncoder(); const arr = encoder.encode('€'); console.log(arr);");
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_TextDecoder() {
+        var runner = Runner()
+        val context = runner.createContext(".io.backgroundrunner.ionic")
+        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); const bytes = new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]); console.log(win1251decoder.decode(bytes));");
+
+        runner.destroy()
+    }
+
+    @Test
     fun testJSON() {
         val runner = Runner()
         val context = runner.createContext("io.backgroundrunner.ionic")

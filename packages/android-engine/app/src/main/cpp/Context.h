@@ -8,6 +8,7 @@
 #include "api_console.h"
 #include "api_crypto.h"
 #include "api_timeout.h"
+#include "api_text.h"
 
 #ifndef ANDROID_ENGINE_CONTEXT_H
 #define ANDROID_ENGINE_CONTEXT_H
@@ -52,6 +53,7 @@ private:
     void init_api_event_listeners();
     void init_api_crypto();
     void init_api_timeout();
+    void init_api_text();
 };
 
 #endif //ANDROID_ENGINE_CONTEXT_H

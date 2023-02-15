@@ -10,10 +10,14 @@ Context::Context(const std::string& name, JSRuntime *rt, JNIEnv* env) {
     this->name = name;
     this->env = env;
 
+    this->run_loop_stopped = true;
+    this->end_run_loop = false;
+
     this->init_api_console();
     this->init_api_event_listeners();
     this->init_api_crypto();
     this->init_api_timeout();
+    this->init_api_text();
 
     JS_SetContextOpaque(this->ctx, this);
 
@@ -97,7 +101,7 @@ void Context::run_loop()
             JS_FreeValue(this->ctx, global_obj);
         }
     }
-    
+
     this->run_loop_stopped = true;
 }
 
@@ -203,6 +207,12 @@ void Context::init_api_timeout()
     JS_SetPropertyStr(this->ctx, global_obj, "clearInterval", JS_NewCFunction(this->ctx, api_clear_timeout, "clearInterval", 1));
 
     JS_FreeValue(this->ctx, global_obj);
+}
+
+void Context::init_api_text()
+{
+    init_text_encoder_class(this->ctx);
+    init_text_decoder_class(this->ctx);
 }
 
 
