@@ -18,16 +18,41 @@ import java.util.UUID
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
+
+    @Test
+    fun testNullEval() {
+        val runner = Runner()
+        val context = runner.createContext("io.backgroundrunner.ionic")
+
+        var value = context.execute("undefined", true)
+        assertTrue(value.isNullOrUndefined())
+
+        value = context.execute("const test = null; test;", true);
+        assertTrue(value.isNullOrUndefined())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testBoolEval() {
+        val runner = Runner()
+        val context = runner.createContext("io.backgroundrunner.ionic")
+
+        var value = context.execute("let test = (1 == 1); test;", true)
+        assertTrue(value.getBoolValue()?: false)
+
+        value = context.execute("test = (100 == 200); test;");
+        assertFalse(value.getBoolValue()?: true)
+
+        runner.destroy()
+    }
+
     @Test
     fun testIntegerEval() {
         val runner = Runner()
         val context = runner.createContext("io.backgroundrunner.ionic")
 
-        var value = context.execute("const test = 1 + 2;")
-        assertEquals(true, value.isUndefined)
-
-        value = context.execute("test");
-        assertEquals(true, value.isNumber)
+        var value = context.execute("1 + 2;", true)
         assertEquals(3, value.getIntValue())
 
         runner.destroy()
@@ -38,11 +63,7 @@ class ExampleInstrumentedTest {
         val runner = Runner()
         val context = runner.createContext("io.backgroundrunner.ionic")
 
-        var value = context.execute("const test = 10.8 + 2.77;")
-        assertEquals(true, value.isUndefined)
-
-        value = context.execute("test");
-        assertEquals(true, value.isNumber)
+        var value = context.execute("10.8 + 2.77;", true)
         assertEquals(13.57f, value.getFloatValue())
 
         runner.destroy()
@@ -53,41 +74,8 @@ class ExampleInstrumentedTest {
         val runner = Runner()
         val context = runner.createContext("io.backgroundrunner.ionic")
 
-        var value = context.execute("const test = 'hello' + ' ' + 'world';")
-        assertEquals(true, value.isUndefined)
-
-        value = context.execute("test");
-        assertEquals(true, value.isString)
+        var value = context.execute("'hello' + ' ' + 'world';", true)
         assertEquals("hello world", value.getStringValue())
-
-        runner.destroy()
-    }
-
-    @Test
-    fun testBoolEval() {
-        val runner = Runner()
-        val context = runner.createContext("io.backgroundrunner.ionic")
-
-        var value = context.execute("const test = true;")
-        assertEquals(true, value.isUndefined)
-
-        value = context.execute("test");
-        assertEquals(true, value.isBool)
-        assertEquals(true, value.getBoolValue())
-
-        runner.destroy()
-    }
-
-    @Test
-    fun testNullEval() {
-        val runner = Runner()
-        val context = runner.createContext("io.backgroundrunner.ionic")
-
-        var value = context.execute("const test = null;")
-        assertEquals(true, value.isUndefined)
-
-        value = context.execute("test");
-        assertEquals(true, value.isNull)
 
         runner.destroy()
     }
@@ -112,20 +100,15 @@ class ExampleInstrumentedTest {
         val context = runner.createContext("io.backgroundrunner.ionic")
 
         // setting a basic event listener
-        var value = context.execute("addEventListener('myEvent', () => { console.log('event listener called'); });")
-        assertTrue(value.isUndefined)
-
+        context.execute("addEventListener('myEvent', () => { console.log('event listener called'); });")
         context.dispatchEvent("myEvent", JSONObject())
 
         // setting multiple event listeners for the same event
-        value = context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
-        assertTrue(value.isUndefined)
-
+        context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
         context.dispatchEvent("myEvent", JSONObject())
 
         // basic event listener with details
-        value = context.execute("addEventListener('myEventDetails', (details) => { console.log('detailed passed: ' + details.name); });")
-        assertTrue(value.isUndefined)
+        context.execute("addEventListener('myEventDetails', (details) => { console.log('detailed passed: ' + details.name); });")
 
         val detailsObject = JSONObject()
         detailsObject.put("name", "John Doe")
@@ -140,11 +123,10 @@ class ExampleInstrumentedTest {
         val runner = Runner()
         val context = runner.createContext("io.backgroundrunner.ionic")
 
-        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); for (const num of array) { console.log(num); } ")
+        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); array;", true)
+        assertEquals(10, value.getJSONObject()?.length())
 
-        value = context.execute("crypto.randomUUID();")
-        assertFalse(value.isUndefined)
-
+        value = context.execute("crypto.randomUUID();", true)
         assertEquals(36, value.getStringValue()?.length)
         runner.destroy()
     }
@@ -155,11 +137,11 @@ class ExampleInstrumentedTest {
         val context = runner.createContext(".io.backgroundrunner.ionic")
         context.start()
 
-        var value = context.execute("setTimeout(() => { console.log('timeout executed'); }, 2000)")
+        var value = context.execute("setTimeout(() => { console.log('timeout executed'); }, 2000)", true)
         assertTrue((value.getIntValue()?: 0) > 0)
         Thread.sleep(3000)
 
-        value = context.execute("setTimeout(() => { console.log('This timeout should not be executed'); }, 4000)")
+        value = context.execute("setTimeout(() => { console.log('This timeout should not be executed'); }, 4000)", true)
         Thread.sleep(1000)
 
         context.execute("clearTimeout(${value.getIntValue()});")
@@ -175,7 +157,7 @@ class ExampleInstrumentedTest {
         val context = runner.createContext(".io.backgroundrunner.ionic")
         context.start()
 
-        var value = context.execute("setInterval(() => { console.log('timeout executed'); }, 2000)")
+        var value = context.execute("setInterval(() => { console.log('timeout executed'); }, 2000)", true)
         assertTrue((value.getIntValue()?: 0) > 0)
 
         Thread.sleep(8000)
@@ -191,7 +173,15 @@ class ExampleInstrumentedTest {
     fun testAPI_TextEncoder() {
         var runner = Runner()
         val context = runner.createContext(".io.backgroundrunner.ionic")
-        var value = context.execute("const encoder = new TextEncoder(); const arr = encoder.encode('€'); console.log(arr);");
+        var value = context.execute("const encoder = new TextEncoder(); encoder.encode('€');", true);
+
+        val arrayObject = value.getJSONObject()
+
+        assertNotNull(arrayObject)
+
+        assertEquals(226, arrayObject?.getInt("0"))
+        assertEquals(130, arrayObject?.getInt("1"))
+        assertEquals(172, arrayObject?.getInt("2"))
 
         runner.destroy()
     }
@@ -201,36 +191,12 @@ class ExampleInstrumentedTest {
         var runner = Runner()
         val context = runner.createContext(".io.backgroundrunner.ionic")
 
-        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));");
-        assertTrue(value.isString)
+        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));", true);
         assertEquals("Привет, мир!", value.getStringValue())
 
-        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));");
-        assertTrue(value.isString)
+        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));", true);
         assertEquals("\uD842\uDFB7", value.getStringValue())
 
         runner.destroy()
     }
-
-    @Test
-    fun testJSON() {
-        val runner = Runner()
-        val context = runner.createContext("io.backgroundrunner.ionic")
-
-        val json = "{\"name\":\"John Doe\",\"age\":55,\"active\":true,\"address\":{\"street\":\"123 Main Street\",\"state\":\"SD\"},\"arr\":[\"hello\",\"world\",\"test\"]}"
-
-        var value = context.execute("JSON.parse('$json');")
-
-
-        runner.destroy()
-    }
-
-//    @Test
-//    fun useAppContext() {
-//        // Context of the app under test.
-////        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-////        assertEquals("io.ionic.backgroundrunner.android_engine", appContext.packageName)
-//
-//
-//    }
 }

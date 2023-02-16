@@ -1,31 +1,68 @@
 package io.ionic.backgroundrunner.android_engine
 
-class JSValue {
-    val isBool: Boolean = false
-    val isNumber: Boolean = false
-    val isString: Boolean = false
-    val isNull: Boolean = false
-    val isUndefined: Boolean = false
-    val isFunction: Boolean = false
-    val isArray: Boolean = false
+import org.json.JSONArray
+import org.json.JSONObject
 
-    private val doubleValue: Double? = null;
-    private val boolValue: Boolean? = null;
-    private val strValue: String? = null;
+class JSValue constructor(jsonString: String) {
+    private val json: String
+
+    init {
+        this.json = jsonString
+    }
 
     fun getIntValue(): Int? {
-        return doubleValue?.toInt()
+        return this.getJSNumber()?.toInt()
     }
 
     fun getFloatValue(): Float? {
-        return doubleValue?.toFloat()
+        return this.getJSNumber()?.toFloat()
     }
 
     fun getStringValue(): String? {
-        return strValue
+        if (checkIfNullOrUndefined()) return null
+
+        return this.json.trim('"')
+    }
+
+    fun isNullOrUndefined() : Boolean {
+        return checkIfNullOrUndefined()
     }
 
     fun getBoolValue(): Boolean? {
-        return boolValue;
+        if (checkIfNullOrUndefined()) return null
+
+        if (this.json == "false" || this.json == "0"  || this.json.isEmpty()) {
+            return false
+        }
+
+        return true
+    }
+
+    fun getJSONArray(): JSONArray? {
+        try {
+            return JSONArray(this.json)
+        } catch (_: java.lang.Exception) {}
+        return null
+    }
+
+    fun getJSONObject(): JSONObject? {
+        try {
+            return JSONObject(this.json)
+        } catch (_: java.lang.Exception) {}
+        return null
+    }
+
+    private fun getJSNumber(): Double? {
+        if (checkIfNullOrUndefined()) return null
+
+        return json.toDoubleOrNull()
+    }
+
+    private fun checkIfNullOrUndefined(): Boolean {
+        if (this.json == "undefined" || this.json == "null") {
+            return true
+        }
+
+        return false
     }
 }

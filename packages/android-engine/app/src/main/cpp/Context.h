@@ -32,11 +32,11 @@ public:
 
     std::mutex timers_mutex;
 
-    JSValue evaluate(const char* code);
+    std::string evaluate(const std::string& code, bool ret_val) const;
     JSValue dispatch_event(const std::string& event, JSValue details);
 
-    JSValue parseJSON(const char* code);
-    const char * stringifyJSON(JSValue object);
+    JSValue parseJSON(const std::string& json_string) const;
+    std::string stringifyJSON(JSValue object) const;
 
 private:
     JSValue global_json_obj;
@@ -49,11 +49,11 @@ private:
 
     void run_loop();
 
-    void init_api_console();
-    void init_api_event_listeners();
-    void init_api_crypto();
-    void init_api_timeout();
-    void init_api_text();
+    void init_api_console() const;
+    void init_api_event_listeners() const;
+    void init_api_crypto() const;
+    void init_api_timeout() const;
+    void init_api_text() const;
 };
 
 #endif //ANDROID_ENGINE_CONTEXT_H

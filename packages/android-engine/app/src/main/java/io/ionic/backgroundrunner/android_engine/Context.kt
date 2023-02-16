@@ -25,7 +25,7 @@ class Context constructor(name: String, runnerPtr: Long) {
 
         external fun initContext(runnerPtr: Long, name: String): Long
         external fun destroyContext(ptr: Long)
-        external fun evaluate(ptr: Long, code: String): JSValue
+        external fun evaluate(ptr: Long, code: String, retValue: Boolean): String
         external fun start(ptr: Long)
         external fun stop(ptr: Long)
         external fun dispatchEvent(ptr: Long, event: String, details: String)
@@ -90,12 +90,14 @@ class Context constructor(name: String, runnerPtr: Long) {
         Context.stop(this.ptr)
     }
 
-    fun execute(code: String): JSValue {
+    fun execute(code: String, returnValue: Boolean = false): JSValue {
         if (this.ptr == null) {
             throw Exception("runner pointer is null")
         }
 
-        return Context.evaluate(this.ptr, code)
+        val jsonString = Context.evaluate(this.ptr, code, returnValue);
+
+       return JSValue(jsonString)
     }
 
     fun dispatchEvent(event: String, details: JSONObject) {
@@ -111,5 +113,9 @@ class Context constructor(name: String, runnerPtr: Long) {
             this.stop();
             Context.destroyContext(this.ptr)
         }
+    }
+
+    private inline fun <reified T> isTypeBoolean(): Boolean {
+        return T::class.java == Boolean::class.java
     }
 }

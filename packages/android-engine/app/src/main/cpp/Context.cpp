@@ -1,7 +1,7 @@
 #include "Context.h"
 
 #include <utility>
-#include <string.h>
+#include <cstring>
 #include <iostream>
 #include <thread>
 
@@ -105,14 +105,14 @@ void Context::run_loop()
     this->run_loop_stopped = true;
 }
 
-JSValue Context::parseJSON(const char *json_string)
+JSValue Context::parseJSON(const std::string& json_string) const
 {
     JSValue ret_value = JS_UNDEFINED;
 
     JSValue global_obj = JS_GetGlobalObject(this->ctx);
     JSValue parse_func_obj = JS_GetPropertyStr(this->ctx, this->global_json_obj, "parse");
 
-    JSValue json = JS_NewString(this->ctx, json_string);
+    JSValue json = JS_NewString(this->ctx, json_string.c_str());
 
     JSValue parsed = JS_Call(this->ctx, parse_func_obj, global_obj, 1, &json);
     ret_value = JS_DupValue(this->ctx, parsed);
@@ -125,11 +125,42 @@ JSValue Context::parseJSON(const char *json_string)
     return ret_value;
 }
 
-JSValue Context::evaluate(const char * code) {
-    int flags = JS_EVAL_TYPE_GLOBAL;
-    flags |= JS_EVAL_FLAG_BACKTRACE_BARRIER;
+std::string Context::stringifyJSON(JSValue object) const
+{
+    JSValue global_obj = JS_GetGlobalObject(this->ctx);
+    JSValue stringify_func_obj = JS_GetPropertyStr(this->ctx, this->global_json_obj, "stringify");
 
-    return JS_Eval(this->ctx, code, strlen(code), "<code>", flags);
+    JSValue str_value = JS_Call(this->ctx, stringify_func_obj, global_obj, 1, &object);
+
+    const char * c_str = JS_ToCString(this->ctx, str_value);
+
+    std::string json(c_str);
+
+    JS_FreeCString(this->ctx, c_str);
+
+    JS_FreeValue(this->ctx, str_value);
+    JS_FreeValue(this->ctx, stringify_func_obj);
+    JS_FreeValue(this->ctx, global_obj);
+
+    return json;
+}
+
+std::string Context::evaluate(const std::string& code, bool ret_val) const {
+    int flags = JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_BACKTRACE_BARRIER;
+
+    size_t code_len = strlen(code.c_str());
+
+    JSValue value = JS_Eval(this->ctx, code.c_str(), code_len, "<code>", flags);
+
+    std::string json;
+
+    if (ret_val) {
+        json = this->stringifyJSON(value);
+    }
+
+    JS_FreeValue(this->ctx, value);
+
+    return json;
 }
 
 JSValue Context::dispatch_event(const std::string &event, JSValue details) {
@@ -154,7 +185,7 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
     return ret_value;
 }
 
-void Context::init_api_console()
+void Context::init_api_console() const
 {
     JSValue global_obj, console;
 
@@ -172,7 +203,7 @@ void Context::init_api_console()
     JS_FreeValue(this->ctx, global_obj);
 }
 
-void Context::init_api_event_listeners()
+void Context::init_api_event_listeners() const
 {
     JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
@@ -181,7 +212,7 @@ void Context::init_api_event_listeners()
     JS_FreeValue(this->ctx, global_obj);
 }
 
-void Context::init_api_crypto()
+void Context::init_api_crypto() const
 {
     JSValue global_obj, crypto;
 
@@ -197,7 +228,7 @@ void Context::init_api_crypto()
     JS_FreeValue(this->ctx, global_obj);
 }
 
-void Context::init_api_timeout()
+void Context::init_api_timeout() const
 {
     JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
@@ -209,7 +240,7 @@ void Context::init_api_timeout()
     JS_FreeValue(this->ctx, global_obj);
 }
 
-void Context::init_api_text()
+void Context::init_api_text() const
 {
     init_text_encoder_class(this->ctx);
     init_text_decoder_class(this->ctx);
