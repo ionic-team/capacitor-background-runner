@@ -200,7 +200,14 @@ class ExampleInstrumentedTest {
     fun testAPI_TextDecoder() {
         var runner = Runner()
         val context = runner.createContext(".io.backgroundrunner.ionic")
-        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); const bytes = new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]); console.log(win1251decoder.decode(bytes));");
+
+        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));");
+        assertTrue(value.isString)
+        assertEquals("Привет, мир!", value.getStringValue())
+
+        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));");
+        assertTrue(value.isString)
+        assertEquals("\uD842\uDFB7", value.getStringValue())
 
         runner.destroy()
     }

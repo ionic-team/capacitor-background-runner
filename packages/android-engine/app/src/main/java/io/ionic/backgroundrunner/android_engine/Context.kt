@@ -51,6 +51,27 @@ class Context constructor(name: String, runnerPtr: Long) {
         @JvmStatic fun stringToByteArray(str: String): ByteArray {
             return str.toByteArray(Charset.forName("UTF-8"))
         }
+
+        @JvmStatic fun byteArrayToString(arr: ByteArray, encoding: String): String {
+            val enc = Context.getCharset(encoding)
+            return arr.toString(enc)
+        }
+
+        fun getCharset(encoding: String): Charset {
+            if (encoding == "utf-16be") {
+                return Charsets.UTF_16BE
+            }
+
+            if (encoding == "utf-16le") {
+                return Charsets.UTF_16LE
+            }
+
+            if (encoding == "utf-8") {
+                return Charsets.UTF_8
+            }
+
+            return Charset.forName(encoding)
+        }
     }
 
     fun start() {
