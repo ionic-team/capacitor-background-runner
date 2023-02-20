@@ -185,6 +185,19 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
     return ret_value;
 }
 
+void Context::register_function(const std::string& func_name, jobject func) {
+    int size = this->functions.size();
+
+    this->function_index[func_name] = size;
+    this->functions.push_back(func);
+
+    JSValue global_obj = JS_GetGlobalObject(this->ctx);
+
+    JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunction(this->ctx, call_global_function, func_name.c_str(), 1));
+
+    JS_FreeValue(this->ctx, global_obj);
+}
+
 void Context::init_api_console() const
 {
     JSValue global_obj, console;
@@ -244,6 +257,49 @@ void Context::init_api_text() const
 {
     init_text_encoder_class(this->ctx);
     init_text_decoder_class(this->ctx);
+}
+
+std::string get_function_name(JSContext *ctx)
+{
+    JS_FreeValue(ctx, JS_ThrowTypeError(ctx, "callstack"));
+    JSValue exception = JS_GetException(ctx);
+
+    JSValue stack_val = JS_GetPropertyStr(ctx, exception, "stack");
+    std::string callstack( JS_ToCString(ctx, stack_val));
+
+    auto first_line = callstack.substr(0, callstack.find("\n"));
+
+    auto name = first_line.replace(first_line.find("(native)"), sizeof("(native)") -1, "");
+    name.erase(std::remove_if(name.begin(), name.end(), ::isspace), name.end());
+    name.erase(0,2);
+
+    JS_FreeValue(ctx, stack_val);
+    JS_FreeValue(ctx, exception);
+    JS_ResetUncatchableError(ctx);
+
+    return name;
+}
+
+JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv)
+{
+    JSValue ret_value = JS_UNDEFINED;
+
+    auto func_name = get_function_name(ctx);
+
+    // TODO: Check for JNI Exceptions
+    Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+
+    int func_index = parent_ctx->function_index[func_name];
+    auto j_func = parent_ctx->functions[func_index];
+
+    if (j_func != nullptr) {
+        jclass j_function_class = parent_ctx->env->GetObjectClass(j_func);
+        jmethodID j_method = parent_ctx->env->GetMethodID(j_function_class, "run", "()V");
+
+        parent_ctx->env->CallVoidMethod(j_func, j_method);
+    }
+
+    return ret_value;
 }
 
 

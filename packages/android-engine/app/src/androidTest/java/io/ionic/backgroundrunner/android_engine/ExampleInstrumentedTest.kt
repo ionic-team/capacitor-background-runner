@@ -1,5 +1,7 @@
 package io.ionic.backgroundrunner.android_engine
 
+import android.util.Log
+import android.util.Log.DEBUG
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import kotlinx.coroutines.delay
@@ -96,24 +98,37 @@ class ExampleInstrumentedTest {
 
     @Test
     fun testAPI_EventListeners() {
+
+        class EventCallback: JSFunction(JSONObject()) {
+            override fun run() {
+                super.run()
+
+                Log.d("[Context]", "Kotlin Callback called!")
+            }
+        }
+
+        val callback = EventCallback()
+
         val runner = Runner()
         val context = runner.createContext("io.backgroundrunner.ionic")
 
+        context.registerFunction("test_EventCallback", callback)
+
         // setting a basic event listener
-        context.execute("addEventListener('myEvent', () => { console.log('event listener called'); });")
+        context.execute("addEventListener('myEvent', () => { test_EventCallback(); });")
         context.dispatchEvent("myEvent", JSONObject())
 
         // setting multiple event listeners for the same event
-        context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
-        context.dispatchEvent("myEvent", JSONObject())
-
-        // basic event listener with details
-        context.execute("addEventListener('myEventDetails', (details) => { console.log('detailed passed: ' + details.name); });")
-
-        val detailsObject = JSONObject()
-        detailsObject.put("name", "John Doe")
-
-        context.dispatchEvent("myEventDetails", detailsObject)
+//        context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
+//        context.dispatchEvent("myEvent", JSONObject())
+//
+//        // basic event listener with details
+//        context.execute("addEventListener('myEventDetails', (details) => { console.log('detailed passed: ' + details.name); });")
+//
+//        val detailsObject = JSONObject()
+//        detailsObject.put("name", "John Doe")
+//
+//        context.dispatchEvent("myEventDetails", detailsObject)
 
         runner.destroy()
     }

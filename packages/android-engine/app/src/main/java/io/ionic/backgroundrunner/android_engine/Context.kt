@@ -29,6 +29,7 @@ class Context constructor(name: String, runnerPtr: Long) {
         external fun start(ptr: Long)
         external fun stop(ptr: Long)
         external fun dispatchEvent(ptr: Long, event: String, details: String)
+        external fun registerGlobalFunction(ptr: Long, functionName: String,  function: JSFunction)
 
         @JvmStatic fun cryptoRandomUUID(): String {
             val random = UUID.randomUUID()
@@ -108,14 +109,18 @@ class Context constructor(name: String, runnerPtr: Long) {
         Context.dispatchEvent(this.ptr, event, details.toString(0))
     }
 
+    fun registerFunction(funcName:String, func: JSFunction) {
+        if (this.ptr == null) {
+            throw Exception("runner pointer is null")
+        }
+
+        Context.registerGlobalFunction(this.ptr, funcName, func)
+    }
+
     fun destroy() {
         if (this.ptr != null) {
             this.stop();
             Context.destroyContext(this.ptr)
         }
-    }
-
-    private inline fun <reified T> isTypeBoolean(): Boolean {
-        return T::class.java == Boolean::class.java
     }
 }

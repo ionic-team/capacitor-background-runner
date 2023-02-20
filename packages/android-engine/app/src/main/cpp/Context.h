@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <jni.h>
 #include <thread>
+#include <vector>
 
 #include "api_events.h"
 #include "api_console.h"
@@ -13,6 +14,7 @@
 #ifndef ANDROID_ENGINE_CONTEXT_H
 #define ANDROID_ENGINE_CONTEXT_H
 
+JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 
 class Context {
 public:
@@ -23,6 +25,8 @@ public:
 
     std::unordered_multimap<std::string, JSValue> event_listeners;
     std::unordered_map<int, Timer> timers;
+    std::unordered_map<std::string, int> function_index;
+    std::vector<jobject> functions;
 
     Context(const std::string& name, JSRuntime* rt, JNIEnv *env);
     ~Context();
@@ -34,6 +38,7 @@ public:
 
     std::string evaluate(const std::string& code, bool ret_val) const;
     JSValue dispatch_event(const std::string& event, JSValue details);
+    void register_function(const std::string& func_name, jobject func);
 
     JSValue parseJSON(const std::string& json_string) const;
     std::string stringifyJSON(JSValue object) const;

@@ -7,9 +7,6 @@
 #include "api_console.h"
 #include "api_events.h"
 
-//static const JSCFunctionListEntry console_funcs[] = {
-//        JS_CFUNC_DEF("log", 1, api_console_log),
-//};
 
 jint throw_js_exception(JNIEnv *env, JSContext* ctx) {
     jclass c = (*env).FindClass("io/ionic/backgroundrunner/android_engine/EngineErrors$JavaScriptException");
@@ -97,8 +94,8 @@ Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_dispatchEv
     }
 
     JS_FreeValue(ctx->ctx, value);
-
 }
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_start(JNIEnv *env ,jobject thiz, jlong ptr) {
@@ -110,4 +107,14 @@ JNIEXPORT void JNICALL
 Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_stop(JNIEnv *env, jobject thiz, jlong ptr) {
     Context *ctx = (Context *)ptr;
     ctx->stop_run_loop();
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_registerGlobalFunction(JNIEnv *env, jobject thiz, jlong ptr, jstring function_name, jobject function) {
+    auto c_function_name = env->GetStringUTFChars(function_name, 0);
+
+    Context *ctx = (Context *)ptr;
+    ctx->register_function(c_function_name, env->NewGlobalRef(function)));
+
+    env->ReleaseStringUTFChars(function_name, c_function_name);
 }
