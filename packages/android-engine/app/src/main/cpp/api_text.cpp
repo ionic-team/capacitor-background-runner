@@ -32,7 +32,6 @@ static JSValue api_text_encoder_constructor(JSContext *ctx, JSValueConst new_tar
 static JSValue api_text_decoder_constructor(JSContext *ctx, JSValueConst new_target, int argc, JSValueConst *argv)
 {
     JSValue ret_value = JS_UNDEFINED;
-    JSValue label_value;
     JSValue proto = JS_GetClassProto(ctx, js_text_decoder_class_id);
 
     ret_value = JS_NewObjectProtoClass(ctx, proto, js_text_decoder_class_id);
