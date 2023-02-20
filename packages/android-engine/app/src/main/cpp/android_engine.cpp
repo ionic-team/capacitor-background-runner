@@ -112,9 +112,9 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_io_ionic_backgroundrunner_android_1engine_Context_00024Companion_registerGlobalFunction(JNIEnv *env, jobject thiz, jlong ptr, jstring function_name, jobject function) {
     auto c_function_name = env->GetStringUTFChars(function_name, 0);
-
+    
     Context *ctx = (Context *)ptr;
-    ctx->register_function(c_function_name, env->NewGlobalRef(function)));
+    ctx->register_function(c_function_name, env->NewGlobalRef(function));
 
     env->ReleaseStringUTFChars(function_name, c_function_name);
 }
