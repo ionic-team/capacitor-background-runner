@@ -1,1 +1,10 @@
 node_modules/
+.DS_Store
+dist/
+*.tgz
+.env
+.ionic/*
+!.ionic/e2e.env
+!.ionic/wdio.config.ts
+xcuserdata
+.turbo
