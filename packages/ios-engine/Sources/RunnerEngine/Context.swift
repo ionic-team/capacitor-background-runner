@@ -31,11 +31,15 @@ public class Context {
         return self.ctx.evaluateScript(code)
     }
     
-    public func dispatchEvent(event: String, details: JSValue? = nil) {
+    public func dispatchEvent(event: String, details: [String: AnyHashable]? = nil) throws {
         if let callbacks = self.eventListeners[event] {
-            callbacks.forEach { jsFunc in
+            try callbacks.forEach { jsFunc in
                 if let detailsObj = details {
-                    jsFunc.call(withArguments: [detailsObj])
+                    guard let jsDetailsObj = JSValue(object: detailsObj, in: self.ctx) else {
+                        throw EngineError.jsValueError
+                    }
+                    
+                    jsFunc.call(withArguments: [jsDetailsObj])
                 } else {
                     jsFunc.call(withArguments: [])
                 }

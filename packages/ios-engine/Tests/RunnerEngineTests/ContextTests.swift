@@ -128,12 +128,12 @@ final class ContextTests: XCTestCase {
         context.ctx.setObject(successCallbackDetails, forKeyedSubscript: "successCallbackDetails" as NSString)
         
         _ = context.execute(code: "addEventListener('myEvent', () => { successCallback(); });")
-        context.dispatchEvent(event: "myEvent")
+       try  context.dispatchEvent(event: "myEvent")
         
         wait(for: [expectation], timeout: 1)
         
         _ = context.execute(code: "addEventListener('myEvent', () => { altSuccessCallback(); });")
-        context.dispatchEvent(event: "myEvent")
+        try context.dispatchEvent(event: "myEvent")
         
         wait(for: [expectation2], timeout: 1)
         
@@ -144,7 +144,7 @@ final class ContextTests: XCTestCase {
         detailsObject["name"] = "John Doe"
         
         _ = context.execute(code: "addEventListener('myEventDetails', (details) => { successCallbackDetails(details); });")
-        context.dispatchEvent(event: "myEventDetails", details: JSValue(object: detailsObject, in: context.ctx))
+        try context.dispatchEvent(event: "myEventDetails", details: detailsObject)
         
         wait(for: [expectation3], timeout: 1)
     }
