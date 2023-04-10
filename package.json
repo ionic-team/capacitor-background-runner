@@ -5,7 +5,14 @@
     "apps/*",
     "packages/*"
   ],
+  "dependencies": {
+    "nx": "^15.7.2"
+  },
   "devDependencies": {
-    "lerna": "^5.4.3"
+    "lerna": "^6.5.1"
+  },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=7"
   }
 }
