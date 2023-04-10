@@ -3,3 +3,11 @@ include ':capacitor-cordova-android-plugins'
 project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
 
 apply from: 'capacitor.settings.gradle'
+
+def androidEngineProject = new File("./android-engine")
+if (!androidEngineProject.exists()) {
+    androidEngineProject = new File("../node_modules/@ionic-enterprise/background-runner/android/android-engine")
+}
+
+include ':android-engine'
+project(':android-engine').projectDir = androidEngineProject

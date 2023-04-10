@@ -13,25 +13,49 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
+* [`init()`](#init)
+* [`dispatchEvent(...)`](#dispatchevent)
+* [Interfaces](#interfaces)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### echo(...)
+### init()
 
 ```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
+init() => any
 ```
 
-| Param         | Type                            |
-| ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
-
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+**Returns:** <code>any</code>
 
 --------------------
+
+
+### dispatchEvent(...)
+
+```typescript
+dispatchEvent(options: DispatchEventOptions) => any
+```
+
+| Param         | Type                                                                  |
+| ------------- | --------------------------------------------------------------------- |
+| **`options`** | <code><a href="#dispatcheventoptions">DispatchEventOptions</a></code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### Interfaces
+
+
+#### DispatchEventOptions
+
+| Prop          | Type                                 |
+| ------------- | ------------------------------------ |
+| **`event`**   | <code>string</code>                  |
+| **`details`** | <code>{ [key: string]: any; }</code> |
 
 </docgen-api>

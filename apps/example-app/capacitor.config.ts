@@ -13,7 +13,7 @@ const config: CapacitorConfig = {
           src: "background.js",
           event: "updateSystem",
           repeat: false,
-          interval: "15m",
+          interval: 3,
           // TODO: Add Android / iOS constraints
         }
       ]

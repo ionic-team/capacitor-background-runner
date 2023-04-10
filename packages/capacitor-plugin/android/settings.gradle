@@ -1,2 +1,10 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+
+def androidEngineProject = new File("./android-engine")
+if (!androidEngineProject.exists()) {
+    androidEngineProject = new File("../node_modules/@ionic-enterprise/background-runner/android/android-engine")
+}
+
+include ':android-engine'
+project(':android-engine').projectDir = androidEngineProject

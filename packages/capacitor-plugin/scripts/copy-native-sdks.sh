@@ -2,6 +2,8 @@
 
 cp -R ../ios-engine/Sources/RunnerEngine ./ios/Plugin/
 
-# cp -f ../android-engine/app/build.gradle ./android/build.gradle
-# cp -f ../android-engine/app/settings.gradle ./android/settings.gradle
-# cp -R ../android-engine/app/src/ ./android/src/
+mkdir -p ./android/android-engine/src
+
+cp -f ../android-engine/build.gradle ./android/android-engine/build.gradle
+cp -f ../android-engine/settings.gradle ./android/android-engine/settings.gradle
+cp -R ../android-engine/src/ ./android/android-engine/src/
