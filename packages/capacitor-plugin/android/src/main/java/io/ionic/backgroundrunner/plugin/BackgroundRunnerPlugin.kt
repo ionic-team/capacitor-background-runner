@@ -1,5 +1,6 @@
 package io.ionic.backgroundrunner.plugin;
 
+import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
@@ -15,8 +16,6 @@ class BackgroundRunnerPlugin: Plugin() {
     private var configs: MutableList<RunnerConfig> = mutableListOf()
 
     override fun load() {
-        super.load()
-
         val runnerConfigs = config.configJSON.getJSONArray("runners")
 
         for (i in 0 until runnerConfigs.length()) {
@@ -41,16 +40,29 @@ class BackgroundRunnerPlugin: Plugin() {
         call.unimplemented()
     }
 
+    @PluginMethod
+    fun init(call: PluginCall) {
+        call.unimplemented("testing on kotlin")
+    }
+
     private fun initRunnerWorkers() {
         configs.forEach {
+            val data = Data.Builder()
+                .putString("label", it.label)
+                .putString("src", it.src)
+                .putString("event", it.event)
+                .build()
+
             if (!it.repeat) {
-                var work = OneTimeWorkRequest.Builder(RunnerWorker::class.java)
+                val work = OneTimeWorkRequest.Builder(RunnerWorker::class.java)
                     .setInitialDelay(it.interval.toLong(), TimeUnit.MINUTES)
+                    .setInputData(data)
                     .addTag(it.label)
                     .build()
                 WorkManager.getInstance(this.context).enqueue(work)
             } else {
-                var work = PeriodicWorkRequest.Builder(RunnerWorker::class.java, it.interval.toLong(), TimeUnit.MINUTES)
+                val work = PeriodicWorkRequest.Builder(RunnerWorker::class.java, it.interval.toLong(), TimeUnit.MINUTES)
+                    .setInputData(data)
                     .addTag(it.label)
                     .build()
                 WorkManager.getInstance(this.context).enqueue(work)
