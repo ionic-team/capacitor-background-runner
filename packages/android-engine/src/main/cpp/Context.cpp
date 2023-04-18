@@ -115,6 +115,38 @@ JSValue Context::parseJSON(const std::string& json_string) const
     JSValue json = JS_NewString(this->ctx, json_string.c_str());
 
     JSValue parsed = JS_Call(this->ctx, parse_func_obj, global_obj, 1, &json);
+
+    // look for __ebr:: and replace with JSFunction
+    JSPropertyEnum *properties;
+    uint32_t count;
+    JS_GetOwnPropertyNames(this->ctx, &properties, &count, parsed, JS_GPN_STRING_MASK|JS_GPN_SYMBOL_MASK|JS_GPN_ENUM_ONLY);
+    for (uint32_t i = 0; i < count; i++) {
+        JSAtom atom = properties[i].atom;
+        const char *key = JS_AtomToCString(ctx, atom);
+
+        JSValue val = JS_GetProperty(ctx, parsed, atom);
+
+        if (JS_IsString(val)) {
+            const char *c_str_val = JS_ToCString(ctx, val);
+            std::string str_value = std::string(c_str_val);
+
+            if(str_value.starts_with("__ebr::")) {
+                try {
+                    auto global_func_name = str_value.substr(6);
+//                    this->function_index.at(global_func_name);
+
+                    JS_SetPropertyStr(this->ctx, parsed, key, JS_NewCFunction(this->ctx, call_global_function, global_func_name.c_str(), 1));
+
+                } catch(std::exception &ex) {}
+            }
+
+            JS_FreeCString(this->ctx, c_str_val);
+        }
+
+        JS_FreeValue(this->ctx, val);
+        JS_FreeCString(this->ctx, key);
+    }
+
     ret_value = JS_DupValue(this->ctx, parsed);
 
     JS_FreeValue(this->ctx, parsed);

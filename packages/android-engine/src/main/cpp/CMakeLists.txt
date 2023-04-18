@@ -11,5 +11,5 @@ add_subdirectory("quickjs")
 target_link_libraries(${PROJECT_NAME} ${log-lib})
 target_link_libraries(${PROJECT_NAME} quickjs)
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall)

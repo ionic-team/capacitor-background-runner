@@ -99,7 +99,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testAPI_EventListeners() {
 
-        class EventCallback: JSFunction(JSONObject()) {
+        class EventCallback: JSFunction(args = null) {
             override fun run() {
                 super.run()
 
@@ -118,17 +118,24 @@ class ExampleInstrumentedTest {
         context.execute("addEventListener('myEvent', () => { test_EventCallback(); });")
         context.dispatchEvent("myEvent", JSONObject())
 
-        // setting multiple event listeners for the same event
+        // basic event listener with details
+        context.execute("addEventListener('myEventDetails', (details) => { console.log('detailed passed: ' + details.name); });")
+
+        val detailsObject = JSONObject()
+        detailsObject.put("name", "John Doe")
+
+        context.dispatchEvent("myEventDetails", detailsObject)
+
+        // basic event listener with registered global function as callback arg
+        val callbackObject = JSONObject()
+        callbackObject.put("completed", "__ebr::test_EventCallback")
+
+        context.execute("addEventListener('myEventCallback', (details) => { details.completed() });")
+        context.dispatchEvent("myEventCallback", callbackObject)
+
+//        // setting multiple event listeners for the same event
 //        context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
 //        context.dispatchEvent("myEvent", JSONObject())
-//
-//        // basic event listener with details
-//        context.execute("addEventListener('myEventDetails', (details) => { console.log('detailed passed: ' + details.name); });")
-//
-//        val detailsObject = JSONObject()
-//        detailsObject.put("name", "John Doe")
-//
-//        context.dispatchEvent("myEventDetails", detailsObject)
 
         runner.destroy()
     }

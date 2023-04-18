@@ -2,9 +2,8 @@ package io.ionic.backgroundrunner
 
 import org.json.JSONObject
 
-open class JSFunction constructor(args: JSONObject): Runnable {
-    private val args: JSONObject
-    private val ret: JSONObject? = null
+open class JSFunction constructor(args: JSONObject?): Runnable {
+    private var args: JSONObject? = null
 
     init {
         this.args = args
