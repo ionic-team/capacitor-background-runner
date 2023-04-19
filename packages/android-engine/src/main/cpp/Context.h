@@ -36,7 +36,7 @@ public:
 
     std::mutex timers_mutex;
 
-    std::string evaluate(const std::string& code, bool ret_val) const;
+    JSValue evaluate(const std::string& code, bool ret_val) const;
     JSValue dispatch_event(const std::string& event, JSValue details);
     void register_function(const std::string& func_name, jobject func);
 

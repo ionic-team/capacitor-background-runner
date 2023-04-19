@@ -177,22 +177,33 @@ std::string Context::stringifyJSON(JSValue object) const
     return json;
 }
 
-std::string Context::evaluate(const std::string& code, bool ret_val) const {
+JSValue Context::evaluate(const std::string& code, bool ret_val) const {
+    JSValue ret_value = JS_UNDEFINED;
+
     int flags = JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_BACKTRACE_BARRIER;
 
     size_t code_len = strlen(code.c_str());
 
     JSValue value = JS_Eval(this->ctx, code.c_str(), code_len, "<code>", flags);
 
-    std::string json;
+    if (JS_IsException(value)) {
+        ret_value = JS_DupValue(this->ctx, value);
+        JS_FreeValue(this->ctx, value);
 
-    if (ret_val) {
-        json = this->stringifyJSON(value);
+        return ret_value;
+    }
+
+    if (ret_val)  {
+        std::string json = this->stringifyJSON(value);
+
+        JSValue json_value = JS_NewString(this->ctx,json.c_str());
+        ret_value = JS_DupValue(this->ctx, json_value);
+
+        JS_FreeValue(this->ctx, json_value);
     }
 
     JS_FreeValue(this->ctx, value);
-
-    return json;
+    return ret_value;
 }
 
 JSValue Context::dispatch_event(const std::string &event, JSValue details) {

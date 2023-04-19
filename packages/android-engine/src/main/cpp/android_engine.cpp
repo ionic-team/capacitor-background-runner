@@ -11,11 +11,17 @@
 jint throw_js_exception(JNIEnv *env, JSContext* ctx) {
     jclass c = (*env).FindClass("io/ionic/backgroundrunner/EngineErrors$JavaScriptException");
 
-    JSValue err_message = JS_GetPropertyStr(ctx, JS_GetException(ctx), "message");
+    JSValue exception = JS_GetException(ctx);
+
+    JSValue err_message = JS_GetPropertyStr(ctx, exception, "message");
     const char* err_str = JS_ToCString(ctx, err_message);
 
     auto ret = (*env).ThrowNew(c, err_str);
+
     JS_FreeCString(ctx, err_str);
+
+    JS_FreeValue(ctx, err_message);
+    JS_FreeValue(ctx, exception);
 
     return ret;
 }
@@ -60,17 +66,19 @@ Java_io_ionic_backgroundrunner_Context_00024Companion_evaluate(JNIEnv *env, jobj
 
     const char *c_code = env->GetStringUTFChars(code, 0);
 
-    auto json_string = ctx->evaluate(c_code, (bool)ret_value);
+    auto value = ctx->evaluate(c_code, (bool)ret_value);
 
-//    if (JS_IsException(value)) {
-//        throw_js_exception(env, ctx->ctx);
-//        JS_FreeValue(ctx->ctx, value);
-//        return nullptr;
-//    }
+    if (JS_IsException(value)) {
+        JS_FreeValue(ctx->ctx, value);
+        throw_js_exception(env, ctx->ctx);
+        return nullptr;
+    } else {
+        const char * json_string = JS_ToCString(ctx->ctx, value);
 
-    const char * c_str_json = json_string.c_str();
+        JS_FreeValue(ctx->ctx, value);
 
-    return env->NewStringUTF(c_str_json);
+        return env->NewStringUTF(json_string);
+    }
 }
 
 extern "C"

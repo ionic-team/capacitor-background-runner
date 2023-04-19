@@ -1,17 +1,13 @@
 package io.ionic.backgroundrunner
 
 import android.util.Log
-import android.util.Log.DEBUG
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import kotlinx.coroutines.delay
 import org.json.JSONObject
 
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
-import java.util.UUID
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -43,7 +39,7 @@ class ExampleInstrumentedTest {
         var value = context.execute("let test = (1 == 1); test;", true)
         assertTrue(value.getBoolValue()?: false)
 
-        value = context.execute("test = (100 == 200); test;");
+        value = context.execute("test = (100 == 200); test;", true);
         assertFalse(value.getBoolValue()?: true)
 
         runner.destroy()
@@ -218,6 +214,28 @@ class ExampleInstrumentedTest {
 
         value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));", true);
         assertEquals("\uD842\uDFB7", value.getStringValue())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testErrorHandling() {
+
+        val runner = Runner()
+        val context = runner.createContext(".io.backgroundrunner.ionic")
+
+        val throwingCodeEx = assertThrows(Exception::class.java) {
+            context.execute("() => { throw new Error('this method has an error'); }();")
+        }
+
+        assertTrue(throwingCodeEx.localizedMessage.contains("JS exception"))
+
+        val badCodeEx = assertThrows(Exception::class.java) {
+            // badly formed code
+            context.execute("addEventListener(")
+        }
+
+        assertTrue(badCodeEx.localizedMessage.contains("JS exception"))
 
         runner.destroy()
     }
