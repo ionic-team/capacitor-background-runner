@@ -14,7 +14,6 @@ export interface BackgroundRunnerConfig {
 }
 
 export interface BackgroundRunnerPlugin {
-  init(): Promise<void>;
   dispatchEvent(options: DispatchEventOptions): Promise<void>;
 }
 
