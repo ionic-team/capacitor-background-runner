@@ -14,9 +14,6 @@ public class Context {
         }
         
         newCtx.name = name
-        newCtx.exceptionHandler = { jsContext, exception in
-            print("[\(name) Error] \(String(describing: exception))")
-        }
         
         self.name = name
         self.ctx = newCtx
@@ -27,13 +24,31 @@ public class Context {
     public func start() {}
     public func stop() {}
     
-    public func execute(code: String) -> JSValue? {
-        return self.ctx.evaluateScript(code)
+    public func execute(code: String) throws -> JSValue? {
+        var thrownException: JSValue?
+        
+        self.ctx.exceptionHandler = { _, exception in
+            thrownException = exception
+        }
+        
+        let value = self.ctx.evaluateScript(code)
+        
+        if let exception = thrownException {
+            throw EngineError.jsException(details: String(describing: exception))
+        }
+        
+        return value
     }
     
     public func dispatchEvent(event: String, details: [String: AnyHashable]? = nil) throws {
         if let callbacks = self.eventListeners[event] {
             try callbacks.forEach { jsFunc in
+                var thrownException: JSValue?
+                
+                self.ctx.exceptionHandler = { _, exception in
+                    thrownException = exception
+                }
+                
                 if let detailsObj = details {
                     guard let jsDetailsObj = JSValue(object: detailsObj, in: self.ctx) else {
                         throw EngineError.jsValueError
@@ -42,6 +57,10 @@ public class Context {
                     jsFunc.call(withArguments: [jsDetailsObj])
                 } else {
                     jsFunc.call(withArguments: [])
+                }
+                
+                if let exception = thrownException {
+                    throw EngineError.jsException(details: String(describing: exception))
                 }
             }
         }

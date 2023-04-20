@@ -7,14 +7,14 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.nulleval")
         
-        guard let value = context.execute(code: "undefined") else {
+        guard let value = try context.execute(code: "undefined") else {
             XCTFail("value is null")
             return
         }
         
         XCTAssertTrue(value.isUndefined)
         
-        guard let value = context.execute(code: "const test = null; test;") else {
+        guard let value = try context.execute(code: "const test = null; test;") else {
             XCTFail("value is null")
             return
         }
@@ -26,7 +26,7 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.booleval")
         
-        guard let value = context.execute(code: "let test = (1 == 1); test;") else {
+        guard let value = try context.execute(code: "let test = (1 == 1); test;") else {
             XCTFail("value is null")
             return
         }
@@ -34,7 +34,7 @@ final class ContextTests: XCTestCase {
         XCTAssertTrue(value.isBoolean)
         XCTAssertTrue(value.toBool())
         
-        guard let value = context.execute(code: "test = (100 == 200); test;") else {
+        guard let value = try context.execute(code: "test = (100 == 200); test;") else {
             XCTFail("value is null")
             return
         }
@@ -47,7 +47,7 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.inteval")
         
-        guard let value = context.execute(code: "1 +2;") else {
+        guard let value = try context.execute(code: "1 +2;") else {
             XCTFail("value is null")
             return
         }
@@ -60,7 +60,7 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.dbleval")
         
-        guard let value = context.execute(code: "10.8 + 2.77;") else {
+        guard let value = try context.execute(code: "10.8 + 2.77;") else {
             XCTFail("value is null")
             return
         }
@@ -73,7 +73,7 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.stringeval")
         
-        guard let value = context.execute(code: "'hello' + ' ' + 'world';") else {
+        guard let value = try context.execute(code: "'hello' + ' ' + 'world';") else {
             XCTFail("value is null")
             return
         }
@@ -86,11 +86,11 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.consoletests")
         
-        _ = context.execute(code: "console.log('hello world');")
-        _ = context.execute(code: "console.info('this message is for informational purposes');")
-        _ = context.execute(code: "console.warn('this is a warning message');")
-        _ = context.execute(code: "console.error('a problem has occurred');")
-        _ = context.execute(code: "console.debug('this is a debugging statement');")
+        _ = try context.execute(code: "console.log('hello world');")
+        _ = try context.execute(code: "console.info('this message is for informational purposes');")
+        _ = try context.execute(code: "console.warn('this is a warning message');")
+        _ = try context.execute(code: "console.error('a problem has occurred');")
+        _ = try context.execute(code: "console.debug('this is a debugging statement');")
     }
     
     func testEventListeners() throws {
@@ -127,12 +127,12 @@ final class ContextTests: XCTestCase {
         context.ctx.setObject(successCallback2, forKeyedSubscript: "altSuccessCallback" as NSString)
         context.ctx.setObject(successCallbackDetails, forKeyedSubscript: "successCallbackDetails" as NSString)
         
-        _ = context.execute(code: "addEventListener('myEvent', () => { successCallback(); });")
+        _ = try context.execute(code: "addEventListener('myEvent', () => { successCallback(); });")
        try  context.dispatchEvent(event: "myEvent")
         
         wait(for: [expectation], timeout: 1)
         
-        _ = context.execute(code: "addEventListener('myEvent', () => { altSuccessCallback(); });")
+        _ = try context.execute(code: "addEventListener('myEvent', () => { altSuccessCallback(); });")
         try context.dispatchEvent(event: "myEvent")
         
         wait(for: [expectation2], timeout: 1)
@@ -143,7 +143,7 @@ final class ContextTests: XCTestCase {
         var detailsObject = [String: String]()
         detailsObject["name"] = "John Doe"
         
-        _ = context.execute(code: "addEventListener('myEventDetails', (details) => { successCallbackDetails(details); });")
+        _ = try context.execute(code: "addEventListener('myEventDetails', (details) => { successCallbackDetails(details); });")
         try context.dispatchEvent(event: "myEventDetails", details: detailsObject)
         
         wait(for: [expectation3], timeout: 1)
@@ -153,7 +153,7 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.cryptotests")
         
-        guard let value = context.execute(code: "const array = new Uint32Array(10);  crypto.getRandomValues(array); array;") else {
+        guard let value = try context.execute(code: "const array = new Uint32Array(10);  crypto.getRandomValues(array); array;") else {
             XCTFail("value is null")
             return
         }
@@ -167,7 +167,7 @@ final class ContextTests: XCTestCase {
         XCTAssertEqual(10, value.toDictionary().count)
         
         
-        guard let value = context.execute(code: "crypto.randomUUID();") else {
+        guard let value = try context.execute(code: "crypto.randomUUID();") else {
             XCTFail("value is null")
             return
         }
@@ -200,7 +200,7 @@ final class ContextTests: XCTestCase {
         context.ctx.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
         context.ctx.setObject(failureCallback, forKeyedSubscript: "failureCallback" as NSString)
         
-        guard let value = context.execute(code: "setTimeout(() => { successCallback(); }, 2000)") else {
+        guard let value = try context.execute(code: "setTimeout(() => { successCallback(); }, 2000)") else {
             XCTFail("value is null")
             return
         }
@@ -209,7 +209,7 @@ final class ContextTests: XCTestCase {
         
         wait(for: [expectation], timeout: 2.5)
         
-        guard let value = context.execute(code: "setTimeout(() => { failureCallback(); }, 4000)") else {
+        guard let value = try context.execute(code: "setTimeout(() => { failureCallback(); }, 4000)") else {
             XCTFail("value is null")
             return
         }
@@ -220,7 +220,7 @@ final class ContextTests: XCTestCase {
             cancelExpectation.fulfill()
         }
         
-        _ = context.execute(code: "clearTimeout(\(timerId))")
+        _ = try context.execute(code: "clearTimeout(\(timerId))")
         
         wait(for: [cancelExpectation], timeout: 5)
         
@@ -240,7 +240,7 @@ final class ContextTests: XCTestCase {
         
         context.ctx.setObject(timerCallback, forKeyedSubscript: "timerCallback" as NSString)
         
-        guard let value = context.execute(code: "setInterval(() => { timerCallback(); }, 2000)") else {
+        guard let value = try context.execute(code: "setInterval(() => { timerCallback(); }, 2000)") else {
             XCTFail("value is null")
             return
         }
@@ -248,7 +248,11 @@ final class ContextTests: XCTestCase {
         let timerId = value.toInt32()
         
         _ = Timer.scheduledTimer(withTimeInterval: TimeInterval(8), repeats: false) {_ in
-            _ = context.execute(code: "clearInterval(\(timerId))")
+            do {
+                _ = try context.execute(code: "clearInterval(\(timerId))")
+            } catch {
+                XCTFail("\(error)")
+            }
         }
         
         _ = Timer.scheduledTimer(withTimeInterval: TimeInterval(11), repeats: false) {_ in
@@ -265,7 +269,7 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.textencodertests")
         
-        guard let value = context.execute(code: "const encoder = new TextEncoder(); encoder.encode('€');") else {
+        guard let value = try context.execute(code: "const encoder = new TextEncoder(); encoder.encode('€');") else {
             XCTFail("value is null")
             return
         }
@@ -286,7 +290,7 @@ final class ContextTests: XCTestCase {
         let runner = Runner()
         let context = try runner.createContext(name: "io.backgroundrunner.textdecodertests")
         
-        guard let value = context.execute(code: "const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));") else {
+        guard let value = try context.execute(code: "const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));") else {
             XCTFail("value is null")
             return
         }
@@ -294,12 +298,31 @@ final class ContextTests: XCTestCase {
         XCTAssertTrue(value.isString)
         XCTAssertEqual("Привет, мир!", value.toString())
         
-        guard let value = context.execute(code: "const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));") else {
+        guard let value = try context.execute(code: "const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));") else {
             XCTFail("value is null")
             return
         }
         
         XCTAssertTrue(value.isString)
         XCTAssertEqual("𠮷", value.toString())
+    }
+    
+    func testErrorHandling() throws {
+        let runner = Runner()
+        let context = try runner.createContext(name: "io.backgroundrunner.testexceptions")
+        
+        XCTAssertThrowsError(try context.execute(code: "() => { throw new Error('this method has an error'); }();")) { error in
+            XCTAssertTrue(String(describing: error).contains("SyntaxError: Unexpected token"))
+        }
+        
+        XCTAssertThrowsError(try context.execute(code: "addEventListener(")) { error in
+            XCTAssertTrue(String(describing: error).contains("SyntaxError: Unexpected end of script"))
+        }
+        
+        _ = try context.execute(code: "addEventListener('myThrowingEvent', () => { throw new Error('this event throws an error') })")
+        
+        XCTAssertThrowsError(try context.dispatchEvent(event: "myThrowingEvent")) { error in
+            XCTAssertTrue(String(describing: error).contains("this event throws an error"))
+        }
     }
 }
