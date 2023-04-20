@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022BF06A29F18D7900485B84 /* RunnerConfig.swift */; };
+		022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */; };
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
 		2F98D68224C9AAE500613A4C /* BackgroundRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */; };
@@ -29,6 +31,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		022BF06A29F18D7900485B84 /* RunnerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerConfig.swift; sourceTree = "<group>"; };
+		022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRunnerErrors.swift; sourceTree = "<group>"; };
 		2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundRunner.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -97,6 +101,8 @@
 				50ADFF8B201F53D600D50D53 /* BackgroundRunnerPlugin.h */,
 				50ADFFA72020EE4F00D50D53 /* BackgroundRunnerPlugin.m */,
 				50ADFF8C201F53D600D50D53 /* Info.plist */,
+				022BF06A29F18D7900485B84 /* RunnerConfig.swift */,
+				022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -307,8 +313,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				50E1A94820377CB70090CE1A /* BackgroundRunnerPlugin.swift in Sources */,
+				022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */,
 				2F98D68224C9AAE500613A4C /* BackgroundRunner.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* BackgroundRunnerPlugin.m in Sources */,
+				022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
