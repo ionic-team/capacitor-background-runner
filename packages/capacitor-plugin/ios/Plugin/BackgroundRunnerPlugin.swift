@@ -82,7 +82,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             let runner = Runner()
             let context = try runner.createContext(name: config.label)
             
-            _ = context.execute(code: srcFile)
+            _ = try context.execute(code: srcFile)
             
             try context.dispatchEvent(event: config.event)
             
