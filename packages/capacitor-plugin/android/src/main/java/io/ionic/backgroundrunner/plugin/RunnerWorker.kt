@@ -13,12 +13,8 @@ import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 
 class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
-    private val runner: Runner
+    private val runner: Runner = Runner()
     private var runnerContext: io.ionic.backgroundrunner.Context? = null
-
-    init {
-        this.runner = Runner()
-    }
 
     override fun doWork(): Result {
         try {
@@ -62,8 +58,6 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
         class CompletionCallback: JSFunction(args = null) {
             override fun run() {
                 super.run()
-
-                Log.d("BackgroundRunner", "Callback triggered")
                 result.value = true
             }
         }
