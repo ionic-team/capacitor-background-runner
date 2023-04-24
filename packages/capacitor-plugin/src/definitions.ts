@@ -1,6 +1,7 @@
 /// <reference types="@capacitor/cli" />
 
 export interface DispatchEventOptions {
+  label: string;
   event: string;
   details: { [key: string]: any };
 }

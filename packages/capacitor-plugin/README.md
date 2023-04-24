@@ -43,6 +43,7 @@ dispatchEvent(options: DispatchEventOptions) => any
 
 | Prop          | Type                                 |
 | ------------- | ------------------------------------ |
+| **`label`**   | <code>string</code>                  |
 | **`event`**   | <code>string</code>                  |
 | **`details`** | <code>{ [key: string]: any; }</code> |
 

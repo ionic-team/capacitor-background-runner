@@ -339,6 +339,22 @@ JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JS
         jclass j_function_class = parent_ctx->env->GetObjectClass(j_func);
         jmethodID j_method = parent_ctx->env->GetMethodID(j_function_class, "run", "()V");
 
+        JSValue args = argv[0];
+        if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
+            auto json_string = parent_ctx->stringifyJSON(args);
+            jstring j_json_string = parent_ctx->env->NewStringUTF(json_string.c_str());
+
+            // create a JSONObject
+            jclass json_object_c = parent_ctx->env->FindClass("org/json/JSONObject");
+            jmethodID json_object_cnstrctr = parent_ctx->env->GetMethodID(json_object_c, "<init>", "(Ljava/lang/String;)V");
+
+            jobject json_object = parent_ctx->env->NewObject(json_object_c, json_object_cnstrctr, j_json_string);
+
+            jfieldID args_field = parent_ctx->env->GetFieldID(j_function_class, "args", "Lorg/json/JSONObject;");
+
+            parent_ctx->env->SetObjectField(j_func, args_field, json_object);
+        }
+
         parent_ctx->env->CallVoidMethod(j_func, j_method);
     }
 

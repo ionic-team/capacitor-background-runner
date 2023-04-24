@@ -16,6 +16,35 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-177473971">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="Pixel_4_API_33" value="120" />
+                  <entry key="R38N103W1AZ" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G973U1" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1306268720">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="R38N103W1AZ" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G973U1" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

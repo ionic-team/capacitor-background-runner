@@ -1,13 +1,11 @@
 package io.ionic.backgroundrunner.plugin;
 
 import android.content.Context
-import android.util.Log
 import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import io.ionic.backgroundrunner.JSFunction
 import io.ionic.backgroundrunner.Runner
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject

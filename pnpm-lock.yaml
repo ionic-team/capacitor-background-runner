@@ -32,6 +32,9 @@ importers:
       '@capacitor/haptics':
         specifier: 4.1.0
         version: 4.1.0(@capacitor/core@4.7.3)
+      '@capacitor/ios':
+        specifier: ^4.7.3
+        version: 4.7.3(@capacitor/core@4.7.3)
       '@capacitor/keyboard':
         specifier: 4.1.1
         version: 4.1.1(@capacitor/core@4.7.3)
@@ -1689,7 +1692,6 @@ packages:
       '@capacitor/core': ^4.7.0
     dependencies:
       '@capacitor/core': 4.7.3
-    dev: true
 
   /@capacitor/keyboard@4.1.1(@capacitor/core@4.7.3):
     resolution: {integrity: sha512-fdC7u2TeG4BqwC0LnPnhOdya31C4QKdhk/8pc5lxI9X5jyYAetMCN1kEkKa7KREw4DdzXotJt27B9BXxAza6og==}
