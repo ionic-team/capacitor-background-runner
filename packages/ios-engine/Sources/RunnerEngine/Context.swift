@@ -21,9 +21,6 @@ public class Context {
         try self.setupWebAPI()
     }
     
-    public func start() {}
-    public func stop() {}
-    
     public func execute(code: String) throws -> JSValue? {
         var thrownException: JSValue?
         
@@ -40,7 +37,7 @@ public class Context {
         return value
     }
     
-    public func dispatchEvent(event: String, details: [String: AnyHashable]? = nil) throws {
+    public func dispatchEvent(event: String, details: [String: Any]? = nil) throws {
         if let callbacks = self.eventListeners[event] {
             try callbacks.forEach { jsFunc in
                 var thrownException: JSValue?
@@ -50,8 +47,21 @@ public class Context {
                 }
                 
                 if let detailsObj = details {
+                    var callbackFunctions: [String: Any] = [:]
+                
+                    detailsObj.keys.forEach { key in
+                        if key.hasPrefix("__ebr::") {
+                            let funcName = key.replacingOccurrences(of: "__ebr::", with: "")
+                            callbackFunctions[funcName] = detailsObj[key]
+                        }
+                    }
+                    
                     guard let jsDetailsObj = JSValue(object: detailsObj, in: self.ctx) else {
                         throw EngineError.jsValueError
+                    }
+                    
+                    callbackFunctions.forEach { (funcName: String, jsFunc: Any) in
+                        jsDetailsObj.setValue(jsFunc, forProperty: funcName)
                     }
                     
                     jsFunc.call(withArguments: [jsDetailsObj])
@@ -81,6 +91,7 @@ public class Context {
         let clearTimeoutFunc: @convention(block) (Int) -> Void = { id in
             return self.clearTimeout(id: id)
         }
+        
         let newTextEncoderConst: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoderConst: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
         

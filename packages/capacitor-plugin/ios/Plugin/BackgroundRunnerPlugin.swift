@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 import BackgroundTasks
+import JavaScriptCore
 
 /**
  * Please read the Capacitor iOS Plugin Development Guide
@@ -8,9 +9,15 @@ import BackgroundTasks
  */
 @objc(BackgroundRunnerPlugin)
 public class BackgroundRunnerPlugin: CAPPlugin {
-    private var runnerConfigs: [RunnerConfig] = []
+    private var runnerConfigs: [String: RunnerConfig] = [:]
     
     override public func load() {
+        if #available(iOS 16.4, *) {
+            self.bridge?.webView?.isInspectable = true
+        } else {
+            // Fallback on earlier versions
+        }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didFinishLaunching), name: UIApplication.didFinishLaunchingNotification, object: nil)
         
@@ -19,7 +26,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
                 for index in 0...jsonRunnerConfigs.count - 1 {
                     if let jsonConfig = jsonRunnerConfigs[index] as? JSObject {
                         let runnerConfig = try RunnerConfig(fromJSObject: jsonConfig)
-                        self.runnerConfigs.append(runnerConfig)
+                        self.runnerConfigs[runnerConfig.label] = runnerConfig
                     }
                 }
             }
@@ -29,27 +36,51 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     }
     
     @objc func dispatchEvent(_ call: CAPPluginCall) {
-        call.unimplemented()
+        do {
+            guard let runnerLabel = call.getString("label") else {
+                throw BackgroundRunnerPloginError.invalidArguement(reason: "label is missing or invalid")
+            }
+            
+            guard let runnerEvent = call.getString("event") else {
+                throw BackgroundRunnerPloginError.invalidArguement(reason: "event is missing or invalid")
+            }
+            
+            let details = call.getObject("details", JSObject())
+            
+            guard let config = self.runnerConfigs[runnerLabel] else {
+                throw BackgroundRunnerPloginError.runnerError(reason: "no runner config found for label")
+            }
+            
+            DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+                do {
+                    if let result = try self.executeRunner(config: config, args: details as [String: Any], overrideEvent: runnerEvent, task: nil) {
+                        call.resolve(result)
+                    } else {
+                        call.resolve()
+                    }
+                } catch {
+                    call.reject("\(error)")
+                }
+            }
+        } catch {
+            call.reject("\(error)")
+        }
     }
-    
     
     @objc private func didFinishLaunching() {
         self.registerRunnerTasks()
-        print("did finish launching, register all tasks")
     }
     
     @objc private func didEnterBackground()  {
-        self.runnerConfigs.forEach { config in
+        self.runnerConfigs.forEach { _, config in
             self.scheduleRunnerTask(runnerConfig: config)
         }
-        
-        print("did enter background, schedule any work")
     }
     
     private func registerRunnerTasks() {
-        self.runnerConfigs.forEach { runnerConfig in
+        self.runnerConfigs.forEach { _, runnerConfig in
             BGTaskScheduler.shared.register(forTaskWithIdentifier: runnerConfig.label, using: nil) { task in
-                self.executeRunner(config: runnerConfig, task: task as! BGAppRefreshTask)
+                _ = try? self.executeRunner(config: runnerConfig, overrideEvent: nil, task: task as? BGAppRefreshTask)
             }
         }
     }
@@ -65,10 +96,10 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         }
     }
     
-    private func executeRunner(config: RunnerConfig, task: BGAppRefreshTask) {
+    private func executeRunner(config: RunnerConfig, args: [String: Any]? = nil, overrideEvent: String? = nil ,task: BGAppRefreshTask? = nil) throws -> [String: Any]? {
         print("successfully executing task")
         
-        if config.repeats {
+        if config.repeats && task != nil {
             self.scheduleRunnerTask(runnerConfig: config)
         }
         
@@ -77,6 +108,34 @@ public class BackgroundRunnerPlugin: CAPPlugin {
                 throw BackgroundRunnerPloginError.runnerError(reason: "source file not found")
             }
             
+            var result: [String: Any]? = nil
+            
+            let waitGroup = DispatchGroup()
+                    
+            let completedFunc: @convention(block)(JavaScriptCore.JSValue) -> Void = { returnObj in
+                if (!returnObj.isUndefined && !returnObj.isNull) {
+                    var dict: [String: Any] = [:]
+                    
+                    returnObj.toDictionary().forEach { key, value in
+                        dict[String(describing: key)] = value
+                    }
+                    
+                    result = dict
+                }
+                
+                waitGroup.leave()
+                return
+            }
+            
+            var argsWithCallback = args
+            
+            if (argsWithCallback == nil) {
+                argsWithCallback = [:]
+            }
+            
+            argsWithCallback?["__ebr::completed"] = completedFunc
+
+            
             let srcFile = try String(contentsOf: srcFileURL)
             
             let runner = Runner()
@@ -84,12 +143,28 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             
             _ = try context.execute(code: srcFile)
             
-            try context.dispatchEvent(event: config.event)
+            waitGroup.enter()
             
-            task.setTaskCompleted(success: true)
+            if let event = overrideEvent {
+                try context.dispatchEvent(event: event, details: argsWithCallback)
+            } else {
+                try context.dispatchEvent(event: config.event, details: argsWithCallback)
+            }
+            
+            waitGroup.wait()
+            
+            if let task = task {
+                task.setTaskCompleted(success: true)
+            }
+            
+            return result
         } catch {
-            print(error)
-            task.setTaskCompleted(success: false)
+            if let task = task {
+                print(error)
+                task.setTaskCompleted(success: false)
+            }
+            
+            throw error
         }
     }
 }
