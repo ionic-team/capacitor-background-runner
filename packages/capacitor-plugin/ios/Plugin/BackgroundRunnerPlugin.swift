@@ -11,13 +11,7 @@ import JavaScriptCore
 public class BackgroundRunnerPlugin: CAPPlugin {
     private var runnerConfigs: [String: RunnerConfig] = [:]
     
-    override public func load() {
-        if #available(iOS 16.4, *) {
-            self.bridge?.webView?.isInspectable = true
-        } else {
-            // Fallback on earlier versions
-        }
-        
+    override public func load() {        
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didFinishLaunching), name: UIApplication.didFinishLaunchingNotification, object: nil)
         
@@ -25,7 +19,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             if let jsonRunnerConfigs = self.getConfig().getArray("runners") {
                 for index in 0...jsonRunnerConfigs.count - 1 {
                     if let jsonConfig = jsonRunnerConfigs[index] as? JSObject {
-                        let runnerConfig = try RunnerConfig(fromJSObject: jsonConfig)
+                        let runnerConfig = try RunnerConfig(from: jsonConfig)
                         self.runnerConfigs[runnerConfig.label] = runnerConfig
                     }
                 }
@@ -67,13 +61,32 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         }
     }
     
+    @objc func registerBackgroundTask(_ call: CAPPluginCall) {
+        do {
+            guard let newConfigJSON = call.getObject("runner") else {
+                throw BackgroundRunnerPloginError.invalidArguement(reason: "runner is missing or invalid")
+            }
+            
+            var newConfig = try RunnerConfig(from: newConfigJSON)
+            newConfig.autoStart = true
+            
+            runnerConfigs[newConfig.label] = newConfig
+            
+            call.resolve()
+        } catch {
+            call.reject("\(error)")
+        }
+    }
+    
     @objc private func didFinishLaunching() {
         self.registerRunnerTasks()
     }
     
     @objc private func didEnterBackground()  {
         self.runnerConfigs.forEach { _, config in
-            self.scheduleRunnerTask(runnerConfig: config)
+            if config.autoStart {
+                self.scheduleRunnerTask(runnerConfig: config)
+            }
         }
     }
     

@@ -6,33 +6,37 @@ public struct RunnerConfig {
     let src: String
     let event: String
     let repeats: Bool
+    var autoStart: Bool
     let interval: Int
     
-    public init(fromJSObject: JSObject) throws {
-        guard let label = fromJSObject["label"] as? String else {
+    public init(from jsObject: JSObject) throws {
+        guard let label = jsObject["label"] as? String else {
             throw BackgroundRunnerPloginError.invalidRunnerConfig(reason: "runner label is missing or invalid")
         }
         
-        guard let src = fromJSObject["src"] as? String else {
+        guard let src = jsObject["src"] as? String else {
             throw BackgroundRunnerPloginError.invalidRunnerConfig(reason: "runner source file path is missing or invalid")
         }
         
-        guard let event = fromJSObject["event"] as? String else {
+        guard let event = jsObject["event"] as? String else {
             throw BackgroundRunnerPloginError.invalidRunnerConfig(reason: "runner event is missing or invalid")
         }
         
-        guard let repeats = fromJSObject["repeat"] as? Bool else {
+        guard let repeats = jsObject["repeat"] as? Bool else {
             throw BackgroundRunnerPloginError.invalidRunnerConfig(reason: "runner repeat is missing or invalid")
         }
         
-        guard let interval = fromJSObject["interval"] as? Int else {
+        guard let interval = jsObject["interval"] as? Int else {
             throw BackgroundRunnerPloginError.invalidRunnerConfig(reason: "runner interval is missing or invalid")
         }
+        
+        let autoStart = jsObject["autoStart"] as? Bool
         
         self.label = label
         self.src = src
         self.event = event
         self.repeats = repeats
         self.interval = interval
+        self.autoStart = autoStart ?? false
     }
 }
