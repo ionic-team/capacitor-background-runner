@@ -58,6 +58,19 @@ class Context constructor(name: String, runnerPtr: Long) {
             return arr.toString(enc)
         }
 
+        @JvmStatic fun KV_Set(key: String, value: String) {
+
+        }
+
+        @JvmStatic fun KV_Get(key: String): String {
+            return ""
+        }
+
+        @JvmStatic fun KV_Remove(key: String) {
+
+
+        }
+
         fun getCharset(encoding: String): Charset {
             if (encoding == "utf-16be") {
                 return Charsets.UTF_16BE

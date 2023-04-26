@@ -60,6 +60,32 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   };
 
+  const onTestKV = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background",
+        event: "testKVStore",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onTestLocation = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background",
+        event: "testSingleLocation",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
   return (
     <div className="container">
       <strong>{name}</strong>
@@ -81,6 +107,8 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
         Dispatch Throwing Event
       </IonButton>
       <IonButton onClick={onRegisterTask}>Register Task</IonButton>
+      <IonButton onClick={onTestKV}>Test KV</IonButton>
+      <IonButton onClick={onTestLocation}>Test Location</IonButton>
     </div>
   );
 };

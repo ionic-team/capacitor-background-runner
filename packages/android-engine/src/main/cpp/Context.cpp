@@ -18,6 +18,7 @@ Context::Context(const std::string& name, JSRuntime *rt, JNIEnv* env) {
     this->init_api_crypto();
     this->init_api_timeout();
     this->init_api_text();
+    this->init_api_kv();
 
     JS_SetContextOpaque(this->ctx, this);
 
@@ -300,6 +301,21 @@ void Context::init_api_text() const
 {
     init_text_encoder_class(this->ctx);
     init_text_decoder_class(this->ctx);
+}
+
+void Context::init_api_kv() const
+{
+    JSValue global_obj, kv;
+
+    global_obj = JS_GetGlobalObject(this->ctx);
+
+    kv = JS_NewObject(this->ctx);
+
+    JS_SetPropertyStr(this->ctx, kv, "set", JS_NewCFunction(ctx, api_kv_set, "set", 2));
+    JS_SetPropertyStr(this->ctx, kv, "get", JS_NewCFunction(ctx, api_kv_get, "get", 1));
+    JS_SetPropertyStr(this->ctx, kv, "remove", JS_NewCFunction(ctx, api_kv_remove, "remove", 1));
+
+    JS_FreeValue(this->ctx, global_obj);
 }
 
 std::string get_function_name(JSContext *ctx)

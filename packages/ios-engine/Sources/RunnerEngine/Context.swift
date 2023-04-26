@@ -105,6 +105,9 @@ public class Context {
         self.ctx.setObject(newTextEncoderConst, forKeyedSubscript: "TextEncoder" as NSString)
         self.ctx.setObject(newTextDecoderConst, forKeyedSubscript: "TextDecoder" as NSString)
         
+        // Capacitor APIs
+        self.ctx.setObject(JSKV.self, forKeyedSubscript: "CapacitorKV" as NSString)
+        self.ctx.setObject(JSGeolocation(context: self.ctx), forKeyedSubscript: "CapacitorGeolocation" as NSString)
     }
     
     private func addEventListener(eventName: String, callback: JSValue) {
