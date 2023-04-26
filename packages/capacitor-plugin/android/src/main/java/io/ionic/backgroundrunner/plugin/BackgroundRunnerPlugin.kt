@@ -1,7 +1,5 @@
 package io.ionic.backgroundrunner.plugin;
 
-import io.ionic.backgroundrunner.JSFunction
-import io.ionic.backgroundrunner.Runner
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
@@ -13,10 +11,7 @@ import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 @CapacitorPlugin(name = "BackgroundRunner")
@@ -54,43 +49,12 @@ class BackgroundRunnerPlugin: Plugin() {
 
         GlobalScope.launch(Dispatchers.Default) {
             try {
-                val srcFile = this@BackgroundRunnerPlugin.bridge.context.assets.open("public/${config.src}").bufferedReader().use {
-                    it.readText()
-                }
+                val returnData = executeRunner(config, this@BackgroundRunnerPlugin.bridge.context, details, runnerEvent)
 
-                val runner = Runner()
-                val runnerContext = runner.createContext(config.label)
-                runnerContext?.execute(srcFile, false)
-
-                val result = MutableStateFlow<Result<JSONObject?>?>(null)
-
-                class CompletionCallback: JSFunction(args = null) {
-                    override fun run() {
-                        super.run()
-                        result.value = Result.success(this.args)
-                    }
-                }
-
-                val callback = CompletionCallback()
-                runnerContext?.registerFunction("_backgroundCallback", callback)
-
-                details.put("completed", "__ebr::_backgroundCallback")
-
-                runnerContext.dispatchEvent(runnerEvent, details)
-
-                val finishedResult = result.conditionalAwait {
-                    it != null
-                }
-
-                runner.destroy()
-
-                if (finishedResult!!.isSuccess) {
-                    val returnData = finishedResult!!.getOrNull()
-                    if (returnData != null) {
-                        call.resolve(JSObject.fromJSONObject(returnData))
-                    } else {
-                        call.resolve()
-                    }
+                if (returnData != null) {
+                    call.resolve(JSObject.fromJSONObject(returnData))
+                } else {
+                    call.resolve()
                 }
             } catch (ex: Exception) {
                 call.reject(ex.message)

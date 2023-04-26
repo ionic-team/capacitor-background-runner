@@ -11,9 +11,6 @@ import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
 
 class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(context, workerParams) {
-    private val runner: Runner = Runner()
-    private var runnerContext: io.ionic.backgroundrunner.Context? = null
-
     override fun doWork(): Result {
         try {
             val label = this.inputData.getString("label") ?: ""
@@ -24,24 +21,13 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 throw Exception("label is empty")
             }
 
-            val srcFile = this.applicationContext.assets.open("public/${src}").bufferedReader().use {
-                it.readText()
-            }
-
-            this.runnerContext = this.runner.createContext(label)
-            this.runnerContext?.execute(srcFile, false)
-
-            var success = false
+            val config = RunnerConfig(label, src, event, false, 0)
 
             runBlocking {
-                success = this@RunnerWorker.execute(event)
+                executeRunner(config, this@RunnerWorker.applicationContext, JSONObject())
             }
 
-            if (success) {
-                return Result.success();
-            }
-
-            return Result.failure()
+            return Result.success()
         } catch (ex: Exception) {
             val data = Data.Builder()
                 .putString("error", ex.toString())
@@ -49,32 +35,5 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
 
             return Result.failure(data)
         }
-    }
-
-    private suspend fun execute(event: String): Boolean {
-        val result = MutableStateFlow<Boolean?>(null)
-        class CompletionCallback: JSFunction(args = null) {
-            override fun run() {
-                super.run()
-                result.value = true
-            }
-        }
-
-        val callback = CompletionCallback()
-        this.runnerContext?.registerFunction("_backgroundCallback", callback)
-
-
-        val details = JSONObject()
-        details.put("completed", "__ebr::_backgroundCallback")
-
-        this.runnerContext?.dispatchEvent(event, details)
-
-        val success = result.conditionalAwait {
-            it != null
-        }
-
-        this.runner.destroy()
-
-        return success!!
     }
 }
