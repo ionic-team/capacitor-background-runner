@@ -32,17 +32,17 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     @objc func dispatchEvent(_ call: CAPPluginCall) {
         do {
             guard let runnerLabel = call.getString("label") else {
-                throw BackgroundRunnerPloginError.invalidArguement(reason: "label is missing or invalid")
+                throw BackgroundRunnerPluginError.invalidArgument(reason: "label is missing or invalid")
             }
             
             guard let runnerEvent = call.getString("event") else {
-                throw BackgroundRunnerPloginError.invalidArguement(reason: "event is missing or invalid")
+                throw BackgroundRunnerPluginError.invalidArgument(reason: "event is missing or invalid")
             }
             
             let details = call.getObject("details", JSObject())
             
             guard let config = self.runnerConfigs[runnerLabel] else {
-                throw BackgroundRunnerPloginError.runnerError(reason: "no runner config found for label")
+                throw BackgroundRunnerPluginError.runnerError(reason: "no runner config found for label")
             }
             
             DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
@@ -64,7 +64,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     @objc func registerBackgroundTask(_ call: CAPPluginCall) {
         do {
             guard let newConfigJSON = call.getObject("runner") else {
-                throw BackgroundRunnerPloginError.invalidArguement(reason: "runner is missing or invalid")
+                throw BackgroundRunnerPluginError.invalidArgument(reason: "runner is missing or invalid")
             }
             
             var newConfig = try RunnerConfig(from: newConfigJSON)
@@ -118,7 +118,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         
         do {
             guard let srcFileURL = Bundle.main.url(forResource: config.src, withExtension: nil, subdirectory: "public") else {
-                throw BackgroundRunnerPloginError.runnerError(reason: "source file not found")
+                throw BackgroundRunnerPluginError.runnerError(reason: "source file not found")
             }
             
             var result: [String: Any]? = nil

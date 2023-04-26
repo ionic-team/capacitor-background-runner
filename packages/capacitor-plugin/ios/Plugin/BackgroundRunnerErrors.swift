@@ -1,7 +1,7 @@
 import Foundation
 
-public enum BackgroundRunnerPloginError: Error, Equatable {
+public enum BackgroundRunnerPluginError: Error, Equatable {
     case invalidRunnerConfig(reason: String)
-    case invalidArguement(reason: String)
+    case invalidArgument(reason: String)
     case runnerError(reason: String)
 }
