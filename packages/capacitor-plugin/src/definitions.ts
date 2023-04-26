@@ -6,16 +6,22 @@ export interface DispatchEventOptions {
   details: { [key: string]: any };
 }
 
+export interface RegisterBackgroundTaskOptions {
+  runner: BackgroundRunnerConfig
+}
+
 export interface BackgroundRunnerConfig {
   label: string;
   src: string;
   event: string;
   repeat: boolean;
   interval: number;
+  autoStart?: boolean
 }
 
 export interface BackgroundRunnerPlugin {
   dispatchEvent(options: DispatchEventOptions): Promise<void>;
+  registerBackgroundTask(options: RegisterBackgroundTaskOptions): Promise<void>;
 }
 
 

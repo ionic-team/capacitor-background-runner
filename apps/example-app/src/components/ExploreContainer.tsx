@@ -26,8 +26,40 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
         },
       },
     });
+    alert(JSON.stringify(result))
     console.log(result);
   };
+
+  const onDispatchEventWithFailure = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background",
+        event: "updateSystemThrow",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  };
+
+  const onRegisterTask = async () => {
+    try {
+      await BackgroundRunner.registerBackgroundTask({
+        runner: {
+          label: "com.example.background",
+          src: "background.js",
+          event: "updateSystem",
+          repeat: false,
+          interval: 2,
+        },
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  };
+
   return (
     <div className="container">
       <strong>{name}</strong>
@@ -45,6 +77,10 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton onClick={onDispatchEventWithDetails}>
         Dispatch Event with Details
       </IonButton>
+      <IonButton color="danger" onClick={onDispatchEventWithFailure}>
+        Dispatch Throwing Event
+      </IonButton>
+      <IonButton onClick={onRegisterTask}>Register Task</IonButton>
     </div>
   );
 };

@@ -21,7 +21,7 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 throw Exception("label is empty")
             }
 
-            val config = RunnerConfig(label, src, event, false, 0)
+            val config = RunnerConfig(label, src, event, false, false, 0)
 
             runBlocking {
                 executeRunner(config, this@RunnerWorker.applicationContext, JSONObject())

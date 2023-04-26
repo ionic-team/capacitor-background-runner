@@ -14,6 +14,7 @@ npx cap sync
 <docgen-index>
 
 * [`dispatchEvent(...)`](#dispatchevent)
+* [`registerBackgroundTask(...)`](#registerbackgroundtask)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -36,6 +37,21 @@ dispatchEvent(options: DispatchEventOptions) => any
 --------------------
 
 
+### registerBackgroundTask(...)
+
+```typescript
+registerBackgroundTask(options: RegisterBackgroundTaskOptions) => any
+```
+
+| Param         | Type                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#registerbackgroundtaskoptions">RegisterBackgroundTaskOptions</a></code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -46,5 +62,24 @@ dispatchEvent(options: DispatchEventOptions) => any
 | **`label`**   | <code>string</code>                  |
 | **`event`**   | <code>string</code>                  |
 | **`details`** | <code>{ [key: string]: any; }</code> |
+
+
+#### RegisterBackgroundTaskOptions
+
+| Prop         | Type                                                                      |
+| ------------ | ------------------------------------------------------------------------- |
+| **`runner`** | <code><a href="#backgroundrunnerconfig">BackgroundRunnerConfig</a></code> |
+
+
+#### BackgroundRunnerConfig
+
+| Prop            | Type                 |
+| --------------- | -------------------- |
+| **`label`**     | <code>string</code>  |
+| **`src`**       | <code>string</code>  |
+| **`event`**     | <code>string</code>  |
+| **`repeat`**    | <code>boolean</code> |
+| **`interval`**  | <code>number</code>  |
+| **`autoStart`** | <code>boolean</code> |
 
 </docgen-api>
