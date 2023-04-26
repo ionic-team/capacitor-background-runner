@@ -74,7 +74,7 @@ class BackgroundRunnerPlugin: Plugin() {
         configs.forEach {
             val data = Data.Builder()
                 .putString("label", it.value.label)
-                .putString("src", it.value.label)
+                .putString("src", it.value.src)
                 .putString("event", it.value.event)
                 .build()
 
