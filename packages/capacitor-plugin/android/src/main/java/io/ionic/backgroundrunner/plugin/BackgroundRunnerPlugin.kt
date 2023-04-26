@@ -1,6 +1,9 @@
 package io.ionic.backgroundrunner.plugin;
 
+import android.util.Log
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
@@ -35,7 +38,12 @@ class BackgroundRunnerPlugin: Plugin() {
             configs[runnerConfig.label] = runnerConfig
         }
 
-        this.initRunnerWorkers()
+        bridge.app.setStatusChangeListener {
+            if (!it) {
+                Log.d("Background Runner", "registering runner workers")
+                this.initRunnerWorkers()
+            }
+        }
     }
 
     @PluginMethod
@@ -76,13 +84,13 @@ class BackgroundRunnerPlugin: Plugin() {
                     .setInputData(data)
                     .addTag(it.value.label)
                     .build()
-                WorkManager.getInstance(this.context).enqueue(work)
+                WorkManager.getInstance(this.context).enqueueUniqueWork(it.value.label, ExistingWorkPolicy.REPLACE, work)
             } else {
                 val work = PeriodicWorkRequest.Builder(RunnerWorker::class.java, it.value.label.toLong(), TimeUnit.MINUTES)
                     .setInputData(data)
                     .addTag(it.value.label)
                     .build()
-                WorkManager.getInstance(this.context).enqueue(work)
+                WorkManager.getInstance(this.context).enqueueUniquePeriodicWork(it.value.label, ExistingPeriodicWorkPolicy.UPDATE, work)
             }
         }
     }
