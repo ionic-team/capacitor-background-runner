@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 import BackgroundTasks
+import WatchConnectivity
 import JavaScriptCore
 
 /**
@@ -11,7 +12,9 @@ import JavaScriptCore
 public class BackgroundRunnerPlugin: CAPPlugin {
     private var runnerConfigs: [String: RunnerConfig] = [:]
     
-    override public func load() {        
+    override public func load() {
+        self.initWatchConnectivity()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didFinishLaunching), name: UIApplication.didFinishLaunchingNotification, object: nil)
         
@@ -109,7 +112,19 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         }
     }
     
-    private func executeRunner(config: RunnerConfig, args: [String: Any]? = nil, overrideEvent: String? = nil ,task: BGAppRefreshTask? = nil) throws -> [String: Any]? {
+    func globalDispatchEvent(event: String, args: [String: Any]? = nil) {
+        self.runnerConfigs.forEach { _, runnerConfig in
+            DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+                do {
+                    _ = try self.executeRunner(config: runnerConfig, args: args, overrideEvent: event, task: nil)
+                } catch {
+                    print("\(error)")
+                }
+            }
+        }
+    }
+    
+    func executeRunner(config: RunnerConfig, args: [String: Any]? = nil, overrideEvent: String? = nil ,task: BGAppRefreshTask? = nil) throws -> [String: Any]? {
         print("successfully executing task")
         
         if config.repeats && task != nil {
@@ -179,5 +194,14 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             
             throw error
         }
+    }
+    
+    private func initWatchConnectivity() {
+        if !WCSession.isSupported() {
+            return
+        }
+        
+        WCSession.default.delegate = self
+        WCSession.default.activate()
     }
 }

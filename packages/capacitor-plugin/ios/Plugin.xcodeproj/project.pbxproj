@@ -9,9 +9,18 @@
 /* Begin PBXBuildFile section */
 		022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022BF06A29F18D7900485B84 /* RunnerConfig.swift */; };
 		022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */; };
+		0237234D29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237234C29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift */; };
+		0237235729FC3D03009B91C9 /* JSCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237234E29FC3D03009B91C9 /* JSCrypto.swift */; };
+		0237235829FC3D03009B91C9 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237234F29FC3D03009B91C9 /* Context.swift */; };
+		0237235929FC3D03009B91C9 /* JSKV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237235029FC3D03009B91C9 /* JSKV.swift */; };
+		0237235A29FC3D03009B91C9 /* JSGeolocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237235129FC3D03009B91C9 /* JSGeolocation.swift */; };
+		0237235B29FC3D03009B91C9 /* JSTextDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237235229FC3D03009B91C9 /* JSTextDecoder.swift */; };
+		0237235C29FC3D03009B91C9 /* JSTextEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237235329FC3D03009B91C9 /* JSTextEncoder.swift */; };
+		0237235D29FC3D03009B91C9 /* JSConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237235429FC3D03009B91C9 /* JSConsole.swift */; };
+		0237235E29FC3D03009B91C9 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237235529FC3D03009B91C9 /* Errors.swift */; };
+		0237235F29FC3D03009B91C9 /* Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237235629FC3D03009B91C9 /* Runner.swift */; };
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
-		2F98D68224C9AAE500613A4C /* BackgroundRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */; };
 		50ADFF92201F53D600D50D53 /* Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50ADFF88201F53D600D50D53 /* Plugin.framework */; };
 		50ADFF97201F53D600D50D53 /* BackgroundRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFF96201F53D600D50D53 /* BackgroundRunnerTests.swift */; };
 		50ADFF99201F53D600D50D53 /* BackgroundRunnerPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ADFF8B201F53D600D50D53 /* BackgroundRunnerPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -33,7 +42,16 @@
 /* Begin PBXFileReference section */
 		022BF06A29F18D7900485B84 /* RunnerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerConfig.swift; sourceTree = "<group>"; };
 		022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRunnerErrors.swift; sourceTree = "<group>"; };
-		2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundRunner.swift; sourceTree = "<group>"; };
+		0237234C29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivtySessionDelegate.swift; sourceTree = "<group>"; };
+		0237234E29FC3D03009B91C9 /* JSCrypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSCrypto.swift; path = RunnerEngine/JSCrypto.swift; sourceTree = "<group>"; };
+		0237234F29FC3D03009B91C9 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Context.swift; path = RunnerEngine/Context.swift; sourceTree = "<group>"; };
+		0237235029FC3D03009B91C9 /* JSKV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSKV.swift; path = RunnerEngine/JSKV.swift; sourceTree = "<group>"; };
+		0237235129FC3D03009B91C9 /* JSGeolocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSGeolocation.swift; path = RunnerEngine/JSGeolocation.swift; sourceTree = "<group>"; };
+		0237235229FC3D03009B91C9 /* JSTextDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSTextDecoder.swift; path = RunnerEngine/JSTextDecoder.swift; sourceTree = "<group>"; };
+		0237235329FC3D03009B91C9 /* JSTextEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSTextEncoder.swift; path = RunnerEngine/JSTextEncoder.swift; sourceTree = "<group>"; };
+		0237235429FC3D03009B91C9 /* JSConsole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = JSConsole.swift; path = RunnerEngine/JSConsole.swift; sourceTree = "<group>"; };
+		0237235529FC3D03009B91C9 /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Errors.swift; path = RunnerEngine/Errors.swift; sourceTree = "<group>"; };
+		0237235629FC3D03009B91C9 /* Runner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Runner.swift; path = RunnerEngine/Runner.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF8B201F53D600D50D53 /* BackgroundRunnerPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BackgroundRunnerPlugin.h; sourceTree = "<group>"; };
@@ -96,13 +114,22 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				0237234F29FC3D03009B91C9 /* Context.swift */,
+				0237235529FC3D03009B91C9 /* Errors.swift */,
+				0237235429FC3D03009B91C9 /* JSConsole.swift */,
+				0237234E29FC3D03009B91C9 /* JSCrypto.swift */,
+				0237235129FC3D03009B91C9 /* JSGeolocation.swift */,
+				0237235029FC3D03009B91C9 /* JSKV.swift */,
+				0237235229FC3D03009B91C9 /* JSTextDecoder.swift */,
+				0237235329FC3D03009B91C9 /* JSTextEncoder.swift */,
+				0237235629FC3D03009B91C9 /* Runner.swift */,
 				50E1A94720377CB70090CE1A /* BackgroundRunnerPlugin.swift */,
-				2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */,
 				50ADFF8B201F53D600D50D53 /* BackgroundRunnerPlugin.h */,
 				50ADFFA72020EE4F00D50D53 /* BackgroundRunnerPlugin.m */,
 				50ADFF8C201F53D600D50D53 /* Info.plist */,
 				022BF06A29F18D7900485B84 /* RunnerConfig.swift */,
 				022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */,
+				0237234C29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -312,11 +339,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0237235B29FC3D03009B91C9 /* JSTextDecoder.swift in Sources */,
 				50E1A94820377CB70090CE1A /* BackgroundRunnerPlugin.swift in Sources */,
+				0237235D29FC3D03009B91C9 /* JSConsole.swift in Sources */,
+				0237235C29FC3D03009B91C9 /* JSTextEncoder.swift in Sources */,
+				0237235A29FC3D03009B91C9 /* JSGeolocation.swift in Sources */,
 				022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */,
-				2F98D68224C9AAE500613A4C /* BackgroundRunner.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* BackgroundRunnerPlugin.m in Sources */,
+				0237235E29FC3D03009B91C9 /* Errors.swift in Sources */,
+				0237235929FC3D03009B91C9 /* JSKV.swift in Sources */,
+				0237235829FC3D03009B91C9 /* Context.swift in Sources */,
 				022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */,
+				0237234D29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift in Sources */,
+				0237235729FC3D03009B91C9 /* JSCrypto.swift in Sources */,
+				0237235F29FC3D03009B91C9 /* Runner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
