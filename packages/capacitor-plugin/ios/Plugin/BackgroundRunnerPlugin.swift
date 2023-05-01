@@ -165,9 +165,11 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
             
             let srcFile = try String(contentsOf: srcFileURL)
-            
+    
             let runner = Runner()
             let context = try runner.createContext(name: config.label)
+            
+            context.setupCapacitorAPI()
             
             _ = try context.execute(code: srcFile)
             

@@ -2,23 +2,20 @@ import Foundation
 import JavaScriptCore
 import CoreLocation
 
-@objc protocol JSGeolocationExports: JSExport {
-    func getCurrentPosition() -> JSValue
+@objc protocol CapacitorGeolocationExports: JSExport {
+    func getCurrentPosition() -> [String: Double]?
 }
 
-enum JSGeolocationErrors: Error, Equatable {
+enum CapacitorGeolocationErrors: Error, Equatable {
     case unauthorized
 }
 
 
-class JSGeolocation: NSObject, JSGeolocationExports, CLLocationManagerDelegate {
-    private let context: JSContext
+class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationManagerDelegate {
     private let locationManager: CLLocationManager
     
-    init(context: JSContext) {
-        self.context = context
+    override init() {
         self.locationManager = CLLocationManager()
-        
         super.init()
         
         self.locationManager.delegate = self
@@ -30,26 +27,22 @@ class JSGeolocation: NSObject, JSGeolocationExports, CLLocationManagerDelegate {
             case .authorizedWhenInUse:
                 return
             default:
-                throw JSGeolocationErrors.unauthorized
+                throw CapacitorGeolocationErrors.unauthorized
             }
         } else {
             // Fallback on earlier versions
         }
     }
     
-    func getCurrentPosition() -> JSValue {
-        return JSValue(newPromiseIn: self.context) { resolve, reject in
-            do {
-                try self.checkPermission()
-                
-                self.locationManager.requestLocation()
-                
-                resolve?.call(withArguments: [])
-            } catch {
-                let jsError = JSValue(newErrorFromMessage: error.localizedDescription, in: self.context)
-        
-                reject?.call(withArguments: [jsError])
-            }
+    func getCurrentPosition() -> [String: Double]? {
+        do {
+            try self.checkPermission()
+            return [:]
+        } catch {
+            let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
+            JSContext.current().exception = ex
+            
+            return nil
         }
     }
     
@@ -63,3 +56,4 @@ class JSGeolocation: NSObject, JSGeolocationExports, CLLocationManagerDelegate {
         print("\(error)")
     }
 }
+

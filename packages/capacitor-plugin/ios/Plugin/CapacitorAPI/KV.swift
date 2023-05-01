@@ -1,13 +1,13 @@
 import Foundation
 import JavaScriptCore
 
-@objc protocol JSKVExports: JSExport {
+@objc protocol CapacitorKVStoreExports: JSExport {
     static func set(_ key: String, _ value: String)
     static func get(_ key: String) -> String?
     static func remove(_ key: String)
 }
 
-class JSKV: NSObject, JSKVExports {
+class CapacitorKVStore: NSObject, CapacitorKVStoreExports {
     static func set(_ key: String, _ value: String) {
         UserDefaults.standard.set(value, forKey: key)
     }
