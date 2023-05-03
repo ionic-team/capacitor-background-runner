@@ -9,11 +9,12 @@ const config: CapacitorConfig = {
     "BackgroundRunner": {
       "runners": [
         {
-          label: "com.example.background",
+          label: "com.example.background.task",
           src: "background.js",
-          event: "updateSystem",
-          repeat: false,
-          interval: 2,
+          event: "testLastKnownLocation",
+          repeat: true,
+          interval: 3,
+          autoStart: true
           // TODO: Add Android / iOS constraints
         }
       ]

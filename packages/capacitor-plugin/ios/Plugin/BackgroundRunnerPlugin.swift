@@ -10,10 +10,12 @@ import JavaScriptCore
  */
 @objc(BackgroundRunnerPlugin)
 public class BackgroundRunnerPlugin: CAPPlugin {
+    private let runner = Runner()
     private var runnerConfigs: [String: RunnerConfig] = [:]
+    private var runnerContexts: [String: Context] = [:]
     
     override public func load() {
-        self.initWatchConnectivity()
+//        self.initWatchConnectivity()
         
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(didFinishLaunching), name: UIApplication.didFinishLaunchingNotification, object: nil)
@@ -24,6 +26,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
                     if let jsonConfig = jsonRunnerConfigs[index] as? JSObject {
                         let runnerConfig = try RunnerConfig(from: jsonConfig)
                         self.runnerConfigs[runnerConfig.label] = runnerConfig
+                        self.runnerContexts[runnerConfig.label] = try initRunnerContext(config: runnerConfig)
                     }
                 }
             }
@@ -124,16 +127,30 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         }
     }
     
-    func executeRunner(config: RunnerConfig, args: [String: Any]? = nil, overrideEvent: String? = nil ,task: BGAppRefreshTask? = nil) throws -> [String: Any]? {
-        print("successfully executing task")
+    func initRunnerContext(config: RunnerConfig) throws -> Context {
+        guard let srcFileURL = Bundle.main.url(forResource: config.src, withExtension: nil, subdirectory: "public") else {
+            throw BackgroundRunnerPluginError.runnerError(reason: "source file not found")
+        }
         
+        let srcFile = try String(contentsOf: srcFileURL)
+
+        let context = try runner.createContext(name: config.label)
+        
+        context.setupCapacitorAPI()
+        
+        _ = try context.execute(code: srcFile)
+        
+        return context
+    }
+    
+    func executeRunner(config: RunnerConfig, args: [String: Any]? = nil, overrideEvent: String? = nil ,task: BGAppRefreshTask? = nil) throws -> [String: Any]? {
         if config.repeats && task != nil {
             self.scheduleRunnerTask(runnerConfig: config)
         }
         
         do {
-            guard let srcFileURL = Bundle.main.url(forResource: config.src, withExtension: nil, subdirectory: "public") else {
-                throw BackgroundRunnerPluginError.runnerError(reason: "source file not found")
+            guard let context = runnerContexts[config.label] else {
+                throw BackgroundRunnerPluginError.genericError(reason: "context for \(config.label) is nil")
             }
             
             var result: [String: Any]? = nil
@@ -162,16 +179,6 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             }
             
             argsWithCallback?["__ebr::completed"] = completedFunc
-
-            
-            let srcFile = try String(contentsOf: srcFileURL)
-    
-            let runner = Runner()
-            let context = try runner.createContext(name: config.label)
-            
-            context.setupCapacitorAPI()
-            
-            _ = try context.execute(code: srcFile)
             
             waitGroup.enter()
             
@@ -186,6 +193,8 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             if let task = task {
                 task.setTaskCompleted(success: true)
             }
+            
+            print("successfully executing task")
             
             return result
         } catch {

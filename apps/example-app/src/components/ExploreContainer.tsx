@@ -9,7 +9,7 @@ interface ContainerProps {
 const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
   const onDispatchEvent = async () => {
     await BackgroundRunner.dispatchEvent({
-      label: "com.example.background",
+      label: "com.example.background.task",
       event: "updateSystem",
       details: {},
     });
@@ -17,7 +17,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
 
   const onDispatchEventWithDetails = async () => {
     const result = await BackgroundRunner.dispatchEvent({
-      label: "com.example.background",
+      label: "com.example.background.task",
       event: "updateSystemWithDetails",
       details: {
         user: {
@@ -33,7 +33,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
   const onDispatchEventWithFailure = async () => {
     try {
       await BackgroundRunner.dispatchEvent({
-        label: "com.example.background",
+        label: "com.example.background.task",
         event: "updateSystemThrow",
         details: {},
       });
@@ -47,7 +47,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     try {
       await BackgroundRunner.registerBackgroundTask({
         runner: {
-          label: "com.example.background",
+          label: "com.example.background.task",
           src: "background.js",
           event: "updateSystem",
           repeat: false,
@@ -63,7 +63,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
   const onTestKV = async () => {
     try {
       await BackgroundRunner.dispatchEvent({
-        label: "com.example.background",
+        label: "com.example.background.task",
         event: "testKVStore",
         details: {},
       });
@@ -76,8 +76,47 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
   const onTestLocation = async () => {
     try {
       await BackgroundRunner.dispatchEvent({
-        label: "com.example.background",
-        event: "testSingleLocation",
+        label: "com.example.background.task",
+        event: "testLastKnownLocation",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onTestCurrentLocation = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testCurrentLocation",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onTestStartLiveLocation = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testStartLocationWatch",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onTestStopLiveLocation = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testEndLocationWatch",
         details: {},
       });
     } catch (err) {
@@ -108,7 +147,10 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       </IonButton>
       <IonButton onClick={onRegisterTask}>Register Task</IonButton>
       <IonButton onClick={onTestKV}>Test KV</IonButton>
-      <IonButton onClick={onTestLocation}>Test Location</IonButton>
+      <IonButton onClick={onTestLocation}>Get Last Known Location</IonButton>
+      <IonButton onClick={onTestCurrentLocation}>Get Current Location</IonButton>
+      <IonButton onClick={onTestStartLiveLocation}>Start Live Location</IonButton>
+      <IonButton onClick={onTestStopLiveLocation}>Stop Live Location</IonButton>
     </div>
   );
 };

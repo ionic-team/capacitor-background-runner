@@ -25,10 +25,36 @@ addEventListener("testKVStore", (details) => {
   details.completed();
 });
 
-addEventListener("testSingleLocation", async (details) => {
+addEventListener("testLastKnownLocation", async (details) => {
+  const location = CapacitorGeolocation.getLastPosition();
+
+  console.log("current location: " + JSON.stringify(location));
+
+  details.completed();
+});
+
+addEventListener("testCurrentLocation", async (details) => {
+  console.log("getting current location...");
   const location = await CapacitorGeolocation.getCurrentPosition();
 
   console.log("current location: " + JSON.stringify(location));
+  details.completed();
+});
+
+addEventListener("testStartLocationWatch", (details) => {
+  CapacitorGeolocation.startWatchingPosition();
+
+  details.completed();
+});
+
+addEventListener("testEndLocationWatch", (details) => {
+  CapacitorGeolocation.stopWatchingPosition();
+
+  details.completed();
+});
+
+addEventListener("currentLocation", (details) => {
+  console.log("current live location: " + JSON.stringify(details.locations))
 
   details.completed();
 });
