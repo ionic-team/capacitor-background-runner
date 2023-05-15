@@ -2,8 +2,8 @@
   "name": "ios-engine",
   "private": true,
   "scripts": {
-    "lint": " pnpm node-swiftlint lint",
-    "fmt": " pnpm node-swiftlint lint -- --fix --format",
+    "lint": " pnpm swiftlint lint",
+    "fmt": " pnpm swiftlint lint --fix --format",
     "swiftlint": "node-swiftlint"
   },
   "dependencies": {
