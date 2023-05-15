@@ -1,0 +1,40 @@
+{
+    "tasksRunnerOptions": {
+      "default": {
+        "runner": "nx/tasks-runners/default",
+        "options": {
+          "cacheableOperations": [
+            "lint",
+            "build"
+          ],
+          "cacheDirectory": "node_modules/.cache/nx"
+        }
+      }
+    },
+    "targetDefaults": {
+      "lint": {
+        "dependsOn": [
+          "^lint"
+        ]
+      },
+      "fmt": {
+        "dependsOn": [
+          "^fmt"
+        ]
+      },
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          "{projectRoot}/dist"
+        ]
+      },
+      "sync": {
+        "dependsOn": [
+          "^sync"
+        ]
+      }
+    }
+  }
+  
