@@ -1,3 +1,5 @@
+// swiftlint:disable line_length
+
 import XCTest
 import JavaScriptCore
 @testable import RunnerEngine
@@ -234,7 +236,7 @@ final class ContextTests: XCTestCase {
         let expectation = XCTestExpectation(description: "Run callback set on timeout")
 
         let timerCallback: @convention(block) () -> Void = {
-            calls = calls + 1
+            calls += 1
         }
 
         context.ctx.setObject(timerCallback, forKeyedSubscript: "timerCallback" as NSString)
@@ -302,3 +304,5 @@ final class ContextTests: XCTestCase {
         XCTAssertEqual("𠮷", value.toString())
     }
 }
+
+// swiftlint:enable line_length

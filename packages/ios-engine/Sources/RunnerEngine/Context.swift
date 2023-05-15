@@ -21,21 +21,21 @@ public class Context {
         self.name = name
         self.ctx = newCtx
 
-        try self.setupWebAPI()
+        try setupWebAPI()
     }
 
     public func start() {}
     public func stop() {}
 
     public func execute(code: String) -> JSValue? {
-        return self.ctx.evaluateScript(code)
+        return ctx.evaluateScript(code)
     }
 
     public func dispatchEvent(event: String, details: [String: AnyHashable]? = nil) throws {
-        if let callbacks = self.eventListeners[event] {
+        if let callbacks = eventListeners[event] {
             try callbacks.forEach { jsFunc in
                 if let detailsObj = details {
-                    guard let jsDetailsObj = JSValue(object: detailsObj, in: self.ctx) else {
+                    guard let jsDetailsObj = JSValue(object: detailsObj, in: ctx) else {
                         throw EngineError.jsValueError
                     }
 
@@ -48,7 +48,7 @@ public class Context {
     }
 
     private func setupWebAPI() throws {
-        let consoleObj = JSConsole(name: self.name)
+        let consoleObj = JSConsole(name: name)
         let addEventListenerFunc: @convention(block)(String, JSValue) -> Void = { type, listener in
             return self.addEventListener(eventName: type, callback: listener)
         }
@@ -64,23 +64,23 @@ public class Context {
         let newTextEncoderConst: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoderConst: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
 
-        self.ctx.setObject(consoleObj, forKeyedSubscript: "console" as NSString)
-        self.ctx.setObject(JSCrypto.self, forKeyedSubscript: "crypto" as NSString)
-        self.ctx.setObject(addEventListenerFunc, forKeyedSubscript: "addEventListener" as NSString)
-        self.ctx.setObject(setTimeoutFunc, forKeyedSubscript: "setTimeout" as NSString)
-        self.ctx.setObject(setIntervalFunc, forKeyedSubscript: "setInterval" as NSString)
-        self.ctx.setObject(clearTimeoutFunc, forKeyedSubscript: "clearTimeout" as NSString)
-        self.ctx.setObject(clearTimeoutFunc, forKeyedSubscript: "clearInterval" as NSString)
-        self.ctx.setObject(newTextEncoderConst, forKeyedSubscript: "TextEncoder" as NSString)
-        self.ctx.setObject(newTextDecoderConst, forKeyedSubscript: "TextDecoder" as NSString)
+        ctx.setObject(consoleObj, forKeyedSubscript: "console" as NSString)
+        ctx.setObject(JSCrypto.self, forKeyedSubscript: "crypto" as NSString)
+        ctx.setObject(addEventListenerFunc, forKeyedSubscript: "addEventListener" as NSString)
+        ctx.setObject(setTimeoutFunc, forKeyedSubscript: "setTimeout" as NSString)
+        ctx.setObject(setIntervalFunc, forKeyedSubscript: "setInterval" as NSString)
+        ctx.setObject(clearTimeoutFunc, forKeyedSubscript: "clearTimeout" as NSString)
+        ctx.setObject(clearTimeoutFunc, forKeyedSubscript: "clearInterval" as NSString)
+        ctx.setObject(newTextEncoderConst, forKeyedSubscript: "TextEncoder" as NSString)
+        ctx.setObject(newTextDecoderConst, forKeyedSubscript: "TextDecoder" as NSString)
 
     }
 
     private func addEventListener(eventName: String, callback: JSValue) {
-        if self.eventListeners[eventName] == nil {
-            self.eventListeners[eventName] = [callback]
+        if eventListeners[eventName] == nil {
+            eventListeners[eventName] = [callback]
         } else {
-            self.eventListeners[eventName]?.append(callback)
+            eventListeners[eventName]?.append(callback)
         }
     }
 
@@ -97,7 +97,7 @@ public class Context {
 
         RunLoop.current.add(timer, forMode: .common)
 
-        self.timers[timerId] = timer
+        timers[timerId] = timer
 
         return timerId
     }
@@ -111,7 +111,7 @@ public class Context {
     }
 
     private func clearTimeout(id: Int) {
-        if let timer = self.timers.removeValue(forKey: id) {
+        if let timer = timers.removeValue(forKey: id) {
             timer.invalidate()
         }
     }
