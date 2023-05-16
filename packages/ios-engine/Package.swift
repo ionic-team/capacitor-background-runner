@@ -8,7 +8,7 @@ let package = Package(
     products: [
         .library(
             name: "BackgroundRunnerEngine",
-            targets: ["RunnerEngine"]),
+            targets: ["RunnerEngine"])
     ],
     dependencies: [],
     targets: [
@@ -17,6 +17,6 @@ let package = Package(
             dependencies: []),
         .testTarget(
             name: "RunnerEngineTests",
-            dependencies: ["RunnerEngine"]),
+            dependencies: ["RunnerEngine"])
     ]
 )

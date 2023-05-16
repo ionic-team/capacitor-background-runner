@@ -1,5 +1,4 @@
 package io.ionic.backgroundrunner
-
 import android.util.Log
 import org.json.JSONObject
 import java.nio.charset.Charset
@@ -9,7 +8,7 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.concurrent.thread
 
-class Context constructor(name: String, runnerPtr: Long) {
+class Context(name: String, runnerPtr: Long) {
     private val ptr: Long?
     private val name: String
 
@@ -18,7 +17,7 @@ class Context constructor(name: String, runnerPtr: Long) {
         this.ptr = Context.initContext(runnerPtr, name)
     }
 
-    companion object {
+    companion object  {
         init {
             System.loadLibrary("android_engine")
         }
@@ -29,31 +28,36 @@ class Context constructor(name: String, runnerPtr: Long) {
         external fun start(ptr: Long)
         external fun stop(ptr: Long)
         external fun dispatchEvent(ptr: Long, event: String, details: String)
-        external fun registerGlobalFunction(ptr: Long, functionName: String,  function: JSFunction)
+        external fun registerGlobalFunction(ptr: Long, functionName: String, function: JSFunction)
 
-        @JvmStatic fun cryptoRandomUUID(): String {
+        @JvmStatic
+        fun cryptoRandomUUID(): String {
             val random = UUID.randomUUID()
             return random.toString()
         }
 
-        @JvmStatic fun randomHashCode(): Int {
+        @JvmStatic
+        fun randomHashCode(): Int {
             return abs(cryptoRandomUUID().hashCode())
         }
 
-        @JvmStatic fun cryptoGetRandom(size: Int): ByteArray {
+        @JvmStatic
+        fun cryptoGetRandom(size: Int): ByteArray {
             val random = SecureRandom()
             val arr = ByteArray(size)
 
             random.nextBytes(arr)
 
-            return arr;
+            return arr
         }
 
-        @JvmStatic fun stringToByteArray(str: String): ByteArray {
+        @JvmStatic
+        fun stringToByteArray(str: String): ByteArray {
             return str.toByteArray(Charset.forName("UTF-8"))
         }
 
-        @JvmStatic fun byteArrayToString(arr: ByteArray, encoding: String): String {
+        @JvmStatic
+        fun byteArrayToString(arr: ByteArray, encoding: String): String {
             val enc = Context.getCharset(encoding)
             return arr.toString(enc)
         }
@@ -109,9 +113,9 @@ class Context constructor(name: String, runnerPtr: Long) {
             throw Exception("runner pointer is null")
         }
 
-        val jsonString = Context.evaluate(this.ptr, code, returnValue);
+        val jsonString = Context.evaluate(this.ptr, code, returnValue)
 
-       return JSValue(jsonString)
+        return JSValue(jsonString)
     }
 
     fun dispatchEvent(event: String, details: JSONObject) {
@@ -122,7 +126,7 @@ class Context constructor(name: String, runnerPtr: Long) {
         Context.dispatchEvent(this.ptr, event, details.toString(0))
     }
 
-    fun registerFunction(funcName:String, func: JSFunction) {
+    fun registerFunction(funcName: String, func: JSFunction) {
         if (this.ptr == null) {
             throw Exception("runner pointer is null")
         }
@@ -132,8 +136,9 @@ class Context constructor(name: String, runnerPtr: Long) {
 
     fun destroy() {
         if (this.ptr != null) {
-            this.stop();
+            this.stop()
             Context.destroyContext(this.ptr)
         }
     }
 }
+

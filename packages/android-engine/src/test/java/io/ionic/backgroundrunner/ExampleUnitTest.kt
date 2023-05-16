@@ -1,5 +1,4 @@
 package io.ionic.backgroundrunner
-
 import org.junit.Test
 
 import org.junit.Assert.*
@@ -15,3 +14,4 @@ class ExampleUnitTest {
         assertEquals(4, 2 + 2)
     }
 }
+

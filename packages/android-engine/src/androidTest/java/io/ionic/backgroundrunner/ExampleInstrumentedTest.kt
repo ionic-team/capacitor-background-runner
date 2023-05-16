@@ -1,5 +1,4 @@
 package io.ionic.backgroundrunner
-
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.json.JSONObject
@@ -25,7 +24,7 @@ class ExampleInstrumentedTest {
         var value = context.execute("undefined", true)
         assertTrue(value.isNullOrUndefined())
 
-        value = context.execute("const test = null; test;", true);
+        value = context.execute("const test = null; test;", true)
         assertTrue(value.isNullOrUndefined())
 
         runner.destroy()
@@ -37,10 +36,10 @@ class ExampleInstrumentedTest {
         val context = runner.createContext("io.backgroundrunner.ionic")
 
         var value = context.execute("let test = (1 == 1); test;", true)
-        assertTrue(value.getBoolValue()?: false)
+        assertTrue(value.getBoolValue() ?: false)
 
-        value = context.execute("test = (100 == 200); test;", true);
-        assertFalse(value.getBoolValue()?: true)
+        value = context.execute("test = (100 == 200); test;", true)
+        assertFalse(value.getBoolValue() ?: true)
 
         runner.destroy()
     }
@@ -95,7 +94,7 @@ class ExampleInstrumentedTest {
     @Test
     fun testAPI_EventListeners() {
 
-        class EventCallback: JSFunction(args = null) {
+        class EventCallback : JSFunction(args = null) {
             override fun run() {
                 super.run()
 
@@ -129,9 +128,9 @@ class ExampleInstrumentedTest {
         context.execute("addEventListener('myEventCallback', (details) => { details.completed() });")
         context.dispatchEvent("myEventCallback", callbackObject)
 
-//        // setting multiple event listeners for the same event
-//        context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
-//        context.dispatchEvent("myEvent", JSONObject())
+        //        // setting multiple event listeners for the same event
+        //        context.execute("addEventListener('myEvent', () => { console.log('alternate event listener called'); });")
+        //        context.dispatchEvent("myEvent", JSONObject())
 
         runner.destroy()
     }
@@ -156,7 +155,7 @@ class ExampleInstrumentedTest {
         context.start()
 
         var value = context.execute("setTimeout(() => { console.log('timeout executed'); }, 2000)", true)
-        assertTrue((value.getIntValue()?: 0) > 0)
+        assertTrue((value.getIntValue() ?: 0) > 0)
         Thread.sleep(3000)
 
         value = context.execute("setTimeout(() => { console.log('This timeout should not be executed'); }, 4000)", true)
@@ -176,7 +175,7 @@ class ExampleInstrumentedTest {
         context.start()
 
         var value = context.execute("setInterval(() => { console.log('timeout executed'); }, 2000)", true)
-        assertTrue((value.getIntValue()?: 0) > 0)
+        assertTrue((value.getIntValue() ?: 0) > 0)
 
         Thread.sleep(8000)
         context.execute("clearInterval(${value.getIntValue()});")
@@ -191,7 +190,7 @@ class ExampleInstrumentedTest {
     fun testAPI_TextEncoder() {
         var runner = Runner()
         val context = runner.createContext(".io.backgroundrunner.ionic")
-        var value = context.execute("const encoder = new TextEncoder(); encoder.encode('€');", true);
+        var value = context.execute("const encoder = new TextEncoder(); encoder.encode('€');", true)
 
         val arrayObject = value.getJSONObject()
 
@@ -209,10 +208,10 @@ class ExampleInstrumentedTest {
         var runner = Runner()
         val context = runner.createContext(".io.backgroundrunner.ionic")
 
-        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));", true);
+        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));", true)
         assertEquals("Привет, мир!", value.getStringValue())
 
-        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));", true);
+        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));", true)
         assertEquals("\uD842\uDFB7", value.getStringValue())
 
         runner.destroy()
@@ -240,3 +239,4 @@ class ExampleInstrumentedTest {
         runner.destroy()
     }
 }
+

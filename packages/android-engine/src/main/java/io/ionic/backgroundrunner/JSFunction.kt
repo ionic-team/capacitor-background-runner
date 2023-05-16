@@ -1,8 +1,7 @@
 package io.ionic.backgroundrunner
-
 import org.json.JSONObject
 
-open class JSFunction constructor(args: JSONObject?): Runnable {
+open class JSFunction(args: JSONObject?) : Runnable {
     public var args: JSONObject? = null
 
     init {
@@ -11,3 +10,4 @@ open class JSFunction constructor(args: JSONObject?): Runnable {
 
     override fun run() {}
 }
+
