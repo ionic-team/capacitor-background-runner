@@ -8,6 +8,10 @@
   "devDependencies": {
     "lerna": "^6.6.2"
   },
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=7"
+  },
   "scripts": {
     "fmt": "nx run-many --target=fmt --parallel=5",
     "lint": "nx run-many --target=lint --parallel=5"
