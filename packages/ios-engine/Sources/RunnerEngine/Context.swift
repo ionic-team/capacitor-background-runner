@@ -12,71 +12,70 @@ public class Context {
         guard let newCtx = JSContext(virtualMachine: vm) else {
             throw EngineError.jsCoreError
         }
-        
+
         newCtx.name = name
-        
+
         self.name = name
         self.ctx = newCtx
-        
+
         try self.setupWebAPI()
     }
-    
+
     public func execute(code: String) throws -> JSValue? {
         var thrownException: JSValue?
-        
+
         self.ctx.exceptionHandler = { _, exception in
             thrownException = exception
         }
-        
+
         let value = self.ctx.evaluateScript(code)
-        
+
         if let exception = thrownException {
             throw EngineError.jsException(details: String(describing: exception))
         }
-        
+
         return value
     }
-    
+
     public func dispatchEvent(event: String, details: [String: Any]? = nil) throws {
         if let callbacks = self.eventListeners[event] {
             try callbacks.forEach { jsFunc in
                 var thrownException: JSValue?
-                
+
                 self.ctx.exceptionHandler = { _, exception in
                     thrownException = exception
                 }
-                
+
                 if let detailsObj = details {
                     var callbackFunctions: [String: Any] = [:]
-                
+
                     detailsObj.keys.forEach { key in
                         if key.hasPrefix("__ebr::") {
                             let funcName = key.replacingOccurrences(of: "__ebr::", with: "")
                             callbackFunctions[funcName] = detailsObj[key]
                         }
                     }
-                    
+
                     guard let jsDetailsObj = JSValue(object: detailsObj, in: self.ctx) else {
                         throw EngineError.jsValueError
                     }
-                    
+
                     callbackFunctions.forEach { (funcName: String, jsFunc: Any) in
                         jsDetailsObj.setValue(jsFunc, forProperty: funcName)
                     }
-                    
+
                     jsFunc.call(withArguments: [jsDetailsObj])
                 } else {
                     jsFunc.call(withArguments: [])
                 }
-                
+
                 if let exception = thrownException {
                     throw EngineError.jsException(details: String(describing: exception))
                 }
             }
         }
     }
-    
-    
+
     private func setupWebAPI() throws {
         let consoleObj = JSConsole(name: self.name)
         let addEventListenerFunc: @convention(block)(String, JSValue) -> Void = { type, listener in

@@ -18,13 +18,13 @@ class JSCrypto: NSObject, JSCryptoExports {
                 arr.setObject(rnd[i], atIndexedSubscript: i)
             }
         }
-        
+
         if arr.toArray() as? [UInt16] != nil {
             for i in 0...(size - 1) {
                 arr.setObject(UInt16(rnd[i]), atIndexedSubscript: i)
             }
         }
-        
+
         if arr.toArray() as? [UInt32] != nil {
             for i in 0...(size - 1) {
                 arr.setObject(UInt32(rnd[i]), forKeyedSubscript: i)

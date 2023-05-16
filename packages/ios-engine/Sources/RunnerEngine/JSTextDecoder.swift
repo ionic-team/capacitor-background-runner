@@ -2,7 +2,7 @@ import JavaScriptCore
 
 @objc protocol JSTextDecoderExports: JSExport {
     var encoding: String { get }
-    
+
     func decode(_ buffer: JSValue) -> String?
 }
 
@@ -13,14 +13,14 @@ class JSTextDecoder: NSObject, JSTextDecoderExports {
             self.encoding = enc
         }
     }
-    
+
     func decode(_ buffer: JSValue) -> String? {
         let useEncoding = setEncoding(enc: self.encoding)
-        
+
         if let arr = buffer.toArray() as? [UInt8] {
             return String(bytes: arr, encoding: useEncoding)
         }
-        
+
         if let arr = buffer.toArray() as? [Int8] {
             let data = Data(bytes: arr, count: arr.count)
             return String(data: data, encoding: useEncoding)
