@@ -30,6 +30,11 @@ addEventListener("testLastKnownLocation", async (details) => {
 
   console.log("current location: " + JSON.stringify(location));
 
+  CapacitorNotifications.schedule({
+    title: "Enterprise Background Runner",
+    body: `Your current location: ${location.lat}, ${location.lng}`
+  });
+
   details.completed();
 });
 
@@ -56,5 +61,13 @@ addEventListener("testEndLocationWatch", (details) => {
 addEventListener("currentLocation", (details) => {
   console.log("current live location: " + JSON.stringify(details.locations))
 
+  details.completed();
+});
+
+addEventListener("scheduleNotification", (details) => {
+  CapacitorNotifications.schedule({
+    title: "Enterprise Background Runner",
+    body: "A test message from the Enterprise Background Runner"
+  });
   details.completed();
 });

@@ -73,6 +73,19 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
+  const onTestNotification = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "scheduleNotification",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
   const onTestLocation = async () => {
     try {
       await BackgroundRunner.dispatchEvent({
@@ -147,6 +160,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       </IonButton>
       <IonButton onClick={onRegisterTask}>Register Task</IonButton>
       <IonButton onClick={onTestKV}>Test KV</IonButton>
+      <IonButton onClick={onTestNotification}>Test Notification</IonButton>
       <IonButton onClick={onTestLocation}>Get Last Known Location</IonButton>
       <IonButton onClick={onTestCurrentLocation}>Get Current Location</IonButton>
       <IonButton onClick={onTestStartLiveLocation}>Start Live Location</IonButton>
