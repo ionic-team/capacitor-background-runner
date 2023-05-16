@@ -36,4 +36,3 @@ class JSConsole: NSObject, JSConsoleExports {
         debugPrint("[\(self.contextName)] [DEBUG] \(msg)")
     }
 }
-

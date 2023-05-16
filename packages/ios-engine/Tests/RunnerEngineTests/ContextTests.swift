@@ -1,3 +1,5 @@
+// swiftlint:disable line_length
+
 import XCTest
 import JavaScriptCore
 @testable import RunnerEngine
@@ -108,7 +110,6 @@ final class ContextTests: XCTestCase {
             successCallbackCalled += 1
             expectation.fulfill()
         }
-        
         let successCallback2: @convention(block) () -> Void = {
             altSuccessCallbackCalled += 1
             expectation2.fulfill()
@@ -280,7 +281,6 @@ final class ContextTests: XCTestCase {
             XCTFail("could not get array object")
             return
         }
-        
         XCTAssertEqual(226, arrayObject["0"])
         XCTAssertEqual(130, arrayObject["1"])
         XCTAssertEqual(172, arrayObject["2"])
