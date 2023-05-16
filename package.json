@@ -6,6 +6,13 @@
     "packages/*"
   ],
   "devDependencies": {
-    "lerna": "^5.4.3"
+    "lerna": "^6.6.2"
+  },
+  "scripts": {
+    "fmt": "nx run-many --target=fmt --parallel=5",
+    "lint": "nx run-many --target=lint --parallel=5"
+  },
+  "dependencies": {
+    "nx": "^16.1.4"
   }
 }
