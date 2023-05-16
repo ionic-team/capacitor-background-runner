@@ -1,9 +1,8 @@
 package io.ionic.backgroundrunner
-
 import org.json.JSONArray
 import org.json.JSONObject
 
-class JSValue constructor(jsonString: String) {
+class JSValue(jsonString: String) {
     private val json: String
 
     init {
@@ -24,14 +23,14 @@ class JSValue constructor(jsonString: String) {
         return this.json.trim('"')
     }
 
-    fun isNullOrUndefined() : Boolean {
+    fun isNullOrUndefined(): Boolean {
         return checkIfNullOrUndefined()
     }
 
     fun getBoolValue(): Boolean? {
         if (checkIfNullOrUndefined()) return null
 
-        if (this.json == "false" || this.json == "0"  || this.json.isEmpty()) {
+        if (this.json == "false" || this.json == "0" || this.json.isEmpty()) {
             return false
         }
 
@@ -41,14 +40,14 @@ class JSValue constructor(jsonString: String) {
     fun getJSONArray(): JSONArray? {
         try {
             return JSONArray(this.json)
-        } catch (_: java.lang.Exception) {}
+        } catch (`_`: java.lang.Exception) {}
         return null
     }
 
     fun getJSONObject(): JSONObject? {
         try {
             return JSONObject(this.json)
-        } catch (_: java.lang.Exception) {}
+        } catch (`_`: java.lang.Exception) {}
         return null
     }
 
@@ -66,3 +65,4 @@ class JSValue constructor(jsonString: String) {
         return false
     }
 }
+

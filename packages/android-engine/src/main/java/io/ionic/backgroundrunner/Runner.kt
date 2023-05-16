@@ -1,5 +1,4 @@
 package io.ionic.backgroundrunner
-
 import kotlin.concurrent.thread
 
 class Runner {
@@ -7,10 +6,10 @@ class Runner {
     private val contexts: HashMap<String, Context> = HashMap()
 
     init {
-        ptr = Runner.initRunner();
+        ptr = Runner.initRunner()
     }
 
-    companion object {
+    companion object  {
         init {
             System.loadLibrary("android_engine")
         }
@@ -24,7 +23,7 @@ class Runner {
             throw Exception("runner pointer is null")
         }
 
-        val newCtx = Context(name, this.ptr);
+        val newCtx = Context(name, this.ptr)
         contexts[name] = newCtx
 
         return newCtx
@@ -49,3 +48,4 @@ class Runner {
         }
     }
 }
+
