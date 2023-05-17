@@ -81,7 +81,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
                     notificationContent.threadIdentifier = id
                 }
                 
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 10, repeats: false)
+                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
                 let request = UNNotificationRequest(identifier: UUID().uuidString, content: notificationContent, trigger: trigger)
                 
                 UNUserNotificationCenter.current().add(request)

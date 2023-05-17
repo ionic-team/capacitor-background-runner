@@ -73,6 +73,21 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
+  const onTestGetKV = async () => {
+    try {
+      const result = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testGetKVStore",
+        details: {},
+      });
+
+      alert(JSON.stringify(result));
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
   const onTestNotification = async () => {
     try {
       await BackgroundRunner.dispatchEvent({
@@ -160,6 +175,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       </IonButton>
       <IonButton onClick={onRegisterTask}>Register Task</IonButton>
       <IonButton onClick={onTestKV}>Test KV</IonButton>
+      <IonButton onClick={onTestGetKV}>Test Get KV</IonButton>
       <IonButton onClick={onTestNotification}>Test Notification</IonButton>
       <IonButton onClick={onTestLocation}>Get Last Known Location</IonButton>
       <IonButton onClick={onTestCurrentLocation}>Get Current Location</IonButton>

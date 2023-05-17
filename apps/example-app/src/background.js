@@ -18,12 +18,22 @@ addEventListener("updateSystemThrow", () => {
 
 addEventListener("testKVStore", (details) => {
   CapacitorKV.set("testValue", "hello world");
-  const result = CapacitorKV.get("testValue");
+  // const result = CapacitorKV.get("testValue");
 
-  console.log("test value is: " + result);
+  // console.log("test value is: " + result);
 
   details.completed();
 });
+
+addEventListener("testGetKVStore", (details) => {
+  const value = CapacitorKV.get("testValue");
+
+  CapacitorKV.set("testValue", null);
+
+  details.completed({
+    value
+  });
+})
 
 addEventListener("testLastKnownLocation", async (details) => {
   const location = CapacitorGeolocation.getLastPosition();
@@ -34,6 +44,8 @@ addEventListener("testLastKnownLocation", async (details) => {
     title: "Enterprise Background Runner",
     body: `Your current location: ${location.lat}, ${location.lng}`
   });
+
+  CapacitorKV.set("testValue", JSON.stringify(location));
 
   details.completed();
 });
