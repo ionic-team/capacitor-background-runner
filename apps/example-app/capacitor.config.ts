@@ -11,9 +11,9 @@ const config: CapacitorConfig = {
         {
           label: "com.example.background.task",
           src: "background.js",
-          event: "testLastKnownLocation",
+          event: "monitorLocation",
           repeat: true,
-          interval: 3,
+          interval: 2,
           autoStart: true
           // TODO: Add Android / iOS constraints
         }

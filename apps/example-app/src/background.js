@@ -18,9 +18,9 @@ addEventListener("updateSystemThrow", () => {
 
 addEventListener("testKVStore", (details) => {
   CapacitorKV.set("testValue", "hello world");
-  // const result = CapacitorKV.get("testValue");
+  const result = CapacitorKV.get("testValue");
 
-  // console.log("test value is: " + result);
+  console.log("test value is: " + result);
 
   details.completed();
 });
@@ -36,7 +36,7 @@ addEventListener("testGetKVStore", (details) => {
 })
 
 addEventListener("testLastKnownLocation", async (details) => {
-  const location = CapacitorGeolocation.getLastPosition();
+  const location = CapacitorGeolocation.getCurrentPosition();
 
   console.log("current location: " + JSON.stringify(location));
 
@@ -59,7 +59,7 @@ addEventListener("testCurrentLocation", async (details) => {
 });
 
 addEventListener("testStartLocationWatch", (details) => {
-  CapacitorGeolocation.startWatchingPosition();
+  CapacitorGeolocation.startWatchingPosition(false);
 
   details.completed();
 });
@@ -71,7 +71,7 @@ addEventListener("testEndLocationWatch", (details) => {
 });
 
 addEventListener("currentLocation", (details) => {
-  console.log("current live location: " + JSON.stringify(details.locations))
+  console.log("current live location: " + JSON.stringify(details.locations));
 
   details.completed();
 });
@@ -82,4 +82,37 @@ addEventListener("scheduleNotification", (details) => {
     body: "A test message from the Enterprise Background Runner"
   });
   details.completed();
+});
+
+addEventListener("monitorLocation", async (details) => {
+  console.log("recording location...")
+  const location = await CapacitorGeolocation.getCurrentPosition();
+  const timestamp = Math.floor(Date.now() / 1000);
+
+  let track = CapacitorKV.get("track");
+  if (!track) {
+    track = [];
+  } else {
+    track = JSON.parse(track);
+  }
+
+  track.push({
+    timestamp,
+    location,
+  });
+
+  CapacitorKV.set("track", JSON.stringify(track));
+
+  CapacitorNotifications.schedule({
+    title: "Enterprise Background Runner",
+    body: "Recording your current location"
+  });
+
+  details.completed();
+});
+
+addEventListener("getSavedLocations", (details) => {
+  let track = CapacitorKV.get("track");
+
+  details.completed({ track: track });
 });

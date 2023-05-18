@@ -153,6 +153,38 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
+  const onMonitorLocation = async () => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "monitorLocation",
+        details: {},
+      });
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onGetTrackedLocations = async () => {
+    try {
+      const result = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "getSavedLocations",
+        details: {},
+      }) as any;
+
+      const track = JSON.parse(result.track);
+
+      console.log(track)
+
+      alert(`${track.length} tracked locations`);
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
   return (
     <div className="container">
       <strong>{name}</strong>
@@ -181,6 +213,8 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton onClick={onTestCurrentLocation}>Get Current Location</IonButton>
       <IonButton onClick={onTestStartLiveLocation}>Start Live Location</IonButton>
       <IonButton onClick={onTestStopLiveLocation}>Stop Live Location</IonButton>
+      <IonButton onClick={onMonitorLocation}>Record Location</IonButton>
+      <IonButton onClick={onGetTrackedLocations}>Get Location Report</IonButton>
     </div>
   );
 };

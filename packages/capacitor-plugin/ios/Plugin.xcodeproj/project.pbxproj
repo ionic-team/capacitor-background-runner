@@ -21,6 +21,7 @@
 		0237237B2A004051009B91C9 /* KV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237A2A004051009B91C9 /* KV.swift */; };
 		0237237D2A0041B2009B91C9 /* Geolocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237C2A0041B2009B91C9 /* Geolocation.swift */; };
 		0237237F2A00431F009B91C9 /* Wearable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237E2A00431F009B91C9 /* Wearable.swift */; };
+		027BCF202A16ABA8009884A0 /* BackgroundRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */; };
 		02D65FBF2A141B7D007A46A2 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D65FBE2A141B7D007A46A2 /* Notifications.swift */; };
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
@@ -57,6 +58,7 @@
 		0237237A2A004051009B91C9 /* KV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KV.swift; sourceTree = "<group>"; };
 		0237237C2A0041B2009B91C9 /* Geolocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geolocation.swift; sourceTree = "<group>"; };
 		0237237E2A00431F009B91C9 /* Wearable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wearable.swift; sourceTree = "<group>"; };
+		027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRunner.swift; sourceTree = "<group>"; };
 		02D65FBE2A141B7D007A46A2 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -155,6 +157,7 @@
 				022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */,
 				0237234C29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift */,
 				023723622A002600009B91C9 /* Context+CapacitorAPI.swift */,
+				027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -371,6 +374,7 @@
 				023723772A003F5C009B91C9 /* Context.swift in Sources */,
 				0237237B2A004051009B91C9 /* KV.swift in Sources */,
 				023723722A003F5C009B91C9 /* JSConsole.swift in Sources */,
+				027BCF202A16ABA8009884A0 /* BackgroundRunner.swift in Sources */,
 				022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* BackgroundRunnerPlugin.m in Sources */,
 				022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */,

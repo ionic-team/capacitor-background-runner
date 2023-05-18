@@ -7,28 +7,28 @@ extension BackgroundRunnerPlugin: WCSessionDelegate {
         args["activationState"] = activationState.rawValue
         args["error"] = error
         
-        self.globalDispatchEvent(event: "WatchConnectivity_activationDidCompleteWith", args: args)
+//        self.globalDispatchEvent(event: "WatchConnectivity_activationDidCompleteWith", args: args)
     }
     
     public func sessionDidBecomeInactive(_ session: WCSession) {
-        self.globalDispatchEvent(event: "WatchConnectivity_sessionDidBecomeInactive")
+//        self.globalDispatchEvent(event: "WatchConnectivity_sessionDidBecomeInactive")
     }
     
     public func sessionDidDeactivate(_ session: WCSession) {
-        self.globalDispatchEvent(event: "WatchConnectivity_sessionDidDeactivate")
+//        self.globalDispatchEvent(event: "WatchConnectivity_sessionDidDeactivate")
     }
     
     public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
         var args: [String: Any] = [:]
         args["userInfo"] = userInfo
         
-        self.globalDispatchEvent(event: "WatchConnectivity_didReceiveUserInfo", args: args)
+//        self.globalDispatchEvent(event: "WatchConnectivity_didReceiveUserInfo", args: args)
     }
     
     public func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         var args: [String: Any] = [:]
         args["message"] = message
         
-        self.globalDispatchEvent(event: "WatchConnectivity_didReceiveMessage", args: args)
+//        self.globalDispatchEvent(event: "WatchConnectivity_didReceiveMessage", args: args)
     }
 }

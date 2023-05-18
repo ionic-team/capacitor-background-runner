@@ -3,10 +3,10 @@ import JavaScriptCore
 import CoreLocation
 
 @objc protocol CapacitorGeolocationExports: JSExport {
-    func startWatchingPosition() -> Void
+    var isWatchingPosition: Bool { get }
+    func startWatchingPosition(_ highAccuracy: Bool) -> Void
     func stopWatchingPosition() -> Void
-    func getCurrentPosition() -> JSValue
-    func getLastPosition() -> [String: Double]?
+    func getCurrentPosition() -> [String: Any]?
 }
 
 enum CapacitorGeolocationErrors: Error, Equatable {
@@ -14,6 +14,10 @@ enum CapacitorGeolocationErrors: Error, Equatable {
 }
 
 class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationManagerDelegate {
+    var isWatchingPosition: Bool {
+        return isWatchingLocation
+    }
+    
     private weak var context: Context?
     private var pendingCurrentLocationCalls: [Int: (Result<CLLocation?, Error>) -> Void] = [:]
     private var isWatchingLocation: Bool = false
@@ -26,8 +30,16 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
         super.init()
         
         self.locationManager.allowsBackgroundLocationUpdates = true
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
+        self.locationManager.pausesLocationUpdatesAutomatically = false
         self.locationManager.delegate = self
+        
+        self.locationManager.startMonitoringSignificantLocationChanges()
+        self.locationManager.stopMonitoringSignificantLocationChanges()
+    }
+    
+    static func getCurrentKnownLocation() -> CLLocation? {
+        return CLLocationManager().location
     }
     
     func checkPermission() throws {
@@ -50,12 +62,16 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
         }
     }
     
-    func startWatchingPosition()  {
+    func startWatchingPosition(_ highAccuracy: Bool) {
         do {
             try self.checkPermission()
             
             DispatchQueue.main.sync {
-                self.locationManager.startUpdatingLocation()
+                if highAccuracy {
+                    self.locationManager.startUpdatingLocation()
+                } else {
+                    self.locationManager.startMonitoringSignificantLocationChanges()
+                }
             }
             
             self.isWatchingLocation = true
@@ -68,68 +84,13 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
     func stopWatchingPosition() {
         DispatchQueue.main.sync {
             self.locationManager.stopUpdatingLocation()
+            self.locationManager.stopMonitoringSignificantLocationChanges()
         }
     
         self.isWatchingLocation = false
     }
     
-    func getCurrentPosition() -> JSValue {
-        return JSValue(newPromiseIn: JSContext.current()) { resolve, reject in
-            do {
-                try self.checkPermission()
-                
-                let group = DispatchGroup()
-                
-                var location: CLLocation?
-                var err: Error?
-                
-                let callId = self.pendingCurrentLocationCalls.count + 1
-                
-                let callback: (Result<CLLocation?, Error>) -> Void = { result in
-                    switch result {
-                    case .success(let resolvedLocation):
-                        location = resolvedLocation
-                    case .failure(let resolvedErr):
-                        err = resolvedErr
-                    }
-                    
-                    group.leave()
-                }
-                
-                self.pendingCurrentLocationCalls[callId] = callback
-                
-                group.enter()
-                DispatchQueue.main.sync {
-                    self.locationManager.requestLocation()
-                }
-                
-                group.wait()
-                
-                if let err = err {
-                    let ex = JSValue(newErrorFromMessage: "\(err)", in: JSContext.current())
-                    reject?.call(withArguments: [ex])
-                    return
-                }
-                
-                guard let location = location else {
-                    resolve?.call(withArguments: [])
-                    return
-                }
-                
-                var coordDict: [String: Double] = [:]
-                coordDict["lat"] = location.coordinate.latitude
-                coordDict["lng"] = location.coordinate.longitude
-                coordDict["altitude"] = location.altitude
-                
-                resolve?.call(withArguments: [coordDict])
-            } catch {
-                let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
-                reject?.call(withArguments: [ex])
-            }
-        }
-    }
-    
-    func getLastPosition() -> [String : Double]? {
+    func getCurrentPosition() -> [String: Any]? {
         do {
             try self.checkPermission()
             
@@ -137,16 +98,7 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
                 return nil
             }
             
-            var coordDict: [String: Double] = [:]
-            coordDict["lat"] = lastLocation.coordinate.latitude
-            coordDict["lng"] = lastLocation.coordinate.longitude
-            coordDict["altitude"] = lastLocation.altitude
-            
-            if let heading = self.locationManager.heading {
-                coordDict["heading"] = heading.magneticHeading
-            }
-            
-            return coordDict
+            return buildLocationDict(location: lastLocation)
         } catch {
             let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
             JSContext.current().exception = ex
@@ -157,13 +109,8 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
         
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let context = self.context, self.isWatchingLocation {
-            let locations: [[String: Double]] = locations.map { location in
-                var coordDict: [String: Double] = [:]
-                coordDict["lat"] = location.coordinate.latitude
-                coordDict["lng"] = location.coordinate.longitude
-                coordDict["altitude"] = location.altitude
-                
-                return coordDict
+            let locations: [[String: Any]] = locations.map { location in
+                return buildLocationDict(location: location)
             }
             
             var details: [String: Any] = [:]
@@ -195,6 +142,19 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
             pendingCurrentLocationCalls.removeValue(forKey: callId)
             callback(.failure(error))
         }
+    }
+    
+    private func buildLocationDict(location: CLLocation) -> [String: Any] {
+        var coords: [String: Any] = [:]
+        coords["latitude"] = location.coordinate.latitude
+        coords["longitude"] = location.coordinate.longitude
+        coords["accuracy"] = location.horizontalAccuracy
+        coords["altitude"] = location.altitude
+        coords["altitudeAccuracy"] = location.verticalAccuracy
+        coords["speed"] = location.speed
+        coords["heading"] = location.course
+        
+        return coords
     }
 }
 
