@@ -1,0 +1,8 @@
+{
+  "Simulator Target Bundle": "io.ionic.backgroundrunner.example",
+  "aps": {
+    "content-available": 1
+  },
+  "acme1": "bar",
+  "acme2": 42
+}

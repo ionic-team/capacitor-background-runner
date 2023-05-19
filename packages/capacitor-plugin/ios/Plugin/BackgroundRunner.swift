@@ -14,94 +14,133 @@ public class BackgroundRunner {
     static let shared = BackgroundRunner()
     
     private var runner: Runner? = nil
-    private var configs: [String: RunnerConfig] = [:]
-    private var contexts: [String: Context] = [:]
+    private var config: RunnerConfig? = nil
+    private var context: Context? = nil
     
     private var started: Bool {
-        return runner != nil
+        return runner != nil && context != nil
     }
     
     public init() {
         do {
-            self.configs = try self.loadRunnerConfig()
+            config = try self.loadRunnerConfig()
         } catch {
             print("could not initialize BackgroundRunner: \(error)")
         }
     }
     
-    public func registerBackgroundTasks() {
-        configs.forEach { _, config in
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: config.label, using: nil) { task in
-                _ = try? BackgroundRunner.shared.execute(config: config, task: (task as! BGAppRefreshTask))
+    public func registerBackgroundTask() {
+        guard let config = config else {
+            print("no runner to register")
+            return
+        }
+            
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: config.label, using: nil) { task in
+            do {
+                task.expirationHandler = {
+                    print("task timed out")
+                }
+                
+                _ = try BackgroundRunner.shared.execute(config: config, event: config.event)
+
+                task.setTaskCompleted(success: true)
+            } catch {
+                print("background task error: \(error)")
+                task.setTaskCompleted(success: false)
             }
         }
     }
     
     public func scheduleBackgroundTasks() {
-        configs.forEach { (label: String, config: RunnerConfig) in
-            if config.autoStart {
-                scheduleBackgroundTask(config: config)
-            }
+        guard let config = config else {
+            return
+        }
+        
+        let request = BGAppRefreshTaskRequest(identifier: config.label)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: Double(config.interval) * 60)
+        
+        do {
+            print("Scheduling \(config.label)")
+            
+            try BGTaskScheduler.shared.submit(request)
+        } catch {
+            print("Could not schedule app refresh: \(error)")
         }
     }
     
     public func start() throws {
         print("starting runner and loading contexts...")
-        self.runner = Runner()
-    
-        // create and load runner and contexts
-        try configs.forEach { _, config in
-            contexts[config.label] = try initContext(config: config)
+        
+        guard let config = config else {
+            print("...no runner config to start")
+            return
         }
+        
+        self.runner = Runner()
+        context = try initContext(config: config)
+        
     }
     
     public func stop() {
         print("...stopping runner and removing all contexts")
-        guard let runner = runner else {
+        guard let runner = runner, let config = config else {
             return
         }
         
-        contexts.forEach({ (name: String, context: Context) in
-            runner.destroyContext(name: name)
-        })
+        runner.destroyContext(name: config.label)
         
-        self.contexts.removeAll()
-        
+        context = nil
         self.runner = nil
     }
     
-    public func getConfig(name: String) -> RunnerConfig? {
-        return configs[name]
+    public func getConfig() -> RunnerConfig? {
+        return config
     }
     
-    public func execute(config: RunnerConfig, task: BGAppRefreshTask? = nil, inputArgs: [String: Any]? = nil, eventOverride: String? = nil) throws -> [String: Any]? {
-        do {
-            defer {
-                if task != nil && config.repeats {
-                    self.scheduleBackgroundTask(config: config)
+    public func dispatchEvent(event: String, inputArgs: [String: Any]?) throws {
+        if !started {
+            try start()
+        }
+        
+        if let config = config {
+            let waitGroup = DispatchGroup()
+            waitGroup.enter()
+            
+            var err: Error?
+            
+            DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+                do {
+                    _ = try self.execute(config: config, event: event, inputArgs: inputArgs)
+                } catch {
+                    err = error
+                    print("[\(config.label)]: \(error)")
                 }
                 
-                stop()
+                waitGroup.leave()
             }
             
+            waitGroup.wait()
+            
+            if let err = err {
+                throw err
+            }
+        }
+    }
+
+    public func execute(config: RunnerConfig, event: String, inputArgs: [String: Any]? = nil) throws -> [String: Any]? {
+        do {
             if !started {
                 try self.start()
             }
             
-            guard let context = contexts[config.label] else {
-                throw BackgroundRunnerPluginError.runnerError(reason: "could not find context for label")
+            guard let context = context else {
+                throw BackgroundRunnerPluginError.runnerError(reason: "no loaded context for config")
             }
             
             var inputArgsWithCallback = inputArgs
             
             if (inputArgsWithCallback == nil) {
                 inputArgsWithCallback = [:]
-            }
-            
-            var event = config.event
-            
-            if let eventOverride = eventOverride {
-                event = eventOverride
             }
             
             let waitGroup = DispatchGroup()
@@ -125,37 +164,20 @@ public class BackgroundRunner {
             
             inputArgsWithCallback?["__ebr::completed"] = completedFunc
             
-            if let task = task {
-                task.expirationHandler = {
-                    print("task timed out")
-                    waitGroup.leave()
-                }
-            }
-            
             waitGroup.enter()
             
             try context.dispatchEvent(event: event, details: inputArgsWithCallback)
             
             waitGroup.wait()
             
-            if let task = task {
-                task.setTaskCompleted(success: true)
-            }
-            
             return result
         } catch {
             print("error executing task: \(error)")
-            if let task = task {
-                task.setTaskCompleted(success: false)
-            }
-            
             throw error
         }
     }
     
-    private func loadRunnerConfig() throws -> [String: RunnerConfig] {
-        var runnerConfigs: [String: RunnerConfig] = [:]
-        
+    private func loadRunnerConfig() throws -> RunnerConfig? {
         guard let capacitorConfigFileURL = Bundle.main.url(forResource: "capacitor.config.json", withExtension: nil) else {
             throw BackgroundRunnerPluginError.runnerError(reason: "capacitor.config.json file not found")
         }
@@ -163,17 +185,12 @@ public class BackgroundRunner {
         let capacitorConfigFileData = try Data(contentsOf: capacitorConfigFileURL)
         
         if let capConfig = JSTypes.coerceDictionaryToJSObject(try JSONSerialization.jsonObject(with: capacitorConfigFileData) as? [String: Any]) {
-            if let runners = capConfig[keyPath: "plugins.BackgroundRunner.runners"] as? JSArray {
-                for index in 0...runners.count - 1 {
-                    if let jsonConfig = runners[index] as? JSObject {
-                        let runnerConfig = try RunnerConfig(from: jsonConfig)
-                        runnerConfigs[runnerConfig.label] = runnerConfig
-                    }
-                }
+            if let jsonConfig = capConfig[keyPath: "plugins.BackgroundRunner"] as? JSObject {
+                return try RunnerConfig(from: jsonConfig)
             }
         }
         
-        return runnerConfigs
+        return nil
     }
 
     private func initContext(config: RunnerConfig) throws -> Context {
@@ -194,18 +211,5 @@ public class BackgroundRunner {
         _ = try context.execute(code: srcFile)
         
         return context
-    }
-    
-    private func scheduleBackgroundTask(config: RunnerConfig) {
-        let request = BGAppRefreshTaskRequest(identifier: config.label)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: Double(config.interval) * 60)
-        
-        do {
-            print("Scheduling \(config.label)")
-            
-            try BGTaskScheduler.shared.submit(request)
-        } catch {
-            print("Could not schedule app refresh: \(error)")
-        }
     }
 }

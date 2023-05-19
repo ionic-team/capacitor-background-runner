@@ -16,23 +16,19 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
     @objc func dispatchEvent(_ call: CAPPluginCall) {
         do {
-            guard let runnerLabel = call.getString("label") else {
-                throw BackgroundRunnerPluginError.invalidArgument(reason: "label is missing or invalid")
-            }
-            
             guard let runnerEvent = call.getString("event") else {
                 throw BackgroundRunnerPluginError.invalidArgument(reason: "event is missing or invalid")
             }
             
             let details = call.getObject("details", JSObject())
             
-            guard let config = impl.getConfig(name: runnerLabel) else {
-                throw BackgroundRunnerPluginError.runnerError(reason: "no runner config found for label")
+            guard let config = impl.getConfig() else {
+                throw BackgroundRunnerPluginError.runnerError(reason: "no runner config loaded")
             }
             
             DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
                 do {
-                    let result = try impl.execute(config: config, task: nil, inputArgs: details as [String: Any], eventOverride: runnerEvent)
+                    let result = try impl.execute(config: config, event: runnerEvent, inputArgs: details as [String: Any])
                     
                     if let result = result {
                         call.resolve(result)
@@ -57,8 +53,25 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         impl.scheduleBackgroundTasks()
     }
     
-    public static func registerBackgroundTasks() {
-        BackgroundRunner.shared.registerBackgroundTasks()
+    public static func registerBackgroundTask() {
+        BackgroundRunner.shared.registerBackgroundTask()
+    }
+    
+    public static func dispatchEvent(event: String, eventArgs: [AnyHashable: Any], completionHandler:((Result<Bool, Error>) -> Void)) {
+        var args: [String: Any] = [:]
+        
+        eventArgs.forEach { (key: AnyHashable, value: Any) in
+            if let strKey = key as? String {
+                args[strKey] = value
+            }
+        }
+        
+        do {
+            try BackgroundRunner.shared.dispatchEvent(event: event, inputArgs: args)
+            completionHandler(.success(true))
+        } catch {
+            completionHandler(.failure(error))
+        }
     }
     
     public static func handleApplicationDidFinishLaunching(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
