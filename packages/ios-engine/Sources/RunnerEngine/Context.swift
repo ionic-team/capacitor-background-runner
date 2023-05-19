@@ -88,10 +88,14 @@ public class Context {
         let clearTimeoutFunc: @convention(block) (Int) -> Void = { id in
             return self.clearTimeout(id: id)
         }
+        let fetchFunc: @convention(block) (JSValue, JSValue) -> JSValue = { resource, options in
+            return fetch(resource: resource, options: options)
+        }
         let newTextEncoderConst: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoderConst: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
 
         ctx.setObject(consoleObj, forKeyedSubscript: "console" as NSString)
+        ctx.setObject(fetchFunc, forKeyedSubscript: "fetch" as NSString)
         ctx.setObject(JSCrypto.self, forKeyedSubscript: "crypto" as NSString)
         ctx.setObject(addEventListenerFunc, forKeyedSubscript: "addEventListener" as NSString)
         ctx.setObject(setTimeoutFunc, forKeyedSubscript: "setTimeout" as NSString)

@@ -321,6 +321,73 @@ final class ContextTests: XCTestCase {
             XCTAssertTrue(String(describing: error).contains("this event throws an error"))
         }
     }
+    
+    func testFetchAPI() throws {
+        let runner = Runner()
+        let context = try runner.createContext(name: "io.backgroundrunner.testfetch")
+        
+        let expectation = XCTestExpectation(description: "Run callback on completed (or failed) fetch")
+        let optionsExpectation = XCTestExpectation(description: "Run callback on completed options fetch")
+        let failureExpectation = XCTestExpectation(description: "Run catch callback on failed fetch")
+        
+        let successCallback: @convention(block) () -> Void = {
+            expectation.fulfill()
+        }
+        
+        let failureCallback: @convention(block) () -> Void = {
+            failureExpectation.fulfill()
+        }
+        
+        let optionsSuccessCallback: @convention(block) () -> Void = {
+            optionsExpectation.fulfill()
+        }
+        
+        context.ctx.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
+        context.ctx.setObject(optionsSuccessCallback, forKeyedSubscript: "successCallback2" as NSString)
+        context.ctx.setObject(failureCallback, forKeyedSubscript: "failureCallback" as NSString)
+        
+        let basicFetchExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.json())
+                .then(json => { console.log(JSON.stringify(json)); successCallback(); })
+                .catch(err => { console.error(err);  successCallback(); });
+            """
+        
+        _ = try context.execute(code: basicFetchExample)
+        
+        wait(for: [expectation], timeout: 3)
+        
+        let fetchFailureExample = """
+            fetch('https://blablabla.fake/todos/1')
+                .catch(err => { console.error(err);  failureCallback(); });
+            """
+
+        _ = try context.execute(code: fetchFailureExample)
+
+        wait(for: [failureExpectation], timeout: 3)
+        
+        let fetchWithOptionsExample = """
+            fetch('https://jsonplaceholder.typicode.com/posts', {
+                method: 'POST',
+                body: JSON.stringify({
+                    title: 'foo',
+                    body: 'bar',
+                    userId: 1,
+                }),
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            })
+            .catch(err => { console.error(err); })
+            .then(response => response.json())
+            .then(json => { console.log(JSON.stringify(json)); successCallback2(); })
+            """
+        
+        _ = try context.execute(code: fetchWithOptionsExample)
+        
+        wait(for: [optionsExpectation], timeout: 3)
+        
+    }
 }
 
 // swiftlint:enable line_length
