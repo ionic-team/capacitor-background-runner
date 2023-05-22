@@ -14,8 +14,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         BackgroundRunnerPlugin.registerBackgroundTask()
         BackgroundRunnerPlugin.handleApplicationDidFinishLaunching(launchOptions: launchOptions)
         
+        application.registerForRemoteNotifications()
+        
         return true
         
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let token = deviceToken.map { String(format: "%02.2hhx", $0) }.joined()
+        print(token)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print(error)
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
@@ -54,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        print("Receied remote notification")
+        print("Received remote notification")
         BackgroundRunnerPlugin.dispatchEvent(event: "remoteNotification", eventArgs: userInfo) { result in
             switch result {
             case .success:

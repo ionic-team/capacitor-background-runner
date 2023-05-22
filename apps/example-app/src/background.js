@@ -118,10 +118,14 @@ addEventListener("getSavedLocations", (details) => {
 });
 
 addEventListener("remoteNotification", (details) => {
+  console.log("received silent push notification");
+
   CapacitorNotifications.schedule({
     title: "Enterprise Background Runner",
     body: "Received silent push notification"
   });
+
+  console.log(`details: ${JSON.stringify(details)}`);
 
   details.completed();
 });
