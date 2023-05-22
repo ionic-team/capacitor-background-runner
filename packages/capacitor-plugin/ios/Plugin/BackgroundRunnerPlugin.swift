@@ -12,6 +12,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     
     override public func load() {
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        initWatchConnectivity()
     }
 
     @objc func dispatchEvent(_ call: CAPPluginCall) {
