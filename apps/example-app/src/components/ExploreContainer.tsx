@@ -185,6 +185,34 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
+  const onCheckWatchReachable = async() => {
+    try {
+      const result = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "checkWatchReachability",
+        details: {},
+      }) as any;      
+
+      alert(JSON.stringify(result));
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onSendWearableMsg = async() => {
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "sendMessageToWearable",
+        details: {},
+      }) as any;      
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
   return (
     <div className="container">
       <strong>{name}</strong>
@@ -215,6 +243,9 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton onClick={onTestStopLiveLocation}>Stop Live Location</IonButton>
       <IonButton onClick={onMonitorLocation}>Record Location</IonButton>
       <IonButton onClick={onGetTrackedLocations}>Get Location Report</IonButton>
+      <IonButton onClick={onCheckWatchReachable}>Check Watch Status</IonButton>
+      <IonButton onClick={onSendWearableMsg}>Send Message to Watch</IonButton>
+      
     </div>
   );
 };

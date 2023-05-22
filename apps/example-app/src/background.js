@@ -129,3 +129,55 @@ addEventListener("remoteNotification", (details) => {
 
   details.completed();
 });
+
+addEventListener("checkWatchReachability", (details) => {
+  const reachable = CapacitorWearable.isReachable();
+
+  details.completed({
+    "reachable": reachable
+  });
+});
+
+addEventListener("sendMessageToWearable", (details) => {
+  console.log("sending message to watch...");
+
+  CapacitorWearable.send({
+    "msg": "Hello World",
+  });
+
+  details.completed();
+});
+
+
+addEventListener("WatchConnectivity_activationDidCompleteWith", (details) => {
+  console.log("watch paired completed");
+  details.completed();
+});
+
+addEventListener("WatchConnectivity_sessionDidBecomeInactive", (details) => {
+  console.log("watch session is inactive");
+  details.completed();
+});
+
+addEventListener("WatchConnectivity_sessionDidDeactivate", (details) => {
+  console.log("watch session is deactivated");
+  details.completed();
+});
+
+addEventListener("WatchConnectivity_didReceiveUserInfo", (details) => {
+  console.log(`watch sent user info: ${JSON.stringify(details)}`);
+  details.completed();
+});
+
+addEventListener("WatchConnectivity_didReceiveMessage", (details) => {
+  const msg = details.message.result;
+
+  CapacitorNotifications.schedule({
+    title: "Enterprise Background Runner",
+    body: msg,
+  });
+
+  console.log(`watch sent data: ${JSON.stringify(details)}`);
+  details.completed();
+});
+
