@@ -7,28 +7,28 @@ extension BackgroundRunnerPlugin: WCSessionDelegate {
         args["activationState"] = activationState.rawValue
         args["error"] = error
         
-        BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_activationDidCompleteWith", inputArgs: args)
+        try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_activationDidCompleteWith", inputArgs: args)
     }
     
     public func sessionDidBecomeInactive(_ session: WCSession) {
-        BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_sessionDidBecomeInactive")
+        try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_sessionDidBecomeInactive", inputArgs: nil)
     }
     
     public func sessionDidDeactivate(_ session: WCSession) {
-        BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_sessionDidDeactivate")
+        try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_sessionDidDeactivate", inputArgs: nil)
     }
     
     public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String : Any] = [:]) {
         var args: [String: Any] = [:]
         args["userInfo"] = userInfo
         
-        BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveUserInfo", inputArgs: args)
+        try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveUserInfo", inputArgs: args)
     }
     
     public func session(_ session: WCSession, didReceiveMessage message: [String : Any]) {
         var args: [String: Any] = [:]
         args["message"] = message
         
-        BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveMessage", inputArgs: args)
+        try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveMessage", inputArgs: args)
     }
 }
