@@ -34,6 +34,11 @@ public class BackgroundRunner {
             print("no runner to register")
             return
         }
+        
+        if config.event == nil {
+            print("cannot register background task without a event to call")
+            return
+        }
             
         BGTaskScheduler.shared.register(forTaskWithIdentifier: config.label, using: nil) { task in
             do {
@@ -41,7 +46,11 @@ public class BackgroundRunner {
                     print("task timed out")
                 }
                 
-                _ = try BackgroundRunner.shared.execute(config: config, event: config.event)
+                guard let event = config.event else {
+                    throw BackgroundRunnerPluginError.invalidRunnerConfig(reason: "runner event is missing or invalid")
+                }
+                
+                _ = try BackgroundRunner.shared.execute(config: config, event: event)
 
                 task.setTaskCompleted(success: true)
             } catch {
@@ -56,8 +65,13 @@ public class BackgroundRunner {
             return
         }
         
+        guard let interval = config.interval else {
+            print("cannot register background task without a configured interval")
+            return
+        }
+        
         let request = BGAppRefreshTaskRequest(identifier: config.label)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: Double(config.interval) * 60)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: Double(interval) * 60)
         
         do {
             print("Scheduling \(config.label)")
