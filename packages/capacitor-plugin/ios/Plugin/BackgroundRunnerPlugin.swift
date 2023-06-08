@@ -100,11 +100,10 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     }
     
     private func initWatchConnectivity() {
-        if !WCSession.isSupported() {
-            return
-        }
-        
-        WCSession.default.delegate = self
-        WCSession.default.activate()
+//        if !WCSession.isSupported() {
+//            return
+//        }
+//        WCSession.default.delegate = self
+//        WCSession.default.activate()
     }
 }

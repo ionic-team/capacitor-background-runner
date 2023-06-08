@@ -11,7 +11,7 @@ import BackgroundTasks
 import JavaScriptCore
 
 public class BackgroundRunner {
-    static let shared = BackgroundRunner()
+    public static let shared = BackgroundRunner()
     
     private var runner: Runner? = nil
     private var config: RunnerConfig? = nil
