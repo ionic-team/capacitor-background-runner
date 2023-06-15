@@ -213,19 +213,33 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
+  const onCheckPermissions = async() => {
+    try {
+      const permissions = await BackgroundRunner.checkPermissions();
+      alert(JSON.stringify(permissions));
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onRequestPermissions = async() => {
+    try {
+      const permissions = await BackgroundRunner.requestPermissions({
+        apis: ["geolocation", "notifications"]
+      });
+
+      alert(JSON.stringify(permissions));
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
   return (
     <div className="container">
-      <strong>{name}</strong>
-      <p>
-        Explore{" "}
-        <a
-          target="_blank"
-          rel="noopener noreferrer"
-          href="https://ionicframework.com/docs/components"
-        >
-          UI Components
-        </a>
-      </p>
+      <IonButton onClick={onCheckPermissions}>Check API Permissions</IonButton>
+      <IonButton onClick={onRequestPermissions}>Request API Permissions</IonButton>
       <IonButton onClick={onDispatchEvent}>Dispatch Event</IonButton>
       <IonButton onClick={onDispatchEventWithDetails}>
         Dispatch Event with Details

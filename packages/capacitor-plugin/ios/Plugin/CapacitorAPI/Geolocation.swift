@@ -14,57 +14,77 @@ enum CapacitorGeolocationErrors: Error, Equatable {
 }
 
 class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationManagerDelegate {
-    var isWatchingPosition: Bool {
-        return isWatchingLocation
-    }
-    
     private weak var context: Context?
     private var pendingCurrentLocationCalls: [Int: (Result<CLLocation?, Error>) -> Void] = [:]
     private var isWatchingLocation: Bool = false
     private let locationManager: CLLocationManager
     
-    init(context: Context) {
+    private var permissionContinuation: CheckedContinuation<Void, Error>?
+    
+    var isWatchingPosition: Bool {
+        return isWatchingLocation
+    }
+    
+    init(context: Context? = nil) {
         self.locationManager = CLLocationManager()
-        self.context = context
-        
         super.init()
+        
+        self.context = context
+        self.locationManager.delegate = self
         
         self.locationManager.allowsBackgroundLocationUpdates = true
         self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
         self.locationManager.pausesLocationUpdatesAutomatically = false
-        self.locationManager.delegate = self
-        
-        self.locationManager.startMonitoringSignificantLocationChanges()
-        self.locationManager.stopMonitoringSignificantLocationChanges()
     }
     
     static func getCurrentKnownLocation() -> CLLocation? {
         return CLLocationManager().location
     }
     
-    func checkPermission() throws {
-        if #available(iOS 14.0, *) {
-            switch self.locationManager.authorizationStatus {
-            case .authorizedWhenInUse:
-                fallthrough
-            case .authorizedAlways:
-                fallthrough
-            case .authorized:
-                return
-            case .notDetermined:
-                self.locationManager.requestAlwaysAuthorization()
-                break
-            default:
-                throw CapacitorGeolocationErrors.unauthorized
-            }
-        } else {
-            // Fallback on earlier versions
+    static func checkPermission() -> String {
+        if !CLLocationManager.locationServicesEnabled() {
+            return "denied"
         }
+        
+        var permission: String = "prompt"
+        
+        switch CLLocationManager.authorizationStatus() {
+        case .authorized, .authorizedWhenInUse, .authorizedAlways:
+            permission = "granted"
+        case .notDetermined:
+            permission = "prompt"
+        case .denied, .restricted:
+            permission = "denied"
+        default:
+            permission = "prompt"
+        }
+        
+        return permission
+    }
+    
+    func requestPermission() async throws {
+        if !CLLocationManager.locationServicesEnabled() {
+            return
+        }
+        
+        if CLLocationManager.authorizationStatus() != .notDetermined {
+            return
+        }
+        
+        return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<Void, Error>) in
+            permissionContinuation = continuation
+            
+            DispatchQueue.main.async {
+                self.locationManager.requestAlwaysAuthorization()
+            }
+        })
     }
     
     func startWatchingPosition(_ highAccuracy: Bool) {
         do {
-            try self.checkPermission()
+            if CapacitorGeolocation.checkPermission() != "granted" {
+                throw CapacitorGeolocationErrors.unauthorized
+            }
             
             DispatchQueue.main.sync {
                 if highAccuracy {
@@ -92,7 +112,9 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
     
     func getCurrentPosition() -> [String: Any]? {
         do {
-            try self.checkPermission()
+            if CapacitorGeolocation.checkPermission() != "granted" {
+                throw CapacitorGeolocationErrors.unauthorized
+            }
             
             guard let lastLocation = self.locationManager.location else {
                 return nil
@@ -131,7 +153,12 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        if let context = self.context, self.isWatchingLocation {
+        if let continuation = permissionContinuation {
+            continuation.resume(throwing: error)
+            permissionContinuation = nil
+        }
+        
+        if let context = context, self.isWatchingLocation {
             var details: [String: Any] = [:]
             details["error"] = error
             
@@ -141,6 +168,13 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
         pendingCurrentLocationCalls.forEach { (callId: Int, callback: (Result<CLLocation?, Error>) -> Void) in
             pendingCurrentLocationCalls.removeValue(forKey: callId)
             callback(.failure(error))
+        }
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if let continuation = permissionContinuation {
+            continuation.resume()
+            permissionContinuation = nil
         }
     }
     

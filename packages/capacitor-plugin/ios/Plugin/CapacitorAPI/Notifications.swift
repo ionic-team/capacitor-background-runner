@@ -37,6 +37,52 @@ struct NotificationOptions {
 }
 
 class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
+    static func checkPermission() -> String {
+        let group = DispatchGroup()
+        var permission: String = "prompt"
+        
+        group.enter()
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            switch settings.authorizationStatus {
+            case .authorized, .ephemeral, .provisional:
+                permission = "granted"
+            case .denied:
+                permission = "denied"
+            case .notDetermined:
+                permission = "prompt"
+            @unknown default:
+                permission = "prompt"
+            }
+            group.leave()
+        }
+        
+        group.wait()
+        
+        return permission
+    }
+    
+    static func requestPermission() throws {
+        var permissionsError: CapacitorNotificationsErrors?
+        
+        let group = DispatchGroup()
+        
+        group.enter()
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            if let error = error {
+                permissionsError = CapacitorNotificationsErrors.unknownError(reason:"\(error)")
+            }
+           
+            group.leave()
+        }
+        
+        group.wait()
+        
+        if let err = permissionsError {
+            throw err
+        }
+    }
+    
+    
     static func schedule(_ options: JSValue) {
         do {
             if options.isUndefined || options.isNull {

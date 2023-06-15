@@ -2,10 +2,6 @@ import Foundation
 import Capacitor
 import WatchConnectivity
 
-/**
- * Please read the Capacitor iOS Plugin Development Guide
- * here: https://capacitorjs.com/docs/plugins/ios
- */
 @objc(BackgroundRunnerPlugin)
 public class BackgroundRunnerPlugin: CAPPlugin {
     private let impl = BackgroundRunner()
@@ -13,6 +9,42 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     override public func load() {
         NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         initWatchConnectivity()
+    }
+    
+    @objc override public func checkPermissions(_ call: CAPPluginCall) {
+        // check geolocation permissions
+        let geolocationState = CapacitorGeolocation.checkPermission()
+        
+        // check notification permissions
+        let notificationState = CapacitorNotifications.checkPermission()
+        
+        call.resolve([
+            "geolocation": geolocationState,
+            "notifications": notificationState
+        ])
+    }
+    
+    @objc override public func requestPermissions(_ call: CAPPluginCall) {
+        Task {
+            let permissions = call.getArray("apis") as? [String] ?? []
+            
+            do {
+                if permissions.contains("notifications") {
+                    try CapacitorNotifications.requestPermission()
+                }
+                
+                if permissions.contains("geolocation") {
+                    let geolocation = CapacitorGeolocation()
+                    print("geolocation requested...")
+                    try await geolocation.requestPermission()
+                    print("geolocation requested...done")
+                }
+                
+                self.checkPermissions(call)
+            } catch {
+                call.reject("\(error)")
+            }
+        }
     }
 
     @objc func dispatchEvent(_ call: CAPPluginCall) {
@@ -100,10 +132,21 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     }
     
     private func initWatchConnectivity() {
-//        if !WCSession.isSupported() {
-//            return
-//        }
-//        WCSession.default.delegate = self
-//        WCSession.default.activate()
+        if !WCSession.isSupported() {
+            return
+        }
+        
+        guard let config = impl.getConfig() else {
+            return
+        }
+        
+        if !config.enableWatchConnectivity {
+            return
+        }
+        
+        WCSession.default.delegate = self
+        WCSession.default.activate()
+        
+        print("Watch Connectivity Enabled")
     }
 }

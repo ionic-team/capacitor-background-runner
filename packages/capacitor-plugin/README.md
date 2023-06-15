@@ -13,14 +13,43 @@ npx cap sync
 
 <docgen-index>
 
+* [`checkPermissions()`](#checkpermissions)
+* [`requestPermissions(...)`](#requestpermissions)
 * [`dispatchEvent(...)`](#dispatchevent)
 * [`registerBackgroundTask(...)`](#registerbackgroundtask)
 * [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+### checkPermissions()
+
+```typescript
+checkPermissions() => any
+```
+
+**Returns:** <code>any</code>
+
+--------------------
+
+
+### requestPermissions(...)
+
+```typescript
+requestPermissions(options: RequestPermissionOptions) => any
+```
+
+| Param         | Type                                                                          |
+| ------------- | ----------------------------------------------------------------------------- |
+| **`options`** | <code><a href="#requestpermissionoptions">RequestPermissionOptions</a></code> |
+
+**Returns:** <code>any</code>
+
+--------------------
+
 
 ### dispatchEvent(...)
 
@@ -55,6 +84,21 @@ registerBackgroundTask(options: RegisterBackgroundTaskOptions) => any
 ### Interfaces
 
 
+#### PermissionStatus
+
+| Prop                | Type                                                        |
+| ------------------- | ----------------------------------------------------------- |
+| **`geolocation`**   | <code><a href="#permissionstate">PermissionState</a></code> |
+| **`notifications`** | <code><a href="#permissionstate">PermissionState</a></code> |
+
+
+#### RequestPermissionOptions
+
+| Prop       | Type            |
+| ---------- | --------------- |
+| **`apis`** | <code>{}</code> |
+
+
 #### DispatchEventOptions
 
 | Prop          | Type                                 |
@@ -81,5 +125,18 @@ registerBackgroundTask(options: RegisterBackgroundTaskOptions) => any
 | **`repeat`**    | <code>boolean</code> |
 | **`interval`**  | <code>number</code>  |
 | **`autoStart`** | <code>boolean</code> |
+
+
+### Type Aliases
+
+
+#### PermissionState
+
+<code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
+
+
+#### API
+
+<code>"geolocation" | "notifications"</code>
 
 </docgen-api>

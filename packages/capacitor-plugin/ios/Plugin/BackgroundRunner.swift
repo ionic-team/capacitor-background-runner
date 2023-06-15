@@ -1,10 +1,3 @@
-//
-//  BackgroundRunner.swift
-//  IonicEnterpriseBackgroundRunner
-//
-//  Created by Joseph Pender on 5/18/23.
-//
-
 import Foundation
 import Capacitor
 import BackgroundTasks
@@ -15,6 +8,7 @@ public class BackgroundRunner {
     
     private var runner: Runner? = nil
     private var config: RunnerConfig? = nil
+    
     private var context: Context? = nil
     
     private var started: Bool {
