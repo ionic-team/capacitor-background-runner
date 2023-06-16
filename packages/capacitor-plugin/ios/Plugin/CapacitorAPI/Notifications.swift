@@ -8,14 +8,22 @@ enum CapacitorNotificationsErrors: Error, Equatable {
     case permissionDenied
 }
 
-struct NotificationOptions {
+struct NotificationOption {
+    let id: Int
     let title: String
     let body: String
+    let scheduleAt: Date
+    let sound: String?
+    let actionTypeId: String?
+    let extra: [String: Any]?
     let threadIdentifier: String?
+    let summaryArgument: String?
+    let groupSummary: String?
     
-    init(from jsValue: JSValue) throws {
-        guard let dict = jsValue.toDictionary() as? [String: Any?] else {
-            throw CapacitorNotificationsErrors.invalidOptions(reason: "options are null")
+    
+    init(from dict: [String: Any?]) throws {
+        guard let id = dict["id"] as? Int else {
+            throw CapacitorNotificationsErrors.invalidOptions(reason: "notification id is required")
         }
         
         guard let title = dict["title"] as? String else {
@@ -26,9 +34,20 @@ struct NotificationOptions {
             throw CapacitorNotificationsErrors.invalidOptions(reason: "notification body is required")
         }
         
+        guard let scheduleAt = dict["scheduleAt"] as? Date else {
+            throw CapacitorNotificationsErrors.invalidOptions(reason: "notification schedule date is required")
+        }
+        
+        self.id = id
         self.title = title
         self.body = body
+        self.scheduleAt = scheduleAt
         self.threadIdentifier = dict["threadIdentifier"] as? String
+        self.sound = dict["sound"] as? String
+        self.actionTypeId = dict["actionTypeId"] as? String
+        self.extra = dict["extra"] as? [String: Any]
+        self.summaryArgument = dict["summaryArgument"] as? String
+        self.groupSummary = dict["groupSummary"] as? String
     }
 }
 
@@ -82,57 +101,63 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
         }
     }
     
-    
     static func schedule(_ options: JSValue) {
         do {
+            if CapacitorNotifications.checkPermission() != "granted" {
+                throw CapacitorNotificationsErrors.permissionDenied
+            }
+            
             if options.isUndefined || options.isNull {
                 throw CapacitorNotificationsErrors.invalidOptions(reason: "options are null")
             }
             
-            let options = try NotificationOptions(from: options)
+            if !options.isArray {
+                throw CapacitorNotificationsErrors.invalidOptions(reason: "options must be an array")
+            }
             
-            var permissionsError: CapacitorNotificationsErrors?
-            var permissionGranted: Bool?
-            
-            
-            let group = DispatchGroup()
-            
-            group.enter()
-            
-            // TODO: Handle permissions
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-                if let error = error {
-                    permissionsError = CapacitorNotificationsErrors.unknownError(reason:"\(error)")
-                    group.leave()
+            if let notificationOptions = options.toArray() as? [[String: Any?]] {
+                for option in notificationOptions {
+                    let notificationOption = try NotificationOption(from: option)
                     
-                    return
+                    let content = UNMutableNotificationContent()
+                    content.title = NSString.localizedUserNotificationString(forKey: notificationOption.title, arguments: nil)
+                    content.body = NSString.localizedUserNotificationString(forKey: notificationOption.body, arguments: nil)
+                    content.userInfo = [:]
+                    
+                    if let extra = notificationOption.extra {
+                        content.userInfo["cap_extra"] = extra
+                    }
+                    
+                    if let actionTypeId = notificationOption.actionTypeId {
+                        content.categoryIdentifier = actionTypeId
+                    }
+                    
+                    if let threadIdentifier = notificationOption.threadIdentifier {
+                        content.threadIdentifier = threadIdentifier
+                    }
+                    
+                    if let summaryArgument = notificationOption.summaryArgument {
+                        content.summaryArgument = summaryArgument
+                    }
+
+                    if let sound = notificationOption.sound {
+                        content.sound = UNNotificationSound(named: UNNotificationSoundName(sound))
+                    }
+                    
+                    var notificationDate = notificationOption.scheduleAt
+                    
+                    if notificationDate < Date() {
+                        notificationDate = Date()
+                    }
+                    
+                    let dateInfo = Calendar.current.dateComponents(in: TimeZone.current, from: notificationDate)
+                    let dateInterval = DateInterval(start: Date(), end: dateInfo.date!)
+                    
+                    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: dateInterval.duration, repeats: false)
+                    let request = UNNotificationRequest(identifier:"\(notificationOption.id)", content: content, trigger: trigger)
+                    
+                    UNUserNotificationCenter.current().add(request)
                 }
-                
-                permissionGranted = granted
-                group.leave()
-            }
-            
-            group.wait()
-            
-            if let err = permissionsError {
-                throw err
-            }
-            
-            if let granted = permissionGranted, granted {
-                let notificationContent = UNMutableNotificationContent()
-                notificationContent.title = options.title
-                notificationContent.body = options.body
-                
-                if let id =  options.threadIdentifier {
-                    notificationContent.threadIdentifier = id
-                }
-                
-                let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 3, repeats: false)
-                let request = UNNotificationRequest(identifier: UUID().uuidString, content: notificationContent, trigger: trigger)
-                
-                UNUserNotificationCenter.current().add(request)
-            } else {
-                throw CapacitorNotificationsErrors.permissionDenied
             }
         } catch {
             let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())

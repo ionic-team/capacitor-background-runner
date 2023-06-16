@@ -31,9 +31,9 @@ addEventListener("testGetKVStore", (details) => {
   CapacitorKV.set("testValue", null);
 
   details.completed({
-    value
+    value,
   });
-})
+});
 
 addEventListener("testLastKnownLocation", async (details) => {
   const location = CapacitorGeolocation.getCurrentPosition();
@@ -42,7 +42,7 @@ addEventListener("testLastKnownLocation", async (details) => {
 
   CapacitorNotifications.schedule({
     title: "Enterprise Background Runner",
-    body: `Your current location: ${location.lat}, ${location.lng}`
+    body: `Your current location: ${location.lat}, ${location.lng}`,
   });
 
   CapacitorKV.set("testValue", JSON.stringify(location));
@@ -77,15 +77,22 @@ addEventListener("currentLocation", (details) => {
 });
 
 addEventListener("scheduleNotification", (details) => {
-  CapacitorNotifications.schedule({
-    title: "Enterprise Background Runner",
-    body: "A test message from the Enterprise Background Runner"
-  });
+  let scheduleDate = new Date();
+  scheduleDate.setSeconds(scheduleDate.getSeconds() + 15);
+
+  CapacitorNotifications.schedule([
+    {
+      id: 100,
+      title: "Enterprise Background Runner",
+      body: "A test message from the Enterprise Background Runner",
+      scheduleAt: scheduleDate,
+    },
+  ]);
   details.completed();
 });
 
 addEventListener("monitorLocation", async (details) => {
-  console.log("recording location...")
+  console.log("recording location...");
   const location = await CapacitorGeolocation.getCurrentPosition();
   const timestamp = Math.floor(Date.now() / 1000);
 
@@ -105,7 +112,7 @@ addEventListener("monitorLocation", async (details) => {
 
   CapacitorNotifications.schedule({
     title: "Enterprise Background Runner",
-    body: "Recording your current location"
+    body: "Recording your current location",
   });
 
   details.completed();
@@ -122,7 +129,7 @@ addEventListener("remoteNotification", (details) => {
 
   CapacitorNotifications.schedule({
     title: "Enterprise Background Runner",
-    body: "Received silent push notification"
+    body: "Received silent push notification",
   });
 
   console.log(`details: ${JSON.stringify(details)}`);
@@ -134,7 +141,7 @@ addEventListener("checkWatchReachability", (details) => {
   const reachable = CapacitorWearable.isReachable();
 
   details.completed({
-    "reachable": reachable
+    reachable: reachable,
   });
 });
 
@@ -142,12 +149,11 @@ addEventListener("sendMessageToWearable", (details) => {
   console.log("sending message to watch...");
 
   CapacitorWearable.send({
-    "msg": "Hello World",
+    msg: "Hello World",
   });
 
   details.completed();
 });
-
 
 addEventListener("WatchConnectivity_activationDidCompleteWith", (details) => {
   console.log("watch paired completed");
@@ -180,4 +186,3 @@ addEventListener("WatchConnectivity_didReceiveMessage", (details) => {
   console.log(`watch sent data: ${JSON.stringify(details)}`);
   details.completed();
 });
-
