@@ -236,6 +236,36 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
+  const onTestBatteryStatus = async() => {
+    try {
+      const result = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testBatteryStatus",
+        details: {},
+      }) as any;      
+
+      alert(JSON.stringify(result));
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
+  const onTestNetworkStatus = async() => {
+    try {
+      const result = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testNetworkStatus",
+        details: {},
+      }) as any;      
+
+      alert(JSON.stringify(result));
+    } catch (err) {
+      alert(err);
+      console.error(err);
+    }
+  }
+
   return (
     <div className="container">
       <IonButton onClick={onCheckPermissions}>Check API Permissions</IonButton>
@@ -259,6 +289,8 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton onClick={onGetTrackedLocations}>Get Location Report</IonButton>
       <IonButton onClick={onCheckWatchReachable}>Check Watch Status</IonButton>
       <IonButton onClick={onSendWearableMsg}>Send Message to Watch</IonButton>
+      <IonButton onClick={onTestBatteryStatus}>Get Battery Status</IonButton>
+      <IonButton onClick={onTestNetworkStatus}>Get Network Status</IonButton>
       
     </div>
   );

@@ -76,6 +76,18 @@ addEventListener("currentLocation", (details) => {
   details.completed();
 });
 
+addEventListener("testBatteryStatus", (details) => {
+  const info = CapacitorDevice.getBatteryStatus();
+  console.log(JSON.stringify(info));
+  details.completed(info);
+});
+
+addEventListener("testNetworkStatus", (details) => {
+  const info = CapacitorDevice.getNetworkStatus();
+  console.log(JSON.stringify(info));
+  details.completed(info);
+});
+
 addEventListener("scheduleNotification", (details) => {
   let scheduleDate = new Date();
   scheduleDate.setSeconds(scheduleDate.getSeconds() + 15);
