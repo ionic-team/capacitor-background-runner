@@ -50,16 +50,17 @@ import JavaScriptCore
         return JSValue(newPromiseIn: JSContext.current()) { resolve, reject in
             do {
                 guard let data = self.data else {
-                    resolve?.call(withArguments: [JSValue(nullIn: JSContext.current())])
+                    resolve?.call(withArguments: [JSValue(nullIn: JSContext.current()) as Any])
                     return
                 }
 
                 let anyObj = try JSONSerialization.jsonObject(with: data)
                 let jsonObj = JSValue(object: anyObj, in: JSContext.current())
-                resolve?.call(withArguments: [jsonObj])
+                resolve?.call(withArguments: [jsonObj as Any])
+    
             } catch {
-                let err = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
-                reject?.call(withArguments: [err])
+                let err = JSError(message: error.localizedDescription)
+                reject?.call(withArguments: [err as Any])
             }
         }
     }

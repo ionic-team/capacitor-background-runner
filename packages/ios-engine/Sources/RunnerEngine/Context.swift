@@ -68,6 +68,7 @@ public class Context {
                 } else {
                     jsFunc.call(withArguments: [])
                 }
+                
                 if let exception = thrownException {
                     throw EngineError.jsException(details: String(describing: exception))
                 }

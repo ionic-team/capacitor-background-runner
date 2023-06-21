@@ -1,8 +1,6 @@
 import JavaScriptCore
 
 func fetch(resource: JSValue, options: JSValue) -> JSValue {
-    print("fetch called")
-
     let session = URLSession.shared
 
     var url: URL?
@@ -27,24 +25,24 @@ func fetch(resource: JSValue, options: JSValue) -> JSValue {
     }
 
     return JSValue(newPromiseIn: JSContext.current()) { resolve, reject in
-
         let task = session.dataTask(with: request) { data, response, err in
             if let err = err {
                 print("fetch failed: \(err.localizedDescription)")
-                let jsErr = JSValue(newErrorFromMessage: "failed", in: JSContext.current())
-                reject?.call(withArguments: ["\(err.localizedDescription)"])
+                let jsErr = JSError(message: err.localizedDescription)
+                reject?.call(withArguments: [jsErr as Any])
                 return
             }
 
-            if let httpResponse = response as? HTTPURLResponse {
-                print("fetch succeeded")
-                let res = JSResponse(from: httpResponse, responseData: data)
-                resolve?.call(withArguments: [res])
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("HTTPURLResponse was nil")
+                let jsErr = JSError(message: "native response was nil")
+                reject?.call(withArguments: [jsErr as Any])
                 return
             }
-
-            print("????")
-            resolve?.call(withArguments: [])
+            
+            let res = JSResponse(from: httpResponse, responseData: data)
+            resolve?.call(withArguments: [res])
+            return
         }
 
         task.resume()
