@@ -18,8 +18,8 @@ import JavaScriptCore
     dynamic var message: String
     
     public override init() {
-        self.message = ""
-        self.cause = nil
+        message = ""
+        cause = nil
     }
     
     public init(message: String) {

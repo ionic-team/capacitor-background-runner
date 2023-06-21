@@ -8,27 +8,27 @@ public class Context {
     private var timers = [Int: Timer]()
     private var eventListeners = [String: [JSValue]]()
 
-    public init(vm: JSVirtualMachine, name: String) throws {
+    public init(vm: JSVirtualMachine, ctxName: String) throws {
         guard let newCtx = JSContext(virtualMachine: vm) else {
             throw EngineError.jsCoreError
         }
 
-        newCtx.name = name
+        newCtx.name = ctxName
 
-        self.name = name
-        self.ctx = newCtx
+        name = ctxName
+        ctx = newCtx
 
-        try self.setupWebAPI()
+        try setupWebAPI()
     }
 
     public func execute(code: String) throws -> JSValue? {
         var thrownException: JSValue?
 
-        self.ctx.exceptionHandler = { _, exception in
+        ctx.exceptionHandler = { _, exception in
             thrownException = exception
         }
 
-        let value = self.ctx.evaluateScript(code)
+        let value = ctx.evaluateScript(code)
 
         if let exception = thrownException {
             throw EngineError.jsException(details: String(describing: exception))
@@ -38,7 +38,7 @@ public class Context {
     }
 
     public func dispatchEvent(event: String, details: [String: Any]? = nil) throws {
-        if let callbacks = self.eventListeners[event] {
+        if let callbacks = eventListeners[event] {
             try callbacks.forEach { jsFunc in
                 var thrownException: JSValue?
 
@@ -76,7 +76,7 @@ public class Context {
         }
     }
     private func setupWebAPI() throws {
-        let consoleObj = JSConsole(name: self.name)
+        let consoleObj = JSConsole(name: name)
         let addEventListenerFunc: @convention(block)(String, JSValue) -> Void = { type, listener in
             return self.addEventListener(eventName: type, callback: listener)
         }

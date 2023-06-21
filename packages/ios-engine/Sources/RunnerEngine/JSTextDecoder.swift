@@ -7,6 +7,7 @@ import JavaScriptCore
 
 class JSTextDecoder: NSObject, JSTextDecoderExports {
     dynamic var encoding: String = "utf-8"
+    
     required init(encoding: String?, options: [AnyHashable: Any]?) {
         if let enc = encoding {
             self.encoding = enc
@@ -14,7 +15,7 @@ class JSTextDecoder: NSObject, JSTextDecoderExports {
     }
 
     func decode(_ buffer: JSValue) -> String? {
-        let useEncoding = setEncoding(enc: self.encoding)
+        let useEncoding = setEncoding(enc: encoding)
 
         if let arr = buffer.toArray() as? [UInt8] {
             return String(bytes: arr, encoding: useEncoding)
