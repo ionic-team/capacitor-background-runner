@@ -7,7 +7,7 @@ import JavaScriptCore
 
 class JSTextDecoder: NSObject, JSTextDecoderExports {
     dynamic var encoding: String = "utf-8"
-    
+
     required init(encoding: String?, options: [AnyHashable: Any]?) {
         if let enc = encoding {
             self.encoding = enc

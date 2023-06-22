@@ -57,7 +57,7 @@ import JavaScriptCore
                 let anyObj = try JSONSerialization.jsonObject(with: data)
                 let jsonObj = JSValue(object: anyObj, in: JSContext.current())
                 resolve?.call(withArguments: [jsonObj as Any])
-    
+
             } catch {
                 let err = JSError(message: error.localizedDescription)
                 reject?.call(withArguments: [err as Any])

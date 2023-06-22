@@ -9,26 +9,25 @@ import JavaScriptCore
 @objc protocol JSErrorExports: JSExport {
     var cause: Any? { get set }
     var message: String { get set }
-    
+
     func toString() -> String
 }
 
 @objc public class JSError: NSObject, JSErrorExports {
     dynamic var cause: Any?
     dynamic var message: String
-    
-    public override init() {
+
+    override public init() {
         message = ""
         cause = nil
     }
-    
+
     public init(message: String) {
         self.message = message
         self.cause = nil
     }
-    
+
     func toString() -> String {
         return message
     }
 }
-

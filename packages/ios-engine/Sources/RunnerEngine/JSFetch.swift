@@ -39,7 +39,7 @@ func fetch(resource: JSValue, options: JSValue) -> JSValue {
                 reject?.call(withArguments: [jsErr as Any])
                 return
             }
-            
+
             let res = JSResponse(from: httpResponse, responseData: data)
             resolve?.call(withArguments: [res])
             return
