@@ -2,11 +2,8 @@ package io.ionic.backgroundrunner
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.json.JSONObject
-
 import org.junit.Test
 import org.junit.runner.RunWith
-
-import org.junit.Assert.*
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -93,7 +90,6 @@ class ExampleInstrumentedTest {
 
     @Test
     fun testAPI_EventListeners() {
-
         class EventCallback : JSFunction(args = null) {
             override fun run() {
                 super.run()
@@ -219,7 +215,6 @@ class ExampleInstrumentedTest {
 
     @Test
     fun testErrorHandling() {
-
         val runner = Runner()
         val context = runner.createContext(".io.backgroundrunner.ionic")
 
@@ -239,4 +234,3 @@ class ExampleInstrumentedTest {
         runner.destroy()
     }
 }
-

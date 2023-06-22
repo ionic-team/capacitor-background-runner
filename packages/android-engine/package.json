@@ -4,17 +4,17 @@
   "dependencies": {
     "clang-format": "^1.8.0",
     "prettier": "~2.3.0",
-    "prettier-plugin-java": "~1.0.2",
-    "prettier-plugin-kotlin": "^2.1.0"
+    "@naturalcycles/ktlint": "1.7.0",
+    "prettier-plugin-java": "~1.0.2"
   },
   "devDependencies": {
     "@ionic/prettier-config": "^1.0.1"
   },
   "prettier": "@ionic/prettier-config",
   "scripts": {
-    "lint": "pnpm prettier --check && pnpm clang-format --dry-run",
-    "fmt": "pnpm prettier --write && pnpm clang-format -i",
-    "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java,kt}\"",
+    "lint": "pnpm prettier --check && pnpm clang-format --dry-run && ktlint 'src/**/*.kt'",
+    "fmt": "pnpm prettier --write && pnpm clang-format -i && ktlint --format 'src/**/*.kt'",
+    "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java}\"",
     "clang-format": "clang-format --glob=src/main/cpp/**/*.{cpp,h}"
   }
 }

@@ -1,5 +1,4 @@
 package io.ionic.backgroundrunner
-import kotlin.concurrent.thread
 
 class Runner {
     private val ptr: Long?
@@ -9,7 +8,7 @@ class Runner {
         ptr = Runner.initRunner()
     }
 
-    companion object  {
+    companion object {
         init {
             System.loadLibrary("android_engine")
         }
@@ -48,4 +47,3 @@ class Runner {
         }
     }
 }
-

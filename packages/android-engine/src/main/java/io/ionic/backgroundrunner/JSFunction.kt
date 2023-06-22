@@ -10,4 +10,3 @@ open class JSFunction(args: JSONObject?) : Runnable {
 
     override fun run() {}
 }
-
