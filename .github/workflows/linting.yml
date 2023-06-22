@@ -1,0 +1,29 @@
+name: Linting
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  lint:
+    name: Lint Code
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+      - name: Setup
+        uses: actions/checkout@v2
+      - name: Setup Node & Npm Cache
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.16.0
+          cache: 'npm'
+      - name: Npm Install
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" >> ~/.npmrc
+          npm ci --ignore-scripts
+      - name: Run Linters
+        run: npm run lint
