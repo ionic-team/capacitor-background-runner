@@ -24,6 +24,8 @@
 		027BCF202A16ABA8009884A0 /* BackgroundRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */; };
 		027BCF232A17DE2C009884A0 /* JSResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF212A17DE2C009884A0 /* JSResponse.swift */; };
 		027BCF242A17DE2C009884A0 /* JSFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF222A17DE2C009884A0 /* JSFetch.swift */; };
+		0296D4B02A45FCE500FCD31A /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0296D4AE2A45FCE500FCD31A /* Device.swift */; };
+		0296D4B12A45FCE500FCD31A /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0296D4AF2A45FCE500FCD31A /* Reachability.swift */; };
 		02D65FBF2A141B7D007A46A2 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D65FBE2A141B7D007A46A2 /* Notifications.swift */; };
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
@@ -63,6 +65,8 @@
 		027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRunner.swift; sourceTree = "<group>"; };
 		027BCF212A17DE2C009884A0 /* JSResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSResponse.swift; sourceTree = "<group>"; };
 		027BCF222A17DE2C009884A0 /* JSFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSFetch.swift; sourceTree = "<group>"; };
+		0296D4AE2A45FCE500FCD31A /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		0296D4AF2A45FCE500FCD31A /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		02D65FBE2A141B7D007A46A2 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -122,6 +126,8 @@
 		023723792A004039009B91C9 /* CapacitorAPI */ = {
 			isa = PBXGroup;
 			children = (
+				0296D4AE2A45FCE500FCD31A /* Device.swift */,
+				0296D4AF2A45FCE500FCD31A /* Reachability.swift */,
 				0237237A2A004051009B91C9 /* KV.swift */,
 				0237237C2A0041B2009B91C9 /* Geolocation.swift */,
 				0237237E2A00431F009B91C9 /* Wearable.swift */,
@@ -385,11 +391,13 @@
 				022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* BackgroundRunnerPlugin.m in Sources */,
 				022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */,
+				0296D4B02A45FCE500FCD31A /* Device.swift in Sources */,
 				023723752A003F5C009B91C9 /* Errors.swift in Sources */,
 				0237234D29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift in Sources */,
 				0237237F2A00431F009B91C9 /* Wearable.swift in Sources */,
 				02D65FBF2A141B7D007A46A2 /* Notifications.swift in Sources */,
 				023723762A003F5C009B91C9 /* Runner.swift in Sources */,
+				0296D4B12A45FCE500FCD31A /* Reachability.swift in Sources */,
 				023723712A003F5C009B91C9 /* JSTextEncoder.swift in Sources */,
 				023723732A003F5C009B91C9 /* JSCrypto.swift in Sources */,
 				027BCF242A17DE2C009884A0 /* JSFetch.swift in Sources */,

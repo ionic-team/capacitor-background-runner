@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import JavaScriptCore
 
 @objc protocol CapacitorDeviceExports: JSExport {
@@ -50,8 +51,7 @@ class CapacitorDevice: NSObject, CapacitorDeviceExports {
 
             return networkStatusDict
         } catch {
-            let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
-            JSContext.current().exception = ex
+            JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
             return nil
         }
     }

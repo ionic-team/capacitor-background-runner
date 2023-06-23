@@ -8,8 +8,6 @@ import WatchConnectivity
     func isReachable() -> JSValue
 }
 
-// TODO: JEDI Prototype Experiment, replace with better fleshed out,
-// cross-platform supported API
 class CapacitorWearable: NSObject, CapacitorWearableExports {
     func send(_ dataDict: JSValue) -> JSValue {
         var dict: [String: Any] = [:]

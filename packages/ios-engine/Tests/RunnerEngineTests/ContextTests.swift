@@ -1,4 +1,4 @@
-// swiftlint:disable line_length
+// swiftlint:disable all
 
 import XCTest
 import JavaScriptCore
@@ -390,4 +390,4 @@ final class ContextTests: XCTestCase {
     }
 }
 
-// swiftlint:enable line_length
+// swiftlint:enable all

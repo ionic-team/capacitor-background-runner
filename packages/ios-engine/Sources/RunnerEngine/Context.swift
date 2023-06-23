@@ -8,6 +8,7 @@ public class Context {
     private var timers = [Int: Timer]()
     private var eventListeners = [String: [JSValue]]()
 
+    // swiftlint:disable:next identifier_name
     public init(vm: JSVirtualMachine, ctxName: String) throws {
         guard let newCtx = JSContext(virtualMachine: vm) else {
             throw EngineError.jsCoreError

@@ -1,6 +1,7 @@
 import JavaScriptCore
 
 @objc protocol JSResponseExports: JSExport {
+    // swiftlint:disable:next identifier_name
     var ok: Bool { get }
     var status: Int { get }
     var url: String { get }
@@ -12,6 +13,7 @@ import JavaScriptCore
 @objc public class JSResponse: NSObject, JSResponseExports {
     dynamic var url: String
     dynamic var status: Int
+    // swiftlint:disable:next identifier_name
     dynamic var ok: Bool {
         return status > 200 && status <= 299
     }

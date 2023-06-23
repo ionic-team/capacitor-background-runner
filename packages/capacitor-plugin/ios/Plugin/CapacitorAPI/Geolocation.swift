@@ -96,8 +96,7 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
 
             self.isWatchingLocation = true
         } catch {
-            let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
-            JSContext.current().exception = ex
+            JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
         }
     }
 
@@ -122,8 +121,7 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
 
             return buildLocationDict(location: lastLocation)
         } catch {
-            let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
-            JSContext.current().exception = ex
+            JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
 
             return nil
         }

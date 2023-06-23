@@ -30,50 +30,31 @@ class JSTextDecoder: NSObject, JSTextDecoderExports {
     }
 
     func setEncoding(enc: String) -> String.Encoding {
-        if enc == "windows-1250" {
+        switch enc {
+        case "windows-1250":
             return .windowsCP1250
-        }
-
-        if enc == "windows-1251" {
+        case "windows-1251":
             return .windowsCP1251
-        }
-
-        if enc == "windows-1252" {
+        case "windows-1252":
             return .windowsCP1252
-        }
-
-        if enc == "windows-1253" {
+        case "windows-1253":
             return .windowsCP1253
-        }
-
-        if enc == "windows-1254" {
+        case "windows-1254":
             return .windowsCP1254
-        }
-
-        if enc == "iso-2022-jp" {
+        case "iso-2022-jp":
             return .iso2022JP
-        }
-
-        if enc == "euc-jp" {
+        case "euc-jp":
             return .japaneseEUC
-        }
-
-        if enc == "macintosh" {
+        case "macintosh":
             return .macOSRoman
-        }
-
-        if enc == "iso-8859-2" {
+        case "iso-8859-2":
             return .isoLatin2
-        }
-
-        if enc == "utf-16be" {
+        case "utf-16be":
             return .utf16BigEndian
-        }
-
-        if enc == "utf-16le" {
+        case "utf-16le":
             return .utf16LittleEndian
+        default:
+            return .utf8
         }
-
-        return .utf8
     }
 }

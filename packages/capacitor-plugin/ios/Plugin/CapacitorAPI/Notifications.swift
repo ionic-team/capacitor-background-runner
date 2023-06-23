@@ -159,8 +159,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
                 }
             }
         } catch {
-            let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
-            JSContext.current().exception = ex
+            JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
         }
     }
 }
