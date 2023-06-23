@@ -13,26 +13,26 @@ class JSConsole: NSObject, JSConsoleExports {
     let contextName: String
 
     init(name: String) {
-        self.contextName = name
+        contextName = name
     }
 
     func log(_ msg: String) {
-        print("[\(self.contextName)] [LOG] \(msg)")
+        print("[\(contextName)] [LOG] \(msg)")
     }
 
     func info(_ msg: String) {
-        print("[\(self.contextName)] [INFO] \(msg)")
+        print("[\(contextName)] [INFO] \(msg)")
     }
 
     func warn(_ msg: String) {
-        print("[\(self.contextName)] [WARN] \(msg)")
+        print("[\(contextName)] [WARN] \(msg)")
     }
 
     func error(_ msg: String) {
-        print("[\(self.contextName)] [ERR] \(msg)")
+        print("[\(contextName)] [ERR] \(msg)")
     }
 
     func debug(_ msg: String) {
-        debugPrint("[\(self.contextName)] [DEBUG] \(msg)")
+        debugPrint("[\(contextName)] [DEBUG] \(msg)")
     }
 }

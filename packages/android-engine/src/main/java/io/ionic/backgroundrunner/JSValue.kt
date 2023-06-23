@@ -65,4 +65,3 @@ class JSValue(jsonString: String) {
         return false
     }
 }
-

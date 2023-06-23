@@ -1,0 +1,20 @@
+name: Unit Tests
+
+on:
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  unittest-ios:
+    runs-on: macos-13
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v2
+      - name: List available Xcode versions
+        run: ls /Applications | grep Xcode
+      - name: Select Xcode
+        run: sudo xcode-select -switch /Applications/Xcode_14.3.1.app && /usr/bin/xcodebuild -version
+      - name: Run ios-engine unit tests
+        run: cd ./packages/ios-engine && swift package clean && swift test
+  

@@ -1,13 +1,24 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { BackgroundRunnerPlugin, DispatchEventOptions, RegisterBackgroundTaskOptions } from './definitions';
+import type { BackgroundRunnerPlugin, PermissionStatus } from './definitions';
 
-export class BackgroundRunnerWeb extends WebPlugin implements BackgroundRunnerPlugin {
-  registerBackgroundTask(_options: RegisterBackgroundTaskOptions): Promise<void> {
-    throw new Error('Method not implemented.');
+export class BackgroundRunnerWeb
+  extends WebPlugin
+  implements BackgroundRunnerPlugin
+{
+  checkPermissions(): Promise<PermissionStatus> {
+    throw new Error('not available on web');
   }
-  
-  dispatchEvent(_options: DispatchEventOptions): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  requestPermissions(): Promise<PermissionStatus> {
+    throw new Error('not available on web');
+  }
+
+  registerBackgroundTask(): Promise<void> {
+    throw new Error('not available on web');
+  }
+
+  dispatchEvent(): Promise<void> {
+    throw new Error('not available on web');
   }
 }

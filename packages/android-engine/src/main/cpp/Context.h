@@ -10,6 +10,7 @@
 #include "api_crypto.h"
 #include "api_timeout.h"
 #include "api_text.h"
+#include "api_kv.h"
 
 #ifndef ANDROID_ENGINE_CONTEXT_H
 #define ANDROID_ENGINE_CONTEXT_H
@@ -59,6 +60,7 @@ private:
     void init_api_crypto() const;
     void init_api_timeout() const;
     void init_api_text() const;
+    void init_api_kv() const;
 };
 
 #endif //ANDROID_ENGINE_CONTEXT_H

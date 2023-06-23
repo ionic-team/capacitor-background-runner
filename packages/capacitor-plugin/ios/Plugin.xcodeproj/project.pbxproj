@@ -9,9 +9,26 @@
 /* Begin PBXBuildFile section */
 		022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022BF06A29F18D7900485B84 /* RunnerConfig.swift */; };
 		022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */; };
+		0237234D29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237234C29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift */; };
+		023723632A002600009B91C9 /* Context+CapacitorAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023723622A002600009B91C9 /* Context+CapacitorAPI.swift */; };
+		023723712A003F5C009B91C9 /* JSTextEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237236A2A003F5C009B91C9 /* JSTextEncoder.swift */; };
+		023723722A003F5C009B91C9 /* JSConsole.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237236B2A003F5C009B91C9 /* JSConsole.swift */; };
+		023723732A003F5C009B91C9 /* JSCrypto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237236C2A003F5C009B91C9 /* JSCrypto.swift */; };
+		023723742A003F5C009B91C9 /* JSTextDecoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237236D2A003F5C009B91C9 /* JSTextDecoder.swift */; };
+		023723752A003F5C009B91C9 /* Errors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237236E2A003F5C009B91C9 /* Errors.swift */; };
+		023723762A003F5C009B91C9 /* Runner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237236F2A003F5C009B91C9 /* Runner.swift */; };
+		023723772A003F5C009B91C9 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023723702A003F5C009B91C9 /* Context.swift */; };
+		0237237B2A004051009B91C9 /* KV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237A2A004051009B91C9 /* KV.swift */; };
+		0237237D2A0041B2009B91C9 /* Geolocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237C2A0041B2009B91C9 /* Geolocation.swift */; };
+		0237237F2A00431F009B91C9 /* Wearable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237E2A00431F009B91C9 /* Wearable.swift */; };
+		027BCF202A16ABA8009884A0 /* BackgroundRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */; };
+		027BCF232A17DE2C009884A0 /* JSResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF212A17DE2C009884A0 /* JSResponse.swift */; };
+		027BCF242A17DE2C009884A0 /* JSFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF222A17DE2C009884A0 /* JSFetch.swift */; };
+		0296D4B02A45FCE500FCD31A /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0296D4AE2A45FCE500FCD31A /* Device.swift */; };
+		0296D4B12A45FCE500FCD31A /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0296D4AF2A45FCE500FCD31A /* Reachability.swift */; };
+		02D65FBF2A141B7D007A46A2 /* Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02D65FBE2A141B7D007A46A2 /* Notifications.swift */; };
 		03FC29A292ACC40490383A1F /* Pods_Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */; };
 		20C0B05DCFC8E3958A738AF2 /* Pods_PluginTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F6753A823D3815DB436415E3 /* Pods_PluginTests.framework */; };
-		2F98D68224C9AAE500613A4C /* BackgroundRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */; };
 		50ADFF92201F53D600D50D53 /* Plugin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50ADFF88201F53D600D50D53 /* Plugin.framework */; };
 		50ADFF97201F53D600D50D53 /* BackgroundRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ADFF96201F53D600D50D53 /* BackgroundRunnerTests.swift */; };
 		50ADFF99201F53D600D50D53 /* BackgroundRunnerPlugin.h in Headers */ = {isa = PBXBuildFile; fileRef = 50ADFF8B201F53D600D50D53 /* BackgroundRunnerPlugin.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -33,7 +50,24 @@
 /* Begin PBXFileReference section */
 		022BF06A29F18D7900485B84 /* RunnerConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunnerConfig.swift; sourceTree = "<group>"; };
 		022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRunnerErrors.swift; sourceTree = "<group>"; };
-		2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundRunner.swift; sourceTree = "<group>"; };
+		0237234C29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivtySessionDelegate.swift; sourceTree = "<group>"; };
+		023723622A002600009B91C9 /* Context+CapacitorAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Context+CapacitorAPI.swift"; sourceTree = "<group>"; };
+		0237236A2A003F5C009B91C9 /* JSTextEncoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSTextEncoder.swift; sourceTree = "<group>"; };
+		0237236B2A003F5C009B91C9 /* JSConsole.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSConsole.swift; sourceTree = "<group>"; };
+		0237236C2A003F5C009B91C9 /* JSCrypto.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSCrypto.swift; sourceTree = "<group>"; };
+		0237236D2A003F5C009B91C9 /* JSTextDecoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSTextDecoder.swift; sourceTree = "<group>"; };
+		0237236E2A003F5C009B91C9 /* Errors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Errors.swift; sourceTree = "<group>"; };
+		0237236F2A003F5C009B91C9 /* Runner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Runner.swift; sourceTree = "<group>"; };
+		023723702A003F5C009B91C9 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
+		0237237A2A004051009B91C9 /* KV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KV.swift; sourceTree = "<group>"; };
+		0237237C2A0041B2009B91C9 /* Geolocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geolocation.swift; sourceTree = "<group>"; };
+		0237237E2A00431F009B91C9 /* Wearable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wearable.swift; sourceTree = "<group>"; };
+		027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRunner.swift; sourceTree = "<group>"; };
+		027BCF212A17DE2C009884A0 /* JSResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSResponse.swift; sourceTree = "<group>"; };
+		027BCF222A17DE2C009884A0 /* JSFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSFetch.swift; sourceTree = "<group>"; };
+		0296D4AE2A45FCE500FCD31A /* Device.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		0296D4AF2A45FCE500FCD31A /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		02D65FBE2A141B7D007A46A2 /* Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Notifications.swift; sourceTree = "<group>"; };
 		3B2A61DA5A1F2DD4F959604D /* Pods_Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF88201F53D600D50D53 /* Plugin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Plugin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50ADFF8B201F53D600D50D53 /* BackgroundRunnerPlugin.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BackgroundRunnerPlugin.h; sourceTree = "<group>"; };
@@ -73,6 +107,35 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		023723692A003F3E009B91C9 /* RunnerEngine */ = {
+			isa = PBXGroup;
+			children = (
+				027BCF222A17DE2C009884A0 /* JSFetch.swift */,
+				027BCF212A17DE2C009884A0 /* JSResponse.swift */,
+				023723702A003F5C009B91C9 /* Context.swift */,
+				0237236E2A003F5C009B91C9 /* Errors.swift */,
+				0237236B2A003F5C009B91C9 /* JSConsole.swift */,
+				0237236C2A003F5C009B91C9 /* JSCrypto.swift */,
+				0237236D2A003F5C009B91C9 /* JSTextDecoder.swift */,
+				0237236A2A003F5C009B91C9 /* JSTextEncoder.swift */,
+				0237236F2A003F5C009B91C9 /* Runner.swift */,
+			);
+			path = RunnerEngine;
+			sourceTree = "<group>";
+		};
+		023723792A004039009B91C9 /* CapacitorAPI */ = {
+			isa = PBXGroup;
+			children = (
+				0296D4AE2A45FCE500FCD31A /* Device.swift */,
+				0296D4AF2A45FCE500FCD31A /* Reachability.swift */,
+				0237237A2A004051009B91C9 /* KV.swift */,
+				0237237C2A0041B2009B91C9 /* Geolocation.swift */,
+				0237237E2A00431F009B91C9 /* Wearable.swift */,
+				02D65FBE2A141B7D007A46A2 /* Notifications.swift */,
+			);
+			path = CapacitorAPI;
+			sourceTree = "<group>";
+		};
 		50ADFF7E201F53D600D50D53 = {
 			isa = PBXGroup;
 			children = (
@@ -96,13 +159,17 @@
 		50ADFF8A201F53D600D50D53 /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				023723792A004039009B91C9 /* CapacitorAPI */,
+				023723692A003F3E009B91C9 /* RunnerEngine */,
 				50E1A94720377CB70090CE1A /* BackgroundRunnerPlugin.swift */,
-				2F98D68124C9AAE400613A4C /* BackgroundRunner.swift */,
 				50ADFF8B201F53D600D50D53 /* BackgroundRunnerPlugin.h */,
 				50ADFFA72020EE4F00D50D53 /* BackgroundRunnerPlugin.m */,
 				50ADFF8C201F53D600D50D53 /* Info.plist */,
 				022BF06A29F18D7900485B84 /* RunnerConfig.swift */,
 				022BF06C29F18E5D00485B84 /* BackgroundRunnerErrors.swift */,
+				0237234C29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift */,
+				023723622A002600009B91C9 /* Context+CapacitorAPI.swift */,
+				027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */,
 			);
 			path = Plugin;
 			sourceTree = "<group>";
@@ -312,11 +379,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				023723742A003F5C009B91C9 /* JSTextDecoder.swift in Sources */,
+				0237237D2A0041B2009B91C9 /* Geolocation.swift in Sources */,
 				50E1A94820377CB70090CE1A /* BackgroundRunnerPlugin.swift in Sources */,
+				027BCF232A17DE2C009884A0 /* JSResponse.swift in Sources */,
+				023723632A002600009B91C9 /* Context+CapacitorAPI.swift in Sources */,
+				023723772A003F5C009B91C9 /* Context.swift in Sources */,
+				0237237B2A004051009B91C9 /* KV.swift in Sources */,
+				023723722A003F5C009B91C9 /* JSConsole.swift in Sources */,
+				027BCF202A16ABA8009884A0 /* BackgroundRunner.swift in Sources */,
 				022BF06B29F18D7900485B84 /* RunnerConfig.swift in Sources */,
-				2F98D68224C9AAE500613A4C /* BackgroundRunner.swift in Sources */,
 				50ADFFA82020EE4F00D50D53 /* BackgroundRunnerPlugin.m in Sources */,
 				022BF06D29F18E5D00485B84 /* BackgroundRunnerErrors.swift in Sources */,
+				0296D4B02A45FCE500FCD31A /* Device.swift in Sources */,
+				023723752A003F5C009B91C9 /* Errors.swift in Sources */,
+				0237234D29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift in Sources */,
+				0237237F2A00431F009B91C9 /* Wearable.swift in Sources */,
+				02D65FBF2A141B7D007A46A2 /* Notifications.swift in Sources */,
+				023723762A003F5C009B91C9 /* Runner.swift in Sources */,
+				0296D4B12A45FCE500FCD31A /* Reachability.swift in Sources */,
+				023723712A003F5C009B91C9 /* JSTextEncoder.swift in Sources */,
+				023723732A003F5C009B91C9 /* JSCrypto.swift in Sources */,
+				027BCF242A17DE2C009884A0 /* JSFetch.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

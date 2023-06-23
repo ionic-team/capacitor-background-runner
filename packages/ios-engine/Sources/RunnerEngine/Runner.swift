@@ -5,12 +5,12 @@ public class Runner {
     var machine: JSVirtualMachine
     var contexts: [String: Context]
     public init() {
-        self.machine = JSVirtualMachine()
-        self.contexts = [:]
+        machine = JSVirtualMachine()
+        contexts = [:]
     }
 
     func createContext(name: String) throws -> Context {
-        let ctx = try Context(vm: self.machine, name: name)
+        let ctx = try Context(vm: machine, ctxName: name)
 
         contexts[name] = ctx
 

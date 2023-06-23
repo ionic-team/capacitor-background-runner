@@ -1,3 +1,4 @@
+// swiftlint:disable all
 import XCTest
 @testable import RunnerEngine
 
@@ -10,3 +11,4 @@ final class RunnerTests: XCTestCase {
     //    }
 
 }
+// swiftlint:enable all

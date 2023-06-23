@@ -1,12 +1,9 @@
 package io.ionic.backgroundrunner
-import android.util.Log
 import org.json.JSONObject
 import java.nio.charset.Charset
-import kotlin.math.abs
 import java.security.SecureRandom
 import java.util.*
-import kotlin.collections.HashMap
-import kotlin.concurrent.thread
+import kotlin.math.abs
 
 class Context(name: String, runnerPtr: Long) {
     private val ptr: Long?
@@ -17,7 +14,7 @@ class Context(name: String, runnerPtr: Long) {
         this.ptr = Context.initContext(runnerPtr, name)
     }
 
-    companion object  {
+    companion object {
         init {
             System.loadLibrary("android_engine")
         }
@@ -61,6 +58,17 @@ class Context(name: String, runnerPtr: Long) {
             val enc = Context.getCharset(encoding)
             return arr.toString(enc)
         }
+
+        @JvmStatic
+        fun KV_Set(key: String, value: String) {}
+
+        @JvmStatic
+        fun KV_Get(key: String): String {
+            return ""
+        }
+
+        @JvmStatic
+        fun KV_Remove(key: String) {}
 
         fun getCharset(encoding: String): Charset {
             if (encoding == "utf-16be") {
@@ -128,4 +136,3 @@ class Context(name: String, runnerPtr: Long) {
         }
     }
 }
-

@@ -8,27 +8,28 @@ public class Context {
     private var timers = [Int: Timer]()
     private var eventListeners = [String: [JSValue]]()
 
-    public init(vm: JSVirtualMachine, name: String) throws {
+    // swiftlint:disable:next identifier_name
+    public init(vm: JSVirtualMachine, ctxName: String) throws {
         guard let newCtx = JSContext(virtualMachine: vm) else {
             throw EngineError.jsCoreError
         }
 
-        newCtx.name = name
+        newCtx.name = ctxName
 
-        self.name = name
-        self.ctx = newCtx
+        name = ctxName
+        ctx = newCtx
 
-        try self.setupWebAPI()
+        try setupWebAPI()
     }
 
     public func execute(code: String) throws -> JSValue? {
         var thrownException: JSValue?
 
-        self.ctx.exceptionHandler = { _, exception in
+        ctx.exceptionHandler = { _, exception in
             thrownException = exception
         }
 
-        let value = self.ctx.evaluateScript(code)
+        let value = ctx.evaluateScript(code)
 
         if let exception = thrownException {
             throw EngineError.jsException(details: String(describing: exception))
@@ -38,7 +39,7 @@ public class Context {
     }
 
     public func dispatchEvent(event: String, details: [String: Any]? = nil) throws {
-        if let callbacks = self.eventListeners[event] {
+        if let callbacks = eventListeners[event] {
             try callbacks.forEach { jsFunc in
                 var thrownException: JSValue?
 
@@ -75,9 +76,8 @@ public class Context {
             }
         }
     }
-
     private func setupWebAPI() throws {
-        let consoleObj = JSConsole(name: self.name)
+        let consoleObj = JSConsole(name: name)
         let addEventListenerFunc: @convention(block)(String, JSValue) -> Void = { type, listener in
             return self.addEventListener(eventName: type, callback: listener)
         }
@@ -90,10 +90,14 @@ public class Context {
         let clearTimeoutFunc: @convention(block) (Int) -> Void = { id in
             return self.clearTimeout(id: id)
         }
+        let fetchFunc: @convention(block) (JSValue, JSValue) -> JSValue = { resource, options in
+            return fetch(resource: resource, options: options)
+        }
         let newTextEncoderConst: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoderConst: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
 
         ctx.setObject(consoleObj, forKeyedSubscript: "console" as NSString)
+        ctx.setObject(fetchFunc, forKeyedSubscript: "fetch" as NSString)
         ctx.setObject(JSCrypto.self, forKeyedSubscript: "crypto" as NSString)
         ctx.setObject(addEventListenerFunc, forKeyedSubscript: "addEventListener" as NSString)
         ctx.setObject(setTimeoutFunc, forKeyedSubscript: "setTimeout" as NSString)
