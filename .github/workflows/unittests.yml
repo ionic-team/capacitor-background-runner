@@ -7,7 +7,7 @@ on:
 
 jobs:
   unittest-ios:
-    runs-on: macos-12
+    runs-on: macos-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v2
