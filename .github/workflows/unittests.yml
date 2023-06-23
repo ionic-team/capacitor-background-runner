@@ -12,5 +12,5 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Run ios-engine unit tests
-        run: cd ./packages/ios-engine && && swift package clean && swift test
+        run: cd ./packages/ios-engine && swift package clean && swift test
   
