@@ -393,4 +393,3 @@ private class ReachabilityWeakifier {
         self.reachability = reachability
     }
 }
-

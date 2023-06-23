@@ -19,25 +19,24 @@ struct NotificationOption {
     let threadIdentifier: String?
     let summaryArgument: String?
     let groupSummary: String?
-    
-    
+
     init(from dict: [String: Any?]) throws {
         guard let id = dict["id"] as? Int else {
             throw CapacitorNotificationsErrors.invalidOptions(reason: "notification id is required")
         }
-        
+
         guard let title = dict["title"] as? String else {
             throw CapacitorNotificationsErrors.invalidOptions(reason: "notification title is required")
         }
-        
+
         guard let body = dict["body"] as? String else {
             throw CapacitorNotificationsErrors.invalidOptions(reason: "notification body is required")
         }
-        
+
         guard let scheduleAt = dict["scheduleAt"] as? Date else {
             throw CapacitorNotificationsErrors.invalidOptions(reason: "notification schedule date is required")
         }
-        
+
         self.id = id
         self.title = title
         self.body = body
@@ -52,14 +51,14 @@ struct NotificationOption {
 }
 
 @objc protocol CapacitorNotificationsExports: JSExport {
-    static func schedule(_ options: JSValue) -> Void
+    static func schedule(_ options: JSValue)
 }
 
 class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
     static func checkPermission() -> String {
         let group = DispatchGroup()
         var permission: String = "prompt"
-        
+
         group.enter()
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             switch settings.authorizationStatus {
@@ -74,68 +73,68 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             }
             group.leave()
         }
-        
+
         group.wait()
-        
+
         return permission
     }
-    
+
     static func requestPermission() throws {
         var permissionsError: CapacitorNotificationsErrors?
-        
+
         let group = DispatchGroup()
-        
+
         group.enter()
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, error in
             if let error = error {
-                permissionsError = CapacitorNotificationsErrors.unknownError(reason:"\(error)")
+                permissionsError = CapacitorNotificationsErrors.unknownError(reason: "\(error)")
             }
-           
+
             group.leave()
         }
-        
+
         group.wait()
-        
+
         if let err = permissionsError {
             throw err
         }
     }
-    
+
     static func schedule(_ options: JSValue) {
         do {
             if CapacitorNotifications.checkPermission() != "granted" {
                 throw CapacitorNotificationsErrors.permissionDenied
             }
-            
+
             if options.isUndefined || options.isNull {
                 throw CapacitorNotificationsErrors.invalidOptions(reason: "options are null")
             }
-            
+
             if !options.isArray {
                 throw CapacitorNotificationsErrors.invalidOptions(reason: "options must be an array")
             }
-            
+
             if let notificationOptions = options.toArray() as? [[String: Any?]] {
                 for option in notificationOptions {
                     let notificationOption = try NotificationOption(from: option)
-                    
+
                     let content = UNMutableNotificationContent()
                     content.title = NSString.localizedUserNotificationString(forKey: notificationOption.title, arguments: nil)
                     content.body = NSString.localizedUserNotificationString(forKey: notificationOption.body, arguments: nil)
                     content.userInfo = [:]
-                    
+
                     if let extra = notificationOption.extra {
                         content.userInfo["cap_extra"] = extra
                     }
-                    
+
                     if let actionTypeId = notificationOption.actionTypeId {
                         content.categoryIdentifier = actionTypeId
                     }
-                    
+
                     if let threadIdentifier = notificationOption.threadIdentifier {
                         content.threadIdentifier = threadIdentifier
                     }
-                    
+
                     if let summaryArgument = notificationOption.summaryArgument {
                         content.summaryArgument = summaryArgument
                     }
@@ -143,19 +142,19 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
                     if let sound = notificationOption.sound {
                         content.sound = UNNotificationSound(named: UNNotificationSoundName(sound))
                     }
-                    
+
                     var notificationDate = notificationOption.scheduleAt
-                    
+
                     if notificationDate < Date() {
                         notificationDate = Date()
                     }
-                    
+
                     let dateInfo = Calendar.current.dateComponents(in: TimeZone.current, from: notificationDate)
                     let dateInterval = DateInterval(start: Date(), end: dateInfo.date!)
-                    
+
                     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: dateInterval.duration, repeats: false)
-                    let request = UNNotificationRequest(identifier:"\(notificationOption.id)", content: content, trigger: trigger)
-                    
+                    let request = UNNotificationRequest(identifier: "\(notificationOption.id)", content: content, trigger: trigger)
+
                     UNUserNotificationCenter.current().add(request)
                 }
             }

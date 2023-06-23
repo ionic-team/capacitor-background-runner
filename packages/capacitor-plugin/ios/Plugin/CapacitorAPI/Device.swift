@@ -11,43 +11,43 @@ enum CapacitorDeviceErrors: Error, Equatable {
 }
 
 class CapacitorDevice: NSObject, CapacitorDeviceExports {
-    var reachability: Reachability? = nil
-    var initError: Error? = nil
-    
+    var reachability: Reachability?
+    var initError: Error?
+
     enum Connection {
         case unavailable, wifi, cellular
     }
-    
+
     override init() {
         super.init()
-        
+
         do {
             reachability = try Reachability()
         } catch {
             initError = error
         }
     }
-    
+
     private func checkError() throws {
         if let err = initError {
             throw CapacitorDeviceErrors.unknownError(reason: "\(err)")
         }
-        
+
         if reachability == nil {
             throw CapacitorDeviceErrors.unknownError(reason: "reachability failed to initialize")
         }
     }
-    
+
     func getNetworkStatus() -> [String: Any]? {
         do {
             try checkError()
-            
+
             let status = reachability?.connection.equivalentEnum ?? Connection.unavailable
-            
+
             var networkStatusDict: [String: Any] = [:]
             networkStatusDict["connected"] = status.isConnected
             networkStatusDict["connectionType"] = status.jsStringValue
-            
+
             return networkStatusDict
         } catch {
             let ex = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
@@ -55,16 +55,16 @@ class CapacitorDevice: NSObject, CapacitorDeviceExports {
             return nil
         }
     }
-    
+
     func getBatteryStatus() -> [String: Any] {
         UIDevice.current.isBatteryMonitoringEnabled = true
-        
+
         var batteryInfoDict: [String: Any] = [:]
         batteryInfoDict["batteryLevel"] = UIDevice.current.batteryLevel
         batteryInfoDict["isCharging"] = UIDevice.current.batteryState == .charging || UIDevice.current.batteryState == .full
-        
+
         UIDevice.current.isBatteryMonitoringEnabled = false
-        
+
         return batteryInfoDict
     }
 }
@@ -93,7 +93,7 @@ extension CapacitorDevice.Connection {
             return "none"
         }
     }
-    
+
     internal var isConnected: Bool {
         switch self {
         case .cellular, .wifi:
@@ -102,7 +102,7 @@ extension CapacitorDevice.Connection {
             return false
         }
     }
-    
+
     internal var logMessage: String {
         switch self {
         case .cellular:
@@ -114,5 +114,3 @@ extension CapacitorDevice.Connection {
         }
     }
 }
-
-

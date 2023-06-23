@@ -137,6 +137,6 @@ registerBackgroundTask(options: RegisterBackgroundTaskOptions) => any
 
 #### API
 
-<code>"geolocation" | "notifications"</code>
+<code>'geolocation' | 'notifications'</code>
 
 </docgen-api>

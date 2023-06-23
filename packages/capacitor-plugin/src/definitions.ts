@@ -1,8 +1,8 @@
 /// <reference types="@capacitor/cli" />
 
-import { PermissionState } from "@capacitor/core";
+import type { PermissionState } from '@capacitor/core';
 
-export type API = "geolocation" | "notifications";
+export type API = 'geolocation' | 'notifications';
 
 export interface PermissionStatus {
   geolocation: PermissionState;
@@ -34,7 +34,9 @@ export interface BackgroundRunnerConfig {
 
 export interface BackgroundRunnerPlugin {
   checkPermissions(): Promise<PermissionStatus>;
-  requestPermissions(options: RequestPermissionOptions): Promise<PermissionStatus>;
+  requestPermissions(
+    options: RequestPermissionOptions,
+  ): Promise<PermissionStatus>;
   dispatchEvent(options: DispatchEventOptions): Promise<void>;
   registerBackgroundTask(options: RegisterBackgroundTaskOptions): Promise<void>;
 }

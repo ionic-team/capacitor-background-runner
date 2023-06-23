@@ -15,7 +15,7 @@ class CapacitorKVStore: NSObject, CapacitorKVStoreExports {
     static func get(_ key: String) -> String? {
         return UserDefaults.standard.string(forKey: key)
     }
-    
+
     static func remove(_ key: String) {
         return UserDefaults.standard.removeObject(forKey: key)
     }
