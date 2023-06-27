@@ -66,14 +66,14 @@ static JSValue api_text_encoder_encode(JSContext *ctx, JSValueConst this_val, in
   auto c_str = JS_ToCString(ctx, argv[0]);
 
   // TODO: Check for JNI Exceptions
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
-  jclass j_context_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/Context");
-  jmethodID j_method = parent_ctx->env->GetStaticMethodID(j_context_class, "stringToByteArray", "(Ljava/lang/String;)[B");
+  jclass j_context_api_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/ContextAPI");
+  jmethodID j_method = parent_ctx->env->GetMethodID(j_context_api_class, "stringToByteArray", "(Ljava/lang/String;)[B");
 
   jstring j_string = parent_ctx->env->NewStringUTF(c_str);
 
-  auto byte_array = static_cast<jbyteArray>(parent_ctx->env->CallStaticObjectMethod(j_context_class, j_method, j_string));
+  auto byte_array = static_cast<jbyteArray>(parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method, j_string));
   auto length = parent_ctx->env->GetArrayLength(byte_array);
   auto arr = parent_ctx->env->GetByteArrayElements(byte_array, 0);
 
@@ -104,12 +104,6 @@ static JSValue api_text_encoder_encode(JSContext *ctx, JSValueConst this_val, in
   return ret_value;
 }
 
-static JSValue api_text_encoder_encode_into(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-  JSValue ret_value = JS_UNDEFINED;
-
-  return ret_value;
-}
-
 static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   JSValue ret_value = JS_UNDEFINED;
 
@@ -128,10 +122,10 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
   }
 
   // TODO: Check for JNI Exceptions
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
-  jclass j_context_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/Context");
-  jmethodID j_method = parent_ctx->env->GetStaticMethodID(j_context_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
+  jclass j_context_api_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/ContextAPI");
+  jmethodID j_method = parent_ctx->env->GetMethodID(j_context_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
 
   auto encoding = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "label"));
   jstring j_encoding = parent_ctx->env->NewStringUTF(encoding);
@@ -141,9 +135,9 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
   parent_ctx->env->SetByteArrayRegion(byte_array, 0, size, reinterpret_cast<const jbyte *>(buf));
   // CheckException(env);
 
-  jstring str = (jstring)parent_ctx->env->CallStaticObjectMethod(j_context_class, j_method, byte_array, j_encoding);
+  jstring str = (jstring) parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method, byte_array, j_encoding);
 
-  const char *c_str = parent_ctx->env->GetStringUTFChars(str, 0);
+  const char * c_str = parent_ctx->env->GetStringUTFChars(str, nullptr);
 
   ret_value = JS_NewString(ctx, c_str);
 

@@ -5,10 +5,12 @@
 #include <thread>
 #include <utility>
 
-Context::Context(const std::string &name, JSRuntime *rt, JNIEnv *env) {
+Context::Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject api_instance) {
   this->ctx = JS_NewContext(rt);
   this->name = name;
   this->env = env;
+
+  this->api = api_instance;
 
   this->run_loop_stopped = true;
   this->end_run_loop = false;

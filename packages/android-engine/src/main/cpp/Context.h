@@ -24,12 +24,14 @@ public:
     JSContext *ctx;
     JNIEnv *env;
 
+    jobject api;
+
     std::unordered_multimap<std::string, JSValue> event_listeners;
     std::unordered_map<int, Timer> timers;
     std::unordered_map<std::string, int> function_index;
     std::vector<jobject> functions;
 
-    Context(const std::string& name, JSRuntime* rt, JNIEnv *env);
+    Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject instance);
     ~Context();
 
     void start_run_loop();

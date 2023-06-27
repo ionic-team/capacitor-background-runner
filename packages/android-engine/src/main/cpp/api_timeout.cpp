@@ -18,16 +18,16 @@ JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueCon
   timeout = JS_VALUE_GET_INT(argv[1]);
 
   // TODO: Check for JNI Exceptions
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
-  jclass j_context_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/Context");
-  jmethodID j_method = parent_ctx->env->GetStaticMethodID(j_context_class, "randomHashCode", "()I");
+  jclass j_context_api_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/ContextAPI");
+  jmethodID j_method = parent_ctx->env->GetMethodID(j_context_api_class, "randomHashCode", "()I");
 
-  int unique = parent_ctx->env->CallStaticIntMethod(j_context_class, j_method);
+  int unique = parent_ctx->env->CallIntMethod(parent_ctx->api, j_method);
 
   Timer timer{};
   timer.js_func = JS_DupValue(ctx, argv[0]);
-  ;
+
   timer.timeout = timeout;
   timer.start = std::chrono::system_clock::now();
   timer.repeat = repeat;
@@ -57,7 +57,7 @@ JSValue api_clear_timeout(JSContext *ctx, JSValueConst this_val, int argc, JSVal
   int id = JS_VALUE_GET_INT(argv[0]);
 
   // TODO: Check for JNI Exceptions
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
   parent_ctx->timers_mutex.lock();
 

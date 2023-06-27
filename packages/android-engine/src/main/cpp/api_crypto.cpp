@@ -20,13 +20,13 @@ JSValue api_crypto_get_random_values(JSContext *ctx, JSValueConst this_val, int 
   }
 
   // TODO: Check for JNI Exceptions
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
-  jclass j_context_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/Context");
-  jmethodID j_method = parent_ctx->env->GetStaticMethodID(j_context_class, "cryptoGetRandom", "(I)[B");
+  jclass j_context_api_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/ContextAPI");
+  jmethodID j_method = parent_ctx->env->GetMethodID(j_context_api_class, "cryptoGetRandom", "(I)[B");
 
-  jbyteArray random_bytes = static_cast<jbyteArray>(parent_ctx->env->CallStaticObjectMethod(j_context_class, j_method, size));
-  auto random = parent_ctx->env->GetByteArrayElements(random_bytes, 0);
+  auto random_bytes = static_cast<jbyteArray>(parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method, size));
+  auto random = parent_ctx->env->GetByteArrayElements(random_bytes, nullptr);
 
   for (int i = 0; i < size; i++) {
     buf[i] = random[i];
@@ -46,14 +46,14 @@ JSValue api_crypto_random_uuid(JSContext *ctx, JSValueConst this_val, int argc, 
 
   JSValue ret_value = JS_UNDEFINED;
 
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
-  jclass j_context_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/Context");
-  jmethodID j_method = parent_ctx->env->GetStaticMethodID(j_context_class, "cryptoRandomUUID", "()Ljava/lang/String;");
+  jclass j_context_api_class = parent_ctx->env->FindClass("io/ionic/backgroundrunner/ContextAPI");
+  jmethodID j_method = parent_ctx->env->GetMethodID(j_context_api_class, "cryptoRandomUUID", "()Ljava/lang/String;");
 
-  jstring str = (jstring)parent_ctx->env->CallStaticObjectMethod(j_context_class, j_method);
+  auto str = (jstring) parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method);
 
-  auto c_str = parent_ctx->env->GetStringUTFChars(str, 0);
+  auto c_str = parent_ctx->env->GetStringUTFChars(str, nullptr);
 
   ret_value = JS_NewString(ctx, c_str);
 

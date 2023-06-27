@@ -11,7 +11,7 @@ JSValue api_console_log(JSContext *ctx, JSValueConst this_val, int argc, JSValue
   const char *str;
   size_t len;
 
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
   std::string tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
@@ -33,7 +33,7 @@ JSValue api_console_warn(JSContext *ctx, JSValueConst this_val, int argc, JSValu
   const char *str;
   size_t len;
 
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
   std::string tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
@@ -55,7 +55,7 @@ JSValue api_console_error(JSContext *ctx, JSValueConst this_val, int argc, JSVal
   const char *str;
   size_t len;
 
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
   std::string tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
@@ -77,7 +77,7 @@ JSValue api_console_debug(JSContext *ctx, JSValueConst this_val, int argc, JSVal
   const char *str;
   size_t len;
 
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
   std::string tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
