@@ -1,0 +1,356 @@
+package io.ionic.backgroundrunner
+
+import android.util.Log
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import io.ionic.android_js_engine.JSFunction
+import io.ionic.android_js_engine.Runner
+import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertNotNull
+import org.json.JSONObject
+import org.junit.Assert.assertThrows
+import org.junit.Test
+import org.junit.runner.RunWith
+import java.sql.Time
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
+
+@RunWith(AndroidJUnit4::class)
+class ContextTests {
+    @Test
+    fun testNullEval() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        var value = context.execute("undefined", true)
+        assertTrue(value.isNullOrUndefined())
+
+        value = context.execute("const test = null; test;", true)
+        assertTrue(value.isNullOrUndefined())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testBoolEval() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        var value = context.execute("let test = (1 == 1); test;", true)
+        assertTrue(value.getBoolValue() ?: false)
+
+        value = context.execute("test = (100 == 200); test;", true)
+        assertFalse(value.getBoolValue() ?: true)
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testIntegerEval() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val value = context.execute("1 + 2;", true)
+        assertEquals(3, value.getIntValue())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testFloatEval() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val value = context.execute("10.8 + 2.77;", true)
+        assertEquals(13.57f, value.getFloatValue())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testStringEval() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val value = context.execute("'hello' + ' ' + 'world';", true)
+        assertEquals("hello world", value.getStringValue())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_Console() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        context.execute("console.log('hello world');")
+        context.execute("console.info('this message is for informational purposes');")
+        context.execute("console.warn('this is a warning message');")
+        context.execute("console.error('a problem has occurred');")
+        context.execute("console.debug('this is a debugging statement');")
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_EventListeners() {
+        val future1 = CompletableFuture<Int>()
+        val future2 = CompletableFuture<Int>()
+        val future3 = CompletableFuture<JSONObject?>()
+        val future4 = CompletableFuture<Int>()
+
+        class SuccessCallback1 : JSFunction(args = null) {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+
+                future1.complete(calls)
+            }
+        }
+
+        class SuccessCallback2: JSFunction(args = null) {
+            public var calls: Int = 0
+
+            override fun run() {
+                super.run()
+                calls++
+
+                future2.complete(calls)
+            }
+        }
+
+        class SuccessCallback3 : JSFunction(args = null) {
+            public var calls: Int = 0
+
+            override fun run() {
+                super.run()
+                calls++
+
+                future3.complete(args)
+            }
+        }
+
+        class SuccessCallback4 : JSFunction(args = null) {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+
+                future4.complete(calls)
+            }
+        }
+
+        val callback1 = SuccessCallback1()
+        val callback2 = SuccessCallback2()
+        val callback3 = SuccessCallback3()
+        val callback4 = SuccessCallback4()
+
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        context.registerFunction("successCallback", callback1)
+        context.registerFunction("altSuccessCallback", callback2)
+        context.registerFunction("successCallbackDetails", callback3)
+        context.registerFunction("successCallbackFunction", callback4)
+
+        // setting a basic event listener
+        context.execute("addEventListener('myEvent', () => { successCallback(); });")
+        context.dispatchEvent("myEvent", JSONObject())
+        assertEquals(1, future1.get())
+
+        context.execute("addEventListener('myEvent', () => { altSuccessCallback(); });")
+        context.dispatchEvent("myEvent", JSONObject())
+        assertEquals(1, future2.get())
+
+        // basic event listener with details
+        context.execute("addEventListener('myEventDetails', (details) => { successCallbackDetails(details); });")
+
+        val detailsObject = JSONObject()
+        detailsObject.put("name", "John Doe")
+        context.dispatchEvent("myEventDetails", detailsObject)
+
+        val returnedDetails = future3.get()
+        assertNotNull(returnedDetails)
+        assertEquals("John Doe", returnedDetails?.getString("name"))
+
+        // basic event listener with registered global function as callback arg
+        val callbackObject = JSONObject()
+        callbackObject.put("completed", "__cbr::successCallbackFunction")
+
+        context.execute("addEventListener('myEventCallback', (details) => { details.completed() });")
+        context.dispatchEvent("myEventCallback", callbackObject)
+        assertEquals(1, future4.get())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_Crypto() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); array;", true)
+        assertEquals(10, value.getJSONObject()?.length())
+
+        value = context.execute("crypto.randomUUID();", true)
+        assertEquals(36, value.getStringValue()?.length)
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_SetTimeout() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+        context.start()
+
+        val timeoutFuture1 = CompletableFuture<Int>()
+        val timeoutFuture2 = CompletableFuture<Int>()
+
+        class TimeoutCallback1 : JSFunction(args = null) {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+
+                timeoutFuture1.complete(calls)
+            }
+        }
+
+        class TimeoutCallback2 : JSFunction(args = null) {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+
+                timeoutFuture2.complete(calls)
+            }
+        }
+
+        val callback1 = TimeoutCallback1()
+        val callback2 = TimeoutCallback2()
+
+        context.registerFunction("timeoutCallback", callback1)
+        context.registerFunction("cancelTimeoutCallback", callback2)
+
+        var value = context.execute("setTimeout(() => { timeoutCallback(); }, 2000)", true)
+        var timerId = value.getIntValue() ?: 0
+
+        assertTrue(timerId > 0)
+        assertEquals(1, timeoutFuture1.get(3, TimeUnit.SECONDS))
+
+        value = context.execute("setTimeout(() => { cancelTimeoutCallback() }, 4000)", true)
+        timerId = value.getIntValue() ?: 0
+        assertTrue(timerId > 0)
+
+        context.execute("clearTimeout(${value.getIntValue()});")
+        try {
+            assertEquals(0, timeoutFuture2.get(3, TimeUnit.SECONDS))
+        } catch (ex: TimeoutException) {
+            assertTrue(true)
+        }
+
+        context.stop()
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_SetInterval() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+        context.start()
+
+        var calls = 0;
+
+        class IntervalCallback : JSFunction(args = null) {
+            override fun run() {
+                super.run()
+                calls++
+            }
+        }
+
+        val callback = IntervalCallback()
+
+        context.registerFunction("intervalCallback", callback)
+
+        val value = context.execute("setInterval(() => { intervalCallback() }, 2000)", true)
+        assertTrue((value.getIntValue() ?: 0) > 0)
+
+        Thread.sleep(8000)
+        assertEquals(4, calls)
+
+        context.execute("clearInterval(${value.getIntValue()});")
+
+        Thread.sleep(3000)
+        assertEquals(4, calls)
+
+        context.stop()
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_TextEncoder() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+        val value = context.execute("const encoder = new TextEncoder(); encoder.encode('€');", true)
+
+        val arrayObject = value.getJSONObject()
+
+        assertNotNull(arrayObject)
+
+        assertEquals(226, arrayObject?.getInt("0"))
+        assertEquals(130, arrayObject?.getInt("1"))
+        assertEquals(172, arrayObject?.getInt("2"))
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_TextDecoder() {
+        val runner = Runner()
+        val context = runner.createContext(".io.ionic.android_js_engine")
+
+        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));", true)
+        assertEquals("Привет, мир!", value.getStringValue())
+
+        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));", true)
+        assertEquals("\uD842\uDFB7", value.getStringValue())
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testErrorHandling() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val throwingCodeEx = assertThrows(Exception::class.java) {
+            context.execute("() => { throw new Error('this method has an error'); }();")
+        }
+
+        assertTrue(throwingCodeEx.localizedMessage.contains("JS exception"))
+
+        val badCodeEx = assertThrows(Exception::class.java) {
+            // badly formed code
+            context.execute("addEventListener(")
+        }
+
+        assertTrue(badCodeEx.localizedMessage.contains("JS exception"))
+
+
+        val throwingEventEx = assertThrows(java.lang.Exception::class.java) {
+            context.execute("addEventListener('myThrowingEvent', () => { throw new Error('this event throws an error') })")
+            context.dispatchEvent("myThrowingEvent", JSONObject())
+        }
+
+        assertTrue(throwingEventEx.localizedMessage.contains("JS exception"))
+
+        runner.destroy()
+    }
+
+
+
+
+}
