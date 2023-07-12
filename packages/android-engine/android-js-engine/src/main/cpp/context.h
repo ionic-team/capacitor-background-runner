@@ -16,7 +16,15 @@
 #include "api_text.h"
 #include "api_fetch.h"
 
-JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
+JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data);
+
+class JavaFunctionData {
+public:
+    std::string name;
+    jobject j_func;
+
+    JavaFunctionData(const std::string& name, jobject func);
+};
 
 class Context {
 public:
@@ -30,9 +38,6 @@ public:
 
     std::unordered_multimap<std::string, JSValue> event_listeners;
     std::unordered_map<int, Timer> timers;
-    std::unordered_map<std::string, int> function_index;
-    std::vector<jobject> functions;
-    std::queue<FetchPromise> fetches;
 
     Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject instance);
     ~Context();
@@ -41,7 +46,6 @@ public:
     void stop_run_loop();
 
     std::mutex timers_mutex;
-    std::mutex fetch_mutex;
 
     JSValue evaluate(const std::string& code, bool ret_val) const;
     JSValue dispatch_event(const std::string& event, JSValue details);

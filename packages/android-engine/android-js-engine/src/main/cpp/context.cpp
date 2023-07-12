@@ -5,6 +5,11 @@
 #include <thread>
 #include <utility>
 
+JavaFunctionData::JavaFunctionData(const std::string &name, jobject func) {
+    this->name = name;
+    this->j_func = func;
+}
+
 Context::Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject api_instance) {
     this->ctx = JS_NewContext(rt);
     this->name = name;
@@ -138,7 +143,8 @@ JSValue Context::parseJSON(const std::string &json_string) const {
                     auto global_func_name = str_value.substr(7);
                     //                    this->function_index.at(global_func_name);
 
-                    JS_SetPropertyStr(this->ctx, parsed, key, JS_NewCFunction(this->ctx, call_global_function, global_func_name.c_str(), 1));
+                    JS_SetPropertyStr(this->ctx, parsed, key, JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 0,
+                                                                                  nullptr));
 
                 } catch (std::exception &ex) {
                 }
@@ -295,49 +301,29 @@ void Context::init_api_fetch() const {
     JS_FreeValue(this->ctx, global_obj);
 }
 
-std::string get_function_name(JSContext *ctx) {
-    JS_FreeValue(ctx, JS_ThrowTypeError(ctx, "callstack"));
-    JSValue exception = JS_GetException(ctx);
-    JS_ResetUncatchableError(ctx);
-
-    JSValue stack_val = JS_GetPropertyStr(ctx, exception, "stack");
-    std::string callstack(JS_ToCString(ctx, stack_val));
-
-    auto first_line = callstack.substr(0, callstack.find('\n'));
-
-    if (first_line.empty()) {
-        return "";
-    }
-
-    auto name = first_line.replace(first_line.find("(native)"), sizeof("(native)") - 1, "");
-    name.erase(std::remove_if(name.begin(), name.end(), ::isspace), name.end());
-    name.erase(0, 2);
-
-    JS_FreeValue(ctx, stack_val);
-    JS_FreeValue(ctx, exception);
-
-
-    return name;
-}
-
 void Context::register_function(const std::string &func_name, jobject func) {
-    int size = this->functions.size();
-
-    this->function_index.insert({func_name, size});
-    this->functions.push_back(func);
-
     JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
-    JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunction(this->ctx, call_global_function, func_name.c_str(), 1));
+    JavaFunctionData* func_data = new JavaFunctionData(func_name, func);
+    JSValue ptr[1] = { JS_NewBigInt64(this->ctx, reinterpret_cast<int64_t>(func_data)) };
+
+    JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
 
     JS_FreeValue(this->ctx, global_obj);
 }
 
-JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {
     JSValue ret_value = JS_UNDEFINED;
     JSValue jni_exception;
 
     JNIEnv *thread_env = nullptr;
+    JSValue ptr = func_data[0];
+
+    int64_t j_func_data_ptr;
+
+    JS_ToBigInt64(ctx, &j_func_data_ptr, ptr);
+
+    auto* j_func_data = (JavaFunctionData *)j_func_data_ptr;
 
     auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
@@ -348,19 +334,9 @@ JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JS
         }
     }
 
-    jobject j_func;
 
-    try {
-        auto func_name = get_function_name(ctx);
-        auto func_index = parent_ctx->function_index.at(func_name);
-
-        j_func = parent_ctx->functions[func_index];
-    } catch (const std::exception& e) {
-        j_func = nullptr;
-    }
-
-    if (j_func != nullptr) {
-        jclass j_function_class = thread_env->GetObjectClass(j_func);
+    if (j_func_data->j_func != nullptr) {
+        jclass j_function_class = thread_env->GetObjectClass(j_func_data->j_func);
         jni_exception = check_and_throw_jni_exception(thread_env, ctx);
 
         if (JS_IsException(jni_exception)) {
@@ -387,10 +363,10 @@ JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JS
 
             jfieldID args_field = thread_env->GetFieldID(j_function_class, "args", "Lorg/json/JSONObject;");
 
-            thread_env->SetObjectField(j_func, args_field, json_object);
+            thread_env->SetObjectField(j_func_data->j_func, args_field, json_object);
         }
 
-        thread_env->CallVoidMethod(j_func, j_method);
+        thread_env->CallVoidMethod(j_func_data->j_func, j_method);
     }
 
     return ret_value;
