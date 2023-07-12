@@ -64,10 +64,12 @@ class ContextAPI {
 
             val response = client.newCall(builder.build()).execute()
 
-            return JSResponse(response.code, response.request.url.toString(), response.body?.bytes())
+            val body = response.body
+
+            return JSResponse(response.code, response.request.url.toString(), body?.bytes(), null)
         } catch (ex: Exception) {
             print(ex.message);
-            throw ex;
+            return JSResponse(-1, urlStr, null, ex.message)
         }
 
     }

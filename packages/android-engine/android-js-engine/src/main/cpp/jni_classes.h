@@ -14,6 +14,7 @@ public:
     jfieldID js_response_status_field;
     jfieldID js_response_url_field;
     jfieldID js_response_data_field;
+    jfieldID js_response_error_field;
 
     JNIClasses(JNIEnv *env);
 

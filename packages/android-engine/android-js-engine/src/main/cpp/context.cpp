@@ -355,7 +355,6 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
         }
     }
 
-
     if (j_func_data->j_func != nullptr) {
         jclass j_function_class = thread_env->GetObjectClass(j_func_data->j_func);
         jni_exception = check_and_throw_jni_exception(thread_env, ctx);

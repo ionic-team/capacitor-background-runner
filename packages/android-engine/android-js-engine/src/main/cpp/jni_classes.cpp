@@ -26,6 +26,9 @@ JNIClasses::JNIClasses(JNIEnv *env)
 
     this->js_response_data_field = env->GetFieldID(this->js_response_class, "data", "[B");
     this->check_exception(env);
+
+    this->js_response_error_field = env->GetFieldID(this->js_response_class, "error", "Ljava/lang/String;");
+    this->check_exception(env);
 }
 
 void JNIClasses::check_exception(JNIEnv *env)
