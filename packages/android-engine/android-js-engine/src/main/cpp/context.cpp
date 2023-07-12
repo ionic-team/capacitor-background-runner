@@ -22,6 +22,8 @@ Context::Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject ap
     this->run_loop_stopped = true;
     this->end_run_loop = false;
 
+    this->jni_classes = new JNIClasses(env);
+
     this->init_api_console();
     this->init_api_event_listeners();
     this->init_api_crypto();
@@ -49,6 +51,25 @@ Context::~Context() {
 
     JS_FreeValue(this->ctx, this->global_json_obj);
     JS_FreeContext(this->ctx);
+}
+
+JNIEnv* Context::getJNIEnv() {
+    JNIEnv *env = nullptr;
+
+    int status = this->vm->GetEnv((void**)&env, JNI_VERSION_1_6);
+    if (status == JNI_EDETACHED) {
+        if (this->vm->AttachCurrentThread(&env, NULL) != JNI_OK) {
+            // TODO: throw exception here
+            return nullptr;
+        }
+    }
+
+    if (status == JNI_EVERSION) {
+        // TODO: throw exception here
+        return nullptr;
+    }
+
+    return env;
 }
 
 void Context::start_run_loop() {

@@ -9,6 +9,8 @@
 #include <vector>
 #include <queue>
 
+#include "jni_classes.h"
+
 #include "api_events.h"
 #include "api_console.h"
 #include "api_crypto.h"
@@ -34,6 +36,8 @@ public:
     JNIEnv *env;
     JavaVM *vm;
 
+    JNIClasses *jni_classes;
+
     jobject api;
 
     std::unordered_multimap<std::string, JSValue> event_listeners;
@@ -41,6 +45,8 @@ public:
 
     Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject instance);
     ~Context();
+
+    JNIEnv* getJNIEnv();
 
     void start_run_loop();
     void stop_run_loop();

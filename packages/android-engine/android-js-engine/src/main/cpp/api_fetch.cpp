@@ -8,59 +8,28 @@
 #include <thread>
 
 
-JSValue js_response_to_value(JSContext *ctx, jobject response) {
+JSValue js_response_to_value(JSContext *ctx, JNIEnv *env, jobject response) {
     JSValue jni_exception, js_response;
 
     auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
-    jclass j_response_class = parent_ctx->env->FindClass("io/ionic/android_js_engine/JSResponse");
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
+    auto j_ok = env->GetBooleanField(response, parent_ctx->jni_classes->js_response_ok_field);
+    auto j_status = env->GetIntField(response, parent_ctx->jni_classes->js_response_status_field);
+    auto j_url = (jstring) env->GetObjectField(response, parent_ctx->jni_classes->js_response_url_field);
+    auto j_data = static_cast<jbyteArray>(env->GetObjectField(response, parent_ctx->jni_classes->js_response_data_field));
+    auto j_data_len = env->GetArrayLength(j_data);
+    auto j_data_arr = env->GetByteArrayElements(j_data, 0);
 
-    auto j_ok_field = parent_ctx->env->GetFieldID(j_response_class, "ok", "Z");
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
-
-    auto j_status_field = parent_ctx->env->GetFieldID(j_response_class, "status", "I");
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
-
-    auto j_url_field = parent_ctx->env->GetFieldID(j_response_class, "url", "Ljava/lang/String;");
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
-
-    auto j_data_field = parent_ctx->env->GetFieldID(j_response_class, "data", "[B");
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
-
-    auto j_ok = parent_ctx->env->GetBooleanField(response, j_ok_field);
-    auto j_status = parent_ctx->env->GetIntField(response, j_status_field);
-    auto j_url = (jstring) parent_ctx->env->GetObjectField(response, j_url_field);
-    auto j_data = static_cast<jbyteArray>(parent_ctx->env->GetObjectField(response, j_data_field));
-    auto j_data_len = parent_ctx->env->GetArrayLength(j_data);
-    auto j_data_arr = parent_ctx->env->GetByteArrayElements(j_data, 0);
-
-    auto c_url  = parent_ctx->env->GetStringUTFChars(j_url, nullptr);
+    auto c_url  = env->GetStringUTFChars(j_url, nullptr);
 
     js_response = JS_NewObject(ctx);
     JS_SetPropertyStr(ctx, js_response, "ok", JS_NewBool(ctx, (int)j_ok));
     JS_SetPropertyStr(ctx, js_response, "status", JS_NewInt32(ctx, (int)j_status));
     JS_SetPropertyStr(ctx, js_response, "url", JS_NewString(ctx, c_url));
-    JS_SetPropertyStr(ctx, js_response, "_data", JS_NewArrayBuffer(ctx, (uint8_t *)j_data_arr, j_data_len,
-                                                                   nullptr, nullptr, 0));
+    JS_SetPropertyStr(ctx, js_response, "_data", JS_NewArrayBuffer(ctx, (uint8_t *)j_data_arr, j_data_len,nullptr, nullptr, 0));
 
-    parent_ctx->env->ReleaseStringUTFChars(j_url, c_url);
-    parent_ctx->env->ReleaseByteArrayElements(j_data, j_data_arr, 0);
+    env->ReleaseStringUTFChars(j_url, c_url);
+    env->ReleaseByteArrayElements(j_data, j_data_arr, 0);
 
     return js_response;
 }
@@ -75,25 +44,60 @@ JSValue fetch_reject(JSContext *ctx, JSValueConst this_val, int argc, JSValue *a
 
 JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv)
 {
-    JSValue resolve, reject;
+    JSValue resolve, reject, request, options;
+    JSValue jni_exception;
 
     resolve = argv[0];
     reject = argv[1];
+    request = argv[2];
+    options = argv[3];
+
+    auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+
+    auto* env = parent_ctx->getJNIEnv();
 
     JSValue global_obj = JS_GetGlobalObject(ctx);
 
-    JS_Call(ctx, resolve, global_obj, 0, nullptr);
+    if (JS_IsNull(request)) {
+        // reject
+        return JS_UNDEFINED;
+    }
+
+    if (!JS_IsString(request)) {
+        // reject
+        return JS_UNDEFINED;
+    }
+
+
+    auto c_url_str = JS_ToCString(ctx, request);
+
+    auto j_url_str = env->NewStringUTF(c_url_str);
+
+    auto response = env->CallObjectMethod(parent_ctx->api, parent_ctx->jni_classes->context_api_fetch_method, j_url_str);
+    jni_exception = check_and_throw_jni_exception(env, ctx);
+
+    if (JS_IsException(jni_exception)) {
+        // reject
+        JS_Call(ctx, reject, global_obj, 1, (JSValueConst *)&jni_exception);
+        JS_FreeValue(ctx, global_obj);
+        return JS_UNDEFINED;
+    }
+
+    auto res = js_response_to_value(ctx, env, response);
+
+    JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&res);
 
     JS_FreeValue(ctx, global_obj);
+    JS_FreeValue(ctx, res);
 
-    return JS_NewString(ctx, "Hello world!");
+    parent_ctx->vm->DetachCurrentThread();
+
+    return JS_UNDEFINED;
 }
 
 JSValue api_fetch_promise(JSContext *ctx, JSValueConst this_val, int argc, JSValue *argv) {
     JSValue promise, resolving_funcs[2];
     JSValueConst args[4];
-
-    auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
     promise = JS_NewPromiseCapability(ctx, resolving_funcs);
     if (JS_IsException(promise)) {
@@ -110,16 +114,6 @@ JSValue api_fetch_promise(JSContext *ctx, JSValueConst this_val, int argc, JSVal
 
     JS_FreeValue(ctx, resolving_funcs[0]);
     JS_FreeValue(ctx, resolving_funcs[1]);
-
-//    FetchPromise fetch_promise{};
-//    fetch_promise.resolve = JS_DupValue(ctx, resolving_funcs[0]);
-//    fetch_promise.reject = JS_DupValue(ctx, resolving_funcs[1]);
-//    fetch_promise.request = JS_DupValue(ctx, argv[0]);
-//    fetch_promise.options = JS_DupValue(ctx, argv[1]);
-//
-//    parent_ctx->fetch_mutex.lock();
-//    parent_ctx->fetches.push(fetch_promise);
-//    parent_ctx->fetch_mutex.unlock();
 
     return promise;
 }
@@ -143,8 +137,6 @@ void api_fetch(JSContext *ctx, FetchPromise promise)
             jni_exception = res;
         }
     }
-
-
 
     JS_FreeValue(ctx, global_obj);
 
