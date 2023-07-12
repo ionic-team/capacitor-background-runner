@@ -7,12 +7,14 @@
 
 #include <thread>
 #include <vector>
+#include <queue>
 
 #include "api_events.h"
 #include "api_console.h"
 #include "api_crypto.h"
 #include "api_timeout.h"
 #include "api_text.h"
+#include "api_fetch.h"
 
 JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 
@@ -30,6 +32,7 @@ public:
     std::unordered_map<int, Timer> timers;
     std::unordered_map<std::string, int> function_index;
     std::vector<jobject> functions;
+    std::queue<FetchPromise> fetches;
 
     Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject instance);
     ~Context();
@@ -38,6 +41,7 @@ public:
     void stop_run_loop();
 
     std::mutex timers_mutex;
+    std::mutex fetch_mutex;
 
     JSValue evaluate(const std::string& code, bool ret_val) const;
     JSValue dispatch_event(const std::string& event, JSValue details);
@@ -62,6 +66,7 @@ private:
     void init_api_crypto() const;
     void init_api_timeout() const;
     void init_api_text() const;
+    void init_api_fetch() const;
 //    void init_api_kv() const;
 };
 

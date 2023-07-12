@@ -1,20 +1,22 @@
 #include <jni.h>
 #include "quickjs/quickjs.h"
+#include "runner.h"
 #include "context.h"
+
 #include "errors.h"
 
 extern "C"
 JNIEXPORT jlong JNICALL
 Java_io_ionic_android_1js_1engine_Context_initContext(JNIEnv *env, jobject thiz, jlong runner_ptr,
                                                       jstring name) {
-    auto *rt = (JSRuntime *)runner_ptr;
+    auto *runner = (Runner *)runner_ptr;
 
     auto context_api_field_id = env->GetFieldID(env->FindClass("io/ionic/android_js_engine/Context"), "api", "Lio/ionic/android_js_engine/ContextAPI;");
 
     auto api = env->GetObjectField(thiz, context_api_field_id);
     auto api_instance = env->NewGlobalRef(api);
 
-    auto *context = new Context(env->GetStringUTFChars(name, nullptr), rt, env, api_instance);
+    auto *context = new Context(env->GetStringUTFChars(name, nullptr), runner->rt, env, api_instance);
 
     return (jlong)(long)context;
 }

@@ -1,5 +1,9 @@
 package io.ionic.android_js_engine
 
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.lang.Exception
+import java.net.URL
 import java.nio.charset.Charset
 import java.security.SecureRandom
 import java.util.UUID
@@ -48,5 +52,23 @@ class ContextAPI {
         }
 
         return Charset.forName(encoding)
+    }
+
+    fun fetch(urlStr: String): JSResponse {
+        try {
+            val url = URL(urlStr)
+            val client = OkHttpClient()
+
+            val builder = Request.Builder()
+            builder.url(url)
+
+            val response = client.newCall(builder.build()).execute()
+
+            return JSResponse(response.code, response.request.url.toString(), response.body?.bytes())
+        } catch (ex: Exception) {
+            print(ex.message);
+            throw ex;
+        }
+
     }
 }

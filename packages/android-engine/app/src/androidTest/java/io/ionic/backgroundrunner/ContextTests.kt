@@ -101,7 +101,7 @@ class ContextTests {
         val future3 = CompletableFuture<JSONObject?>()
         val future4 = CompletableFuture<Int>()
 
-        class SuccessCallback1 : JSFunction(args = null) {
+        class SuccessCallback1 : JSFunction(jsName = "successCallback") {
             public var calls: Int = 0
             override fun run() {
                 super.run()
@@ -111,7 +111,7 @@ class ContextTests {
             }
         }
 
-        class SuccessCallback2: JSFunction(args = null) {
+        class SuccessCallback2: JSFunction(jsName = "altSuccessCallback") {
             public var calls: Int = 0
 
             override fun run() {
@@ -122,7 +122,7 @@ class ContextTests {
             }
         }
 
-        class SuccessCallback3 : JSFunction(args = null) {
+        class SuccessCallback3 : JSFunction(jsName = "successCallbackDetails") {
             public var calls: Int = 0
 
             override fun run() {
@@ -133,7 +133,7 @@ class ContextTests {
             }
         }
 
-        class SuccessCallback4 : JSFunction(args = null) {
+        class SuccessCallback4 : JSFunction(jsName = "successCallbackFunction") {
             public var calls: Int = 0
             override fun run() {
                 super.run()
@@ -209,7 +209,7 @@ class ContextTests {
         val timeoutFuture1 = CompletableFuture<Int>()
         val timeoutFuture2 = CompletableFuture<Int>()
 
-        class TimeoutCallback1 : JSFunction(args = null) {
+        class TimeoutCallback1 : JSFunction(jsName = "timeoutCallback") {
             public var calls: Int = 0
             override fun run() {
                 super.run()
@@ -219,7 +219,7 @@ class ContextTests {
             }
         }
 
-        class TimeoutCallback2 : JSFunction(args = null) {
+        class TimeoutCallback2 : JSFunction(jsName = "cancelTimeoutCallback") {
             public var calls: Int = 0
             override fun run() {
                 super.run()
@@ -264,7 +264,7 @@ class ContextTests {
 
         var calls = 0;
 
-        class IntervalCallback : JSFunction(args = null) {
+        class IntervalCallback : JSFunction(jsName = "intervalCallback") {
             override fun run() {
                 super.run()
                 calls++
@@ -310,7 +310,7 @@ class ContextTests {
     @Test
     fun testAPI_TextDecoder() {
         val runner = Runner()
-        val context = runner.createContext(".io.ionic.android_js_engine")
+        val context = runner.createContext("io.ionic.android_js_engine")
 
         var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));", true)
         assertEquals("Привет, мир!", value.getStringValue())
@@ -319,6 +319,52 @@ class ContextTests {
         assertEquals("\uD842\uDFB7", value.getStringValue())
 
         runner.destroy()
+    }
+
+    @Test
+    fun testAPI_Fetch() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+        context.start()
+
+        val future1 = CompletableFuture<Int>()
+        val future2 = CompletableFuture<Void>()
+
+        class SuccessCallback : JSFunction(jsName = "successCallback") {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+                print("called success callback")
+                future1.complete(calls)
+            }
+        }
+
+        val callback1 = SuccessCallback()
+
+        context.registerFunction("successCallback", callback1)
+
+//        val basicFetchExample = """
+//            fetch('https://jsonplaceholder.typicode.com/todos/1')
+//                .then(response => response.json())
+//                .then(json => { console.log(JSON.stringify(json)); successCallback(); })
+//                .catch(err => { console.error(err);  successCallback(); });
+//        """.trimIndent()
+
+        val basicFetchExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(() => { console.log("callback completed"); successCallback(); })
+                .catch(err => { console.error(err);  successCallback(); });
+            console.log("starting fetch");
+        """.trimIndent()
+
+        context.execute(basicFetchExample)
+
+        assertEquals(1, future1.get(10, TimeUnit.SECONDS))
+
+        context.stop()
+        runner.destroy()
+
     }
 
     @Test
@@ -349,8 +395,4 @@ class ContextTests {
 
         runner.destroy()
     }
-
-
-
-
 }

@@ -22,6 +22,7 @@ Context::Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject ap
     this->init_api_crypto();
     this->init_api_timeout();
     this->init_api_text();
+    this->init_api_fetch();
 
     JS_SetContextOpaque(this->ctx, this);
 
@@ -230,19 +231,6 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
     return ret_value;
 }
 
-void Context::register_function(const std::string &func_name, jobject func) {
-    int size = this->functions.size();
-
-    this->function_index[func_name] = size;
-    this->functions.push_back(func);
-
-    JSValue global_obj = JS_GetGlobalObject(this->ctx);
-
-    JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunction(this->ctx, call_global_function, func_name.c_str(), 1));
-
-    JS_FreeValue(this->ctx, global_obj);
-}
-
 void Context::init_api_console() const {
     JSValue global_obj, console;
 
@@ -299,14 +287,27 @@ void Context::init_api_text() const {
     init_text_decoder_class(this->ctx);
 }
 
+void Context::init_api_fetch() const {
+    JSValue global_obj = JS_GetGlobalObject(this->ctx);
+
+    JS_SetPropertyStr(this->ctx, global_obj, "fetch", JS_NewCFunction(this->ctx, api_fetch_promise, "fetch", 2));
+
+    JS_FreeValue(this->ctx, global_obj);
+}
+
 std::string get_function_name(JSContext *ctx) {
     JS_FreeValue(ctx, JS_ThrowTypeError(ctx, "callstack"));
     JSValue exception = JS_GetException(ctx);
+    JS_ResetUncatchableError(ctx);
 
     JSValue stack_val = JS_GetPropertyStr(ctx, exception, "stack");
     std::string callstack(JS_ToCString(ctx, stack_val));
 
     auto first_line = callstack.substr(0, callstack.find('\n'));
+
+    if (first_line.empty()) {
+        return "";
+    }
 
     auto name = first_line.replace(first_line.find("(native)"), sizeof("(native)") - 1, "");
     name.erase(std::remove_if(name.begin(), name.end(), ::isspace), name.end());
@@ -314,9 +315,22 @@ std::string get_function_name(JSContext *ctx) {
 
     JS_FreeValue(ctx, stack_val);
     JS_FreeValue(ctx, exception);
-    JS_ResetUncatchableError(ctx);
+
 
     return name;
+}
+
+void Context::register_function(const std::string &func_name, jobject func) {
+    int size = this->functions.size();
+
+    this->function_index.insert({func_name, size});
+    this->functions.push_back(func);
+
+    JSValue global_obj = JS_GetGlobalObject(this->ctx);
+
+    JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunction(this->ctx, call_global_function, func_name.c_str(), 1));
+
+    JS_FreeValue(this->ctx, global_obj);
 }
 
 JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
@@ -334,10 +348,16 @@ JSValue call_global_function(JSContext *ctx, JSValueConst this_val, int argc, JS
         }
     }
 
-    auto func_name = get_function_name(ctx);
+    jobject j_func;
 
-    int func_index = parent_ctx->function_index[func_name];
-    auto j_func = parent_ctx->functions[func_index];
+    try {
+        auto func_name = get_function_name(ctx);
+        auto func_index = parent_ctx->function_index.at(func_name);
+
+        j_func = parent_ctx->functions[func_index];
+    } catch (const std::exception& e) {
+        j_func = nullptr;
+    }
 
     if (j_func != nullptr) {
         jclass j_function_class = thread_env->GetObjectClass(j_func);
