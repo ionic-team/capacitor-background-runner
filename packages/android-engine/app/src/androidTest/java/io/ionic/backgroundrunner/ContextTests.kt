@@ -1,6 +1,5 @@
 package io.ionic.backgroundrunner
 
-import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.ionic.android_js_engine.JSFunction
 import io.ionic.android_js_engine.Runner
@@ -12,7 +11,6 @@ import org.json.JSONObject
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.sql.Time
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
@@ -329,6 +327,7 @@ class ContextTests {
 
         val future1 = CompletableFuture<Int>()
         val future2 = CompletableFuture<Int>()
+        val future3 = CompletableFuture<Int>()
 
         class SuccessCallback : JSFunction(jsName = "successCallback") {
             public var calls: Int = 0
@@ -349,11 +348,22 @@ class ContextTests {
             }
         }
 
+        class OptionsSuccessCallback : JSFunction(jsName = "successCallback2") {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+                future3.complete(calls)
+            }
+        }
+
         val callback1 = SuccessCallback()
         val callback2 = FailureCallback()
+        val callback3 = OptionsSuccessCallback();
 
         context.registerFunction("successCallback", callback1)
         context.registerFunction("failureCallback", callback2)
+        context.registerFunction("successCallback2", callback3)
 
         val basicFetchExample = """
             fetch('https://jsonplaceholder.typicode.com/todos/1')
@@ -393,11 +403,15 @@ class ContextTests {
 
         context.execute(basicFetchExample)
 
-        assertEquals(1, future1.get(10, TimeUnit.SECONDS))
+        assertEquals(1, future1.get(5, TimeUnit.SECONDS))
 
         context.execute(fetchFailureExample)
 
         assertEquals(1, future2.get(5, TimeUnit.SECONDS))
+
+        context.execute(fetchWithOptionsExample)
+
+        assertEquals(1, future3.get(5, TimeUnit.SECONDS))
 
         context.stop()
         runner.destroy()

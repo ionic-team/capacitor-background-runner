@@ -15,6 +15,9 @@ JNIClasses::JNIClasses(JNIEnv *env)
     this->context_api_fetch_method = env->GetMethodID(this->context_api_class, "fetch", "(Ljava/lang/String;)Lio/ionic/android_js_engine/JSResponse;");
     this->check_exception(env);
 
+    this->context_api_byteArrayToString_method = env->GetMethodID(this->context_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
+    this->check_exception(env);
+
     this->js_response_ok_field = env->GetFieldID(this->js_response_class, "ok", "Z");
     this->check_exception(env);
 

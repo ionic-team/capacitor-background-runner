@@ -9,6 +9,7 @@ public:
     jclass js_response_class;
 
     jmethodID context_api_fetch_method;
+    jmethodID context_api_byteArrayToString_method;
 
     jfieldID js_response_ok_field;
     jfieldID js_response_status_field;
