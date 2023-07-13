@@ -1,7 +1,11 @@
 package io.ionic.android_js_engine
 
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.lang.Exception
 import java.net.URL
 import java.nio.charset.Charset
@@ -54,13 +58,30 @@ class ContextAPI {
         return Charset.forName(encoding)
     }
 
-    fun fetch(urlStr: String): JSResponse {
+    fun fetch(urlStr: String, options: JSFetchOptions?): JSResponse {
         try {
             val url = URL(urlStr)
             val client = OkHttpClient()
 
+            var postBody: RequestBody? = null
+
             val builder = Request.Builder()
             builder.url(url)
+
+            if (options != null) {
+                val contentType = options.headers["Content-Type"];
+
+                if (options.body != null) {
+                    postBody =
+                        options.body!!.toRequestBody(contentType?.toMediaType(), 0, options.body!!.size)
+                }
+
+                builder.method(options.httpMethod, postBody)
+
+                options.headers.forEach {
+                    builder.addHeader(it.key, it.value)
+                }
+            }
 
             val response = client.newCall(builder.build()).execute()
 

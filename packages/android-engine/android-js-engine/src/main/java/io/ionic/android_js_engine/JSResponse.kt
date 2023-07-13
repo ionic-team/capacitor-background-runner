@@ -17,19 +17,4 @@ class JSResponse(statusCode: Int, url: String, data: ByteArray?, error: String?)
         this.data = data
         this.error = error
     }
-
-    fun blob(): ByteArray? {
-        return data
-    }
-
-    fun text(): String {
-        val data = this.data ?: return ""
-        return data.toString()
-    }
-
-    fun json(): JSONObject? {
-        val data = this.data ?: return null
-
-        return JSONObject(data.toString());
-    }
 }

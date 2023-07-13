@@ -169,7 +169,30 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv)
 
     auto j_url_str = env->NewStringUTF(c_url_str);
 
-    auto response = env->CallObjectMethod(parent_ctx->api, parent_ctx->jni_classes->context_api_fetch_method, j_url_str);
+    jobject j_options = nullptr;
+
+    if (!JS_IsNull(options) && !JS_IsUndefined(options)) {
+        auto options_json = parent_ctx->stringifyJSON(options);
+        auto j_options_json = env->NewStringUTF(options_json.c_str());
+
+        j_options = env->NewObject(parent_ctx->jni_classes->js_fetch_options_class, parent_ctx->jni_classes->js_fetch_options_constructor, j_options_json);
+
+        jni_exception = check_and_throw_jni_exception(env, ctx);
+        if (JS_IsException(jni_exception)) {
+            JS_Call(ctx, reject, global_obj, 1, (JSValueConst *)&jni_exception);
+            JS_FreeValue(ctx, global_obj);
+            env->DeleteLocalRef(j_options_json);
+
+            parent_ctx->vm->DetachCurrentThread();
+
+            return JS_UNDEFINED;
+        }
+
+        env->DeleteLocalRef(j_options_json);
+    }
+
+    auto response = env->CallObjectMethod(parent_ctx->api, parent_ctx->jni_classes->context_api_fetch_method, j_url_str,
+                                          j_options);
     jni_exception = check_and_throw_jni_exception(env, ctx);
     if (JS_IsException(jni_exception)) {
         JS_Call(ctx, reject, global_obj, 1, (JSValueConst *)&jni_exception);

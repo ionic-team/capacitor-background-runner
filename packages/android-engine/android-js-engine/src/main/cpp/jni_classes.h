@@ -7,9 +7,11 @@ class JNIClasses {
 public:
     jclass context_api_class;
     jclass js_response_class;
+    jclass js_fetch_options_class;
 
     jmethodID context_api_fetch_method;
     jmethodID context_api_byteArrayToString_method;
+    jmethodID js_fetch_options_constructor;
 
     jfieldID js_response_ok_field;
     jfieldID js_response_status_field;

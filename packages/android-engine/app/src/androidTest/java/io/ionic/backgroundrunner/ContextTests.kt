@@ -394,13 +394,6 @@ class ContextTests {
             .then(json => { console.log(JSON.stringify(json)); successCallback2(); })
         """.trimIndent()
 
-//        val basicFetchExample = """
-//            fetch('https://jsonplaceholder.typicode.com/todos/1')
-//                .then(() => { console.log("callback completed"); successCallback(); })
-//                .catch(err => { console.error(err);  successCallback(); });
-//            console.log("starting fetch");
-//        """.trimIndent()
-
         context.execute(basicFetchExample)
 
         assertEquals(1, future1.get(5, TimeUnit.SECONDS))

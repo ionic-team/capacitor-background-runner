@@ -12,10 +12,17 @@ JNIClasses::JNIClasses(JNIEnv *env)
     this->js_response_class = env->FindClass("io/ionic/android_js_engine/JSResponse");
     this->check_exception(env);
 
-    this->context_api_fetch_method = env->GetMethodID(this->context_api_class, "fetch", "(Ljava/lang/String;)Lio/ionic/android_js_engine/JSResponse;");
+    this->js_fetch_options_class = env->FindClass("io/ionic/android_js_engine/JSFetchOptions");
+    this->check_exception(env);
+    this->js_fetch_options_class = reinterpret_cast<jclass>(env->NewGlobalRef(this->js_fetch_options_class));
+
+    this->context_api_fetch_method = env->GetMethodID(this->context_api_class, "fetch", "(Ljava/lang/String;Lio/ionic/android_js_engine/JSFetchOptions;)Lio/ionic/android_js_engine/JSResponse;");
     this->check_exception(env);
 
     this->context_api_byteArrayToString_method = env->GetMethodID(this->context_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
+    this->check_exception(env);
+
+    this->js_fetch_options_constructor = env->GetMethodID(this->js_fetch_options_class, "<init>", "(Ljava/lang/String;)V");
     this->check_exception(env);
 
     this->js_response_ok_field = env->GetFieldID(this->js_response_class, "ok", "Z");

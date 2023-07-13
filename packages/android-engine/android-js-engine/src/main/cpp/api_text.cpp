@@ -148,11 +148,11 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
   }
 
   jmethodID j_method = parent_ctx->env->GetMethodID(j_context_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
+  jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
 
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
+  if (JS_IsException(jni_exception)) {
+      return jni_exception;
+  }
 
   auto encoding = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "label"));
   jstring j_encoding = parent_ctx->env->NewStringUTF(encoding);
