@@ -180,7 +180,7 @@ class ContextTests {
 
         context.execute("addEventListener('myEventCallback', (details) => { details.completed() });")
         context.dispatchEvent("myEventCallback", callbackObject)
-        assertEquals(1, future4.get())
+        assertEquals(1, future4.get(5, TimeUnit.SECONDS))
 
         runner.destroy()
     }
@@ -198,6 +198,7 @@ class ContextTests {
         runner.destroy()
     }
 
+    // TODO: Flakey test - intermittent unfreed structs
     @Test
     fun testAPI_SetTimeout() {
         val runner = Runner()

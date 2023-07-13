@@ -49,6 +49,10 @@ Context::~Context() {
         JS_FreeValue(this->ctx, kv.second.js_func);
     }
 
+    for (const auto &kv : this->registered_functions) {
+        delete kv.second;
+    }
+
     JS_FreeValue(this->ctx, this->global_json_obj);
     JS_FreeContext(this->ctx);
 }
@@ -162,11 +166,12 @@ JSValue Context::parseJSON(const std::string &json_string) const {
             if (prefix == "__cbr::") {
                 try {
                     auto global_func_name = str_value.substr(7);
-                    //                    this->function_index.at(global_func_name);
 
-                    JS_SetPropertyStr(this->ctx, parsed, key, JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 0,
-                                                                                  nullptr));
+                    JavaFunctionData* func_data = this->registered_functions.at(global_func_name);
+                    JSValue ptr[1] = { JS_NewBigInt64(this->ctx, reinterpret_cast<int64_t>(func_data)) };
 
+                    JS_SetPropertyStr(this->ctx, parsed, key, JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1,
+                                                                                  ptr));
                 } catch (std::exception &ex) {
                 }
             }
@@ -326,6 +331,8 @@ void Context::register_function(const std::string &func_name, jobject func) {
     JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
     JavaFunctionData* func_data = new JavaFunctionData(func_name, func);
+    this->registered_functions.insert({ func_name, func_data });
+
     JSValue ptr[1] = { JS_NewBigInt64(this->ctx, reinterpret_cast<int64_t>(func_data)) };
 
     JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
@@ -355,7 +362,7 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
         }
     }
 
-    if (j_func_data->j_func != nullptr) {
+    if (j_func_data != nullptr && j_func_data->j_func != nullptr) {
         jclass j_function_class = thread_env->GetObjectClass(j_func_data->j_func);
         jni_exception = check_and_throw_jni_exception(thread_env, ctx);
 
