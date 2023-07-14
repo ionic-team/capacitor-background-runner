@@ -19,6 +19,9 @@
 #include "api_fetch.h"
 
 #include "api_kv.h"
+#include "api_device.h"
+#include "api_notifications.h"
+#include "api_geolocation.h"
 
 JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data);
 
@@ -84,6 +87,9 @@ private:
     void init_api_fetch() const;
 
     void init_capacitor_kv_api() const;
+    void init_capacitor_device_api() const;
+    void init_capacitor_notifications_api() const;
+    void init_capacitor_geolocation_api() const;
 };
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H

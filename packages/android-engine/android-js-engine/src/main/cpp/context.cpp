@@ -337,6 +337,7 @@ void Context::init_capacitor_api(jobject cap_api)  {
     this->capacitor_api = cap_api;
 
     this->init_capacitor_kv_api();
+    this->init_capacitor_geolocation_api();
 }
 
 void Context::init_capacitor_kv_api() const {
@@ -352,7 +353,45 @@ void Context::init_capacitor_kv_api() const {
     JS_SetPropertyStr(this->ctx, global_obj, "CapacitorKV", kv);
 
     JS_FreeValue(this->ctx, global_obj);
+}
 
+void Context::init_capacitor_device_api() const {
+    JSValue global_obj, device;
+
+    global_obj = JS_GetGlobalObject(this->ctx);
+
+    device = JS_NewObject(this->ctx);
+    JS_SetPropertyStr(this->ctx, device, "getBatteryStatus", JS_NewCFunction(this->ctx, api_device_battery, "getBatteryStatus", 0));
+
+    JS_SetPropertyStr(this->ctx, global_obj, "CapacitorDevice", device);
+
+    JS_FreeValue(this->ctx, global_obj);
+}
+
+void Context::init_capacitor_notifications_api() const {
+    JSValue global_obj, notifications;
+
+    global_obj = JS_GetGlobalObject(this->ctx);
+
+    notifications = JS_NewObject(this->ctx);
+    JS_SetPropertyStr(this->ctx, notifications, "schedule", JS_NewCFunction(this->ctx, api_notifications_schedule, "schedule", 1));
+
+    JS_SetPropertyStr(this->ctx, global_obj, "CapacitorNotifications", notifications);
+
+    JS_FreeValue(this->ctx, global_obj);
+}
+
+void Context::init_capacitor_geolocation_api() const {
+    JSValue global_obj, geolocation;
+
+    global_obj = JS_GetGlobalObject(this->ctx);
+    geolocation = JS_NewObject(this->ctx);
+
+    JS_SetPropertyStr(this->ctx, geolocation, "getCurrentPosition", JS_NewCFunction(this->ctx, api_geolocation_current_location, "getCurrentPosition", 0));
+
+    JS_SetPropertyStr(this->ctx, global_obj, "CapacitorGeolocation", geolocation);
+
+    JS_FreeValue(this->ctx, global_obj);
 }
 
 JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {

@@ -1,26 +1,36 @@
 package io.ionic.backgroundrunner.plugin;
 
+import android.Manifest
 import android.util.Log
-import androidx.work.Data
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.OneTimeWorkRequest
-import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkManager
+import com.getcapacitor.JSArray
 import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
 import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
+import com.getcapacitor.annotation.Permission
+import com.getcapacitor.annotation.PermissionCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.Exception
-import java.util.concurrent.TimeUnit
+import io.ionic.android_js_engine.api.Geolocation
+import org.json.JSONObject
 
-@CapacitorPlugin(name = "BackgroundRunner")
+@CapacitorPlugin(
+    name = "BackgroundRunner",
+    permissions = [
+        Permission(
+            strings = [Manifest.permission.ACCESS_COARSE_LOCATION],
+            alias = BackgroundRunnerPlugin.GEOLOCATION
+        )
+    ]
+)
 class BackgroundRunnerPlugin: Plugin() {
     private var impl: BackgroundRunner? = null
+
+    companion object {
+        const val GEOLOCATION = "geolocation"
+    }
 
     override fun load() {
         super.load()
@@ -32,6 +42,22 @@ class BackgroundRunnerPlugin: Plugin() {
                 impl?.scheduleBackgroundTask(this.context)
             }
         }
+    }
+
+    @PluginMethod
+    override fun checkPermissions(call: PluginCall) {
+        super.checkPermissions(call)
+    }
+
+    @PluginMethod
+    override fun requestPermissions(call: PluginCall) {
+        val apiToRequest = call.getArray("apis").toList<String>()
+        super.requestPermissionForAliases(apiToRequest.toTypedArray(), call, "completePermissionsCallback")
+    }
+
+    @PermissionCallback
+    fun completePermissionsCallback(call: PluginCall) {
+        super.checkPermissions(call)
     }
 
     @PluginMethod

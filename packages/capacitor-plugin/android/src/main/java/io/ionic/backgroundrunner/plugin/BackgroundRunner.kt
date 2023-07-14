@@ -16,7 +16,6 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.lang.Exception
-import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 
@@ -53,6 +52,10 @@ class BackgroundRunner(context: android.content.Context) {
         config ?: throw Exception("...no runner config to schedule")
 
         val interval = config.interval ?: throw Exception("cannot register background task without a configured interval")
+
+        if (!config.autoSchedule) {
+            return return
+        }
 
         val data = Data.Builder()
             .putString("label", config.label)
@@ -141,7 +144,7 @@ class BackgroundRunner(context: android.content.Context) {
         }
 
         val newContext  = runner!!.createContext(config.label)
-        
+
         val api = CapacitorAPI(context, config.label)
         newContext.setCapacitorAPI(api)
 

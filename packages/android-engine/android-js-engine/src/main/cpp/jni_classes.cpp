@@ -47,6 +47,11 @@ JNIClasses::JNIClasses(JNIEnv *env)
     this->capacitor_api_kv_field =  env->GetFieldID(this->capacitor_api_class, "kv", "Lio/ionic/android_js_engine/api/KV;");
     this->check_exception(env);
 
+    this->capacitor_api_device_field = env->GetFieldID(this->capacitor_api_class, "device", "Lio/ionic/android_js_engine/api/Device;");
+    this->check_exception(env);
+
+    this->capacitor_api_geolocation_field = env->GetFieldID(this->capacitor_api_class, "geolocation", "Lio/ionic/android_js_engine/api/Geolocation;");
+    this->check_exception(env);
 }
 
 void JNIClasses::check_exception(JNIEnv *env)

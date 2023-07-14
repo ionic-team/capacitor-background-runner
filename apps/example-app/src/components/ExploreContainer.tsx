@@ -281,10 +281,10 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton onClick={onTestKV}>Test KV</IonButton>
       <IonButton onClick={onTestGetKV}>Test Get KV</IonButton>
       <IonButton onClick={onTestNotification}>Test Notification</IonButton>
-      <IonButton onClick={onTestLocation}>Get Last Known Location</IonButton>
-      <IonButton onClick={onTestCurrentLocation}>Get Current Location</IonButton>
-      <IonButton onClick={onTestStartLiveLocation}>Start Live Location</IonButton>
-      <IonButton onClick={onTestStopLiveLocation}>Stop Live Location</IonButton>
+      <IonButton onClick={onTestLocation}>GetLast Known Location</IonButton>
+      {/* <IonButton onClick={onTestCurrentLocation}>Get Current Location</IonButton> */}
+      {/* <IonButton onClick={onTestStartLiveLocation}>Start Live Location</IonButton> */}
+      {/* <IonButton onClick={onTestStopLiveLocation}>Stop Live Location</IonButton> */}
       <IonButton onClick={onMonitorLocation}>Record Location</IonButton>
       <IonButton onClick={onGetTrackedLocations}>Get Location Report</IonButton>
       <IonButton onClick={onCheckWatchReachable}>Check Watch Status</IonButton>
