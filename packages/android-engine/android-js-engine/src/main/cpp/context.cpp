@@ -10,6 +10,8 @@ JavaFunctionData::JavaFunctionData(const std::string &name, jobject func) {
     this->j_func = func;
 }
 
+JavaFunctionData::~JavaFunctionData() {}
+
 Context::Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject api_instance) {
     this->ctx = JS_NewContext(rt);
     this->name = name;
@@ -49,9 +51,7 @@ Context::~Context() {
         JS_FreeValue(this->ctx, kv.second.js_func);
     }
 
-    for (const auto &kv : this->registered_functions) {
-        delete kv.second;
-    }
+    this->registered_functions.clear();
 
     JS_FreeValue(this->ctx, this->global_json_obj);
     JS_FreeContext(this->ctx);
@@ -166,9 +166,9 @@ JSValue Context::parseJSON(const std::string &json_string) const {
             if (prefix == "__cbr::") {
                 try {
                     auto global_func_name = str_value.substr(7);
+                    auto func_data = this->registered_functions.at(global_func_name);
 
-                    JavaFunctionData* func_data = this->registered_functions.at(global_func_name);
-                    JSValue ptr[1] = { JS_NewBigInt64(this->ctx, reinterpret_cast<int64_t>(func_data)) };
+                    JSValue ptr[1] = { JS_NewString(this->ctx, global_func_name.c_str()) };
 
                     JS_SetPropertyStr(this->ctx, parsed, key, JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1,
                                                                                   ptr));
@@ -328,16 +328,8 @@ void Context::init_api_fetch() const {
 }
 
 void Context::register_function(const std::string &func_name, jobject func) {
-    JSValue global_obj = JS_GetGlobalObject(this->ctx);
-
-    JavaFunctionData* func_data = new JavaFunctionData(func_name, func);
-    this->registered_functions.insert({ func_name, func_data });
-
-    JSValue ptr[1] = { JS_NewBigInt64(this->ctx, reinterpret_cast<int64_t>(func_data)) };
-
-    JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
-
-    JS_FreeValue(this->ctx, global_obj);
+    JavaFunctionData func_data = JavaFunctionData(func_name, func);
+    this->registered_functions.insert_or_assign(func_name, func_data);
 }
 
 JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {
@@ -345,13 +337,11 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
     JSValue jni_exception;
 
     JNIEnv *thread_env = nullptr;
-    JSValue ptr = func_data[0];
+    JSValue func_name_obj = func_data[0];
 
-    int64_t j_func_data_ptr;
-
-    JS_ToBigInt64(ctx, &j_func_data_ptr, ptr);
-
-    auto* j_func_data = (JavaFunctionData *)j_func_data_ptr;
+    auto func_name = JS_ToCString(ctx, func_name_obj);
+    auto func_name_str = std::string(func_name);
+    JS_FreeCString(ctx, func_name);
 
     auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
@@ -362,39 +352,39 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
         }
     }
 
-    if (j_func_data != nullptr && j_func_data->j_func != nullptr) {
-        jclass j_function_class = thread_env->GetObjectClass(j_func_data->j_func);
-        jni_exception = check_and_throw_jni_exception(thread_env, ctx);
+    auto j_func_data = parent_ctx->registered_functions.at(func_name);
 
-        if (JS_IsException(jni_exception)) {
-            return jni_exception;
-        }
+    jclass j_function_class = thread_env->GetObjectClass(j_func_data.j_func);
+    jni_exception = check_and_throw_jni_exception(thread_env, ctx);
 
-        jmethodID j_method = thread_env->GetMethodID(j_function_class, "run", "()V");
-        jni_exception = check_and_throw_jni_exception(thread_env, ctx);
-
-        if (JS_IsException(jni_exception)) {
-            return jni_exception;
-        }
-
-        JSValue args = argv[0];
-        if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
-            auto json_string = parent_ctx->stringifyJSON(args);
-            jstring j_json_string = thread_env->NewStringUTF(json_string.c_str());
-
-            // create a JSONObject
-            jclass json_object_c = thread_env->FindClass("org/json/JSONObject");
-            jmethodID json_object_cnstrctr = thread_env->GetMethodID(json_object_c, "<init>", "(Ljava/lang/String;)V");
-
-            jobject json_object = thread_env->NewObject(json_object_c, json_object_cnstrctr, j_json_string);
-
-            jfieldID args_field = thread_env->GetFieldID(j_function_class, "args", "Lorg/json/JSONObject;");
-
-            thread_env->SetObjectField(j_func_data->j_func, args_field, json_object);
-        }
-
-        thread_env->CallVoidMethod(j_func_data->j_func, j_method);
+    if (JS_IsException(jni_exception)) {
+        return jni_exception;
     }
+
+    jmethodID j_method = thread_env->GetMethodID(j_function_class, "run", "()V");
+    jni_exception = check_and_throw_jni_exception(thread_env, ctx);
+
+    if (JS_IsException(jni_exception)) {
+        return jni_exception;
+    }
+
+    JSValue args = argv[0];
+    if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
+        auto json_string = parent_ctx->stringifyJSON(args);
+        jstring j_json_string = thread_env->NewStringUTF(json_string.c_str());
+
+        // create a JSONObject
+        jclass json_object_c = thread_env->FindClass("org/json/JSONObject");
+        jmethodID json_object_cnstrctr = thread_env->GetMethodID(json_object_c, "<init>", "(Ljava/lang/String;)V");
+
+        jobject json_object = thread_env->NewObject(json_object_c, json_object_cnstrctr, j_json_string);
+
+        jfieldID args_field = thread_env->GetFieldID(j_function_class, "args", "Lorg/json/JSONObject;");
+
+        thread_env->SetObjectField(j_func_data.j_func, args_field, json_object);
+    }
+
+    thread_env->CallVoidMethod(j_func_data.j_func, j_method);
 
     return ret_value;
 }
