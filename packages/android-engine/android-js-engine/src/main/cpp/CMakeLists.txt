@@ -5,7 +5,9 @@ project("android_js_engine")
 add_library(
         ${PROJECT_NAME}
         SHARED
-        errors.cpp jni_classes.cpp context.cpp runner.cpp native_runner.cpp native_context.cpp api_console.cpp api_crypto.cpp api_events.cpp api_text.cpp api_timeout.cpp api_fetch.cpp)
+        errors.cpp jni_classes.cpp context.cpp runner.cpp native_runner.cpp native_context.cpp api_console.cpp api_crypto.cpp api_events.cpp api_text.cpp api_timeout.cpp api_fetch.cpp
+        api_kv.cpp
+)
 
 find_library(
         log-lib

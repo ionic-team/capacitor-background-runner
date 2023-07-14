@@ -8,6 +8,7 @@ public:
     jclass context_api_class;
     jclass js_response_class;
     jclass js_fetch_options_class;
+    jclass capacitor_api_class;
 
     jmethodID context_api_fetch_method;
     jmethodID context_api_byteArrayToString_method;
@@ -18,6 +19,7 @@ public:
     jfieldID js_response_url_field;
     jfieldID js_response_data_field;
     jfieldID js_response_error_field;
+    jfieldID capacitor_api_kv_field;
 
     JNIClasses(JNIEnv *env);
 

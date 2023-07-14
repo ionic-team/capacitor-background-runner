@@ -101,7 +101,9 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_6_Pro_API_33" value="120" />
+                  <entry key="R5CR50ZSBZB" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G991U1" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

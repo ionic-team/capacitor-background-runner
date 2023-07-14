@@ -10,9 +10,10 @@ JavaFunctionData::JavaFunctionData(const std::string &name, jobject func) {
     this->j_func = func;
 }
 
-JavaFunctionData::~JavaFunctionData() {}
-
 Context::Context(const std::string& name, JSRuntime* rt, JNIEnv *env, jobject api_instance) {
+    this->vm = nullptr;
+    this->capacitor_api = nullptr;
+
     this->ctx = JS_NewContext(rt);
     this->name = name;
     this->env = env;
@@ -330,6 +331,26 @@ void Context::init_api_fetch() const {
 void Context::register_function(const std::string &func_name, jobject func) {
     JavaFunctionData func_data = JavaFunctionData(func_name, func);
     this->registered_functions.insert_or_assign(func_name, func_data);
+}
+
+void Context::init_capacitor_api(jobject cap_api)  {
+    this->capacitor_api = cap_api;
+
+    this->init_capacitor_kv_api();
+}
+
+void Context::init_capacitor_kv_api() const {
+    JSValue global_obj, kv;
+
+    global_obj = JS_GetGlobalObject(this->ctx);
+
+    kv = JS_NewObject(this->ctx);
+
+    JS_SetPropertyStr(this->ctx, global_obj, "CapacitorKV", kv);
+    JS_SetPropertyStr(this->ctx, global_obj, "set", JS_NewCFunction(this->ctx, api_kv_set, "set", 2));
+
+    JS_FreeValue(this->ctx, global_obj);
+
 }
 
 JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {

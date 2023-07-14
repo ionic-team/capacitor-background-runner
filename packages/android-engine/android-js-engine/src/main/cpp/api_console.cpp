@@ -1,6 +1,6 @@
 #include "api_console.h"
 
-#include "Context.h"
+#include "context.h"
 
 void write_to_logcat(android_LogPriority priority, const char *tag, const char *message) {
   __android_log_write(priority, tag, message);

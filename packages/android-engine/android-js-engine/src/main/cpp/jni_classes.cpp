@@ -39,6 +39,14 @@ JNIClasses::JNIClasses(JNIEnv *env)
 
     this->js_response_error_field = env->GetFieldID(this->js_response_class, "error", "Ljava/lang/String;");
     this->check_exception(env);
+
+    // Capacitor API
+    this->capacitor_api_class = env->FindClass("io/ionic/android_js_engine/api/CapacitorAPI");
+    this->check_exception(env);
+
+    this->capacitor_api_kv_field =  env->GetFieldID(this->capacitor_api_class, "kv", "Lio/ionic/android_js_engine/api/KV;");
+    this->check_exception(env);
+
 }
 
 void JNIClasses::check_exception(JNIEnv *env)

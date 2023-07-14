@@ -18,6 +18,8 @@
 #include "api_text.h"
 #include "api_fetch.h"
 
+#include "api_kv.h"
+
 JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data);
 
 class JavaFunctionData {
@@ -39,6 +41,7 @@ public:
     JNIClasses *jni_classes;
 
     jobject api;
+    jobject capacitor_api;
 
     std::unordered_multimap<std::string, JSValue> event_listeners;
     std::unordered_map<int, Timer> timers;
@@ -61,6 +64,7 @@ public:
     JSValue parseJSON(const std::string& json_string) const;
     std::string stringifyJSON(JSValue object) const;
 
+    void init_capacitor_api(jobject cap_api);
 private:
     JSValue global_json_obj;
 
@@ -78,7 +82,8 @@ private:
     void init_api_timeout() const;
     void init_api_text() const;
     void init_api_fetch() const;
-//    void init_api_kv() const;
+
+    void init_capacitor_kv_api() const;
 };
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H
