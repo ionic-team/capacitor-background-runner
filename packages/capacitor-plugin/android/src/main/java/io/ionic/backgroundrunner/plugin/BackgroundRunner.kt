@@ -10,6 +10,7 @@ import androidx.work.WorkManager
 import io.ionic.android_js_engine.Context
 import io.ionic.android_js_engine.JSFunction
 import io.ionic.android_js_engine.Runner
+import io.ionic.android_js_engine.api.CapacitorAPI
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.json.JSONObject
 import java.io.BufferedReader
@@ -140,8 +141,9 @@ class BackgroundRunner(context: android.content.Context) {
         }
 
         val newContext  = runner!!.createContext(config.label)
-
-        // TODO: Setup capacitor api
+        
+        val api = CapacitorAPI(context, config.label)
+        newContext.setCapacitorAPI(api)
 
         newContext.execute(srcFile, false)
 

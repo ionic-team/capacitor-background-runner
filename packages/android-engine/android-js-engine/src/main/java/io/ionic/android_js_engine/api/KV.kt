@@ -3,11 +3,11 @@ package io.ionic.android_js_engine.api
 import android.content.Context
 import android.content.SharedPreferences
 
-class KV (context: android.content.Context) {
+class KV (context: android.content.Context, label: String) {
     private val prefs: SharedPreferences
 
     init {
-        this.prefs = context.getSharedPreferences("", Context.MODE_PRIVATE)
+        this.prefs = context.getSharedPreferences(label, Context.MODE_PRIVATE)
     }
 
     fun set(key: String, value: String) {

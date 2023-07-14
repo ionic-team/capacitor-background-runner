@@ -345,9 +345,11 @@ void Context::init_capacitor_kv_api() const {
     global_obj = JS_GetGlobalObject(this->ctx);
 
     kv = JS_NewObject(this->ctx);
+    JS_SetPropertyStr(this->ctx, kv, "set", JS_NewCFunction(this->ctx, api_kv_set, "set", 2));
+    JS_SetPropertyStr(this->ctx, kv, "get", JS_NewCFunction(this->ctx, api_kv_get, "get", 1));
+    JS_SetPropertyStr(this->ctx, kv, "remove", JS_NewCFunction(this->ctx, api_kv_get, "remove", 1));
 
     JS_SetPropertyStr(this->ctx, global_obj, "CapacitorKV", kv);
-    JS_SetPropertyStr(this->ctx, global_obj, "set", JS_NewCFunction(this->ctx, api_kv_set, "set", 2));
 
     JS_FreeValue(this->ctx, global_obj);
 

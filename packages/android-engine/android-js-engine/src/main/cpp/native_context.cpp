@@ -98,5 +98,7 @@ JNIEXPORT void JNICALL
 Java_io_ionic_android_1js_1engine_Context_initCapacitorAPI(JNIEnv *env, jobject thiz, jlong ptr,
                                                            jobject api) {
     auto *ctx = (Context *)ptr;
-    ctx->init_capacitor_api(api);
+
+    auto api_instance = env->NewGlobalRef(api);
+    ctx->init_capacitor_api(api_instance);
 }

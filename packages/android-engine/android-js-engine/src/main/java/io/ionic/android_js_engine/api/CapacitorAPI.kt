@@ -1,9 +1,12 @@
 package io.ionic.android_js_engine.api
 
-class CapacitorAPI(context: android.content.Context) {
+class CapacitorAPI(context: android.content.Context, contextLabel: String) {
     private val kv: KV
+    private val label: String
 
     init {
-        kv = KV(context)
+        label = contextLabel
+
+        kv = KV(context, label)
     }
 }
