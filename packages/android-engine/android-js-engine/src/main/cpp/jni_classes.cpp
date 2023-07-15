@@ -52,6 +52,9 @@ JNIClasses::JNIClasses(JNIEnv *env)
 
     this->capacitor_api_geolocation_field = env->GetFieldID(this->capacitor_api_class, "geolocation", "Lio/ionic/android_js_engine/api/Geolocation;");
     this->check_exception(env);
+
+    this->capacitor_api_notification_field = env->GetFieldID(this->capacitor_api_class, "notifications", "Lio/ionic/android_js_engine/api/NotificationsAPI;");
+    this->check_exception(env);
 }
 
 void JNIClasses::check_exception(JNIEnv *env)

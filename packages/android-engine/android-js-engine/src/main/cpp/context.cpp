@@ -338,6 +338,7 @@ void Context::init_capacitor_api(jobject cap_api)  {
 
     this->init_capacitor_kv_api();
     this->init_capacitor_geolocation_api();
+    this->init_capacitor_notifications_api();
 }
 
 void Context::init_capacitor_kv_api() const {

@@ -100,6 +100,7 @@ addEventListener("scheduleNotification", (details) => {
       scheduleAt: scheduleDate,
     },
   ]);
+  
   details.completed();
 });
 

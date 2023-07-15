@@ -5,15 +5,19 @@ class CapacitorAPI(context: android.content.Context, contextLabel: String) {
 
     private val kv: KV
     private val device: Device
-    private val notifications: Notifications
+    private var notifications: NotificationsAPI?
     private val geolocation: Geolocation
 
     init {
         label = contextLabel
+        notifications = null
 
         kv = KV(context, label)
         device = Device(context)
-        notifications = Notifications(context)
         geolocation = Geolocation(context)
+    }
+
+    fun initNotificationsAPI(api: NotificationsAPI) {
+        this.notifications = api
     }
 }

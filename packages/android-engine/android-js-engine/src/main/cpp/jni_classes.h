@@ -21,6 +21,7 @@ public:
     jfieldID js_response_error_field;
     jfieldID capacitor_api_kv_field;
     jfieldID capacitor_api_device_field;
+    jfieldID capacitor_api_notification_field;
     jfieldID capacitor_api_geolocation_field;
 
     JNIClasses(JNIEnv *env);

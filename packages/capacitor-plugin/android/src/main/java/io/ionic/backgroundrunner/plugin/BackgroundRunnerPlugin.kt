@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import io.ionic.android_js_engine.api.Geolocation
+import io.ionic.backgroundrunner.plugin.api.Notifications
 import org.json.JSONObject
 
 @CapacitorPlugin(
@@ -22,6 +23,10 @@ import org.json.JSONObject
         Permission(
             strings = [Manifest.permission.ACCESS_COARSE_LOCATION],
             alias = BackgroundRunnerPlugin.GEOLOCATION
+        ),
+        Permission(
+            strings = [Manifest.permission.POST_NOTIFICATIONS],
+            alias = BackgroundRunnerPlugin.NOTIFICATIONS
         )
     ]
 )
@@ -30,6 +35,7 @@ class BackgroundRunnerPlugin: Plugin() {
 
     companion object {
         const val GEOLOCATION = "geolocation"
+        const val NOTIFICATIONS = "notifications"
     }
 
     override fun load() {
