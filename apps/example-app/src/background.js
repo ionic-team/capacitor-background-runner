@@ -90,7 +90,7 @@ addEventListener("testNetworkStatus", (details) => {
 
 addEventListener("scheduleNotification", (details) => {
   let scheduleDate = new Date();
-  scheduleDate.setSeconds(scheduleDate.getSeconds() + 15);
+  scheduleDate.setSeconds(scheduleDate.getSeconds() + 30);
 
   CapacitorNotifications.schedule([
     {
@@ -100,7 +100,7 @@ addEventListener("scheduleNotification", (details) => {
       scheduleAt: scheduleDate,
     },
   ]);
-  
+
   details.completed();
 });
 

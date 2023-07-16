@@ -1,7 +1,16 @@
 package io.ionic.backgroundrunner.plugin.api
 
 import android.R
+import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.ContentResolver
 import android.content.Context
+import android.content.Intent
+import android.media.AudioAttributes
+import android.net.Uri
+import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.getcapacitor.Logger.config
@@ -14,12 +23,19 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
     private val manager: NotificationManagerCompat
     private val context: android.content.Context
 
-    private val defaultSoundID = AssetUtil.RESOURCE_ID_ZERO_VALUE
-    private var defaultSmallIconID = AssetUtil.RESOURCE_ID_ZERO_VALUE
+
 
     init {
         this.context = context
         this.manager = NotificationManagerCompat.from(context)
+
+        this.createNotificationChannel()
+    }
+    companion object {
+        val notificationIntentKey = "LocalNotificationId"
+        var defaultSoundID = AssetUtil.RESOURCE_ID_ZERO_VALUE
+        var defaultSmallIconID = AssetUtil.RESOURCE_ID_ZERO_VALUE
+        val defaultNotificationChannelID = "default"
     }
 
     override fun schedule(jsonString: String) {
@@ -42,7 +58,7 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
             builder.setContentText(it.body)
             builder.setAutoCancel(it.autoCancel)
             builder.setOngoing(it.ongoing)
-            builder.setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            builder.priority = NotificationCompat.PRIORITY_DEFAULT
             builder.setGroupSummary(it.groupSummary != null)
             builder.setSmallIcon(it.smallIcon(this.context, getDefaultSmallIcon()))
 
@@ -53,8 +69,38 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
                 style.setSummaryText(it.summaryText)
             }
 
-            this.manager.notify(it.id, builder.build())
+            scheduleNotification(builder.build(), it)
         }
+    }
+
+    fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name: CharSequence = "Default"
+            val description = "Default"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(defaultNotificationChannelID, name, importance)
+            channel.description = description
+            val audioAttributes = AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setUsage(AudioAttributes.USAGE_ALARM)
+                .build()
+            val soundUri = this.getDefaultSoundUrl(context)
+            if (soundUri != null) {
+                channel.setSound(soundUri, audioAttributes)
+            }
+
+            val notificationManager = context.getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun getDefaultSoundUrl(context: Context): Uri? {
+        val soundId = getDefaultSound(context)
+        return if (soundId != AssetUtil.RESOURCE_ID_ZERO_VALUE) {
+            Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + soundId)
+        } else null
     }
 
     private fun getDefaultSmallIcon(): Int {
@@ -70,5 +116,46 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
         }
         defaultSmallIconID = resId
         return resId
+    }
+
+    private fun getDefaultSound(context: Context): Int {
+        if (defaultSoundID != AssetUtil.RESOURCE_ID_ZERO_VALUE) return defaultSoundID
+        var resId = AssetUtil.RESOURCE_ID_ZERO_VALUE
+        var soundConfigResourceName = config.getString("sound")
+        soundConfigResourceName = AssetUtil.getResourceBaseName(soundConfigResourceName)
+        if (soundConfigResourceName != null) {
+            resId = AssetUtil.getResourceID(context, soundConfigResourceName, "raw")
+        }
+        defaultSoundID = resId
+        return resId
+    }
+
+    private fun scheduleNotification(notification: android.app.Notification, request: Notification) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, TimedNotificationPublisher::class.java)
+        intent.putExtra(notificationIntentKey, request.id)
+        intent.putExtra(TimedNotificationPublisher.NOTIFICATION_KEY, notification)
+        var flags = PendingIntent.FLAG_CANCEL_CURRENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flags = flags or PendingIntent.FLAG_MUTABLE
+        }
+
+        val pendingIntent =
+            PendingIntent.getBroadcast(context, request.id, intent, flags)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, request.scheduleAt.time, pendingIntent);
+            } else {
+                alarmManager.set(AlarmManager.RTC, request.scheduleAt.time, pendingIntent);
+            }
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, request.scheduleAt.time, pendingIntent);
+            } else {
+                alarmManager.setExact(AlarmManager.RTC, request.scheduleAt.time, pendingIntent);
+            }
+        }
+
     }
 }

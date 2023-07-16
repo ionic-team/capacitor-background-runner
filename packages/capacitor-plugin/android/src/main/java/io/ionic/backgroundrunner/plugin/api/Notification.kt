@@ -1,10 +1,13 @@
 package io.ionic.backgroundrunner.plugin.api
 
+import android.annotation.SuppressLint
 import com.getcapacitor.plugin.util.AssetUtil
 import org.json.JSONObject
+import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.TimeZone
 
-
+@SuppressLint("SimpleDateFormat")
 class Notification(jsonObject: JSONObject) {
     var id: Int
     var title: String
@@ -23,6 +26,8 @@ class Notification(jsonObject: JSONObject) {
     var groupSummary: String? = null
     var channelId: String? = null
 
+    private val jsDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
     init {
         id = jsonObject.optInt("id", -1)
         title = jsonObject.optString("title", "")
@@ -30,8 +35,12 @@ class Notification(jsonObject: JSONObject) {
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
 
-        val scheduleDate = jsonObject.getString("scheduleAt")
-        scheduleAt = Date()
+        val scheduleDateString = jsonObject.getString("scheduleAt")
+
+        val sdf = SimpleDateFormat(jsDateFormat)
+        val parsedDate = sdf.parse(scheduleDateString)
+
+        scheduleAt = parsedDate ?: Date()
     }
 
     fun smallIcon(context: android.content.Context, defaultIcon: Int): Int {
@@ -47,5 +56,4 @@ class Notification(jsonObject: JSONObject) {
 
         return resId
     }
-
 }
