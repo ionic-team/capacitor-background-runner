@@ -1,6 +1,6 @@
 package io.ionic.backgroundrunner.plugin.api
 
-import android.R
+import android.R.drawable
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -18,12 +18,12 @@ import com.getcapacitor.plugin.util.AssetUtil
 import io.ionic.android_js_engine.api.NotificationsAPI
 import org.json.JSONArray
 
-
-class Notifications(context: android.content.Context) : NotificationsAPI {
+class Notifications(context: Context) : NotificationsAPI {
     private val manager: NotificationManagerCompat
-    private val context: android.content.Context
+    private val context: Context
 
-
+    var defaultSmallIconID = AssetUtil.RESOURCE_ID_ZERO_VALUE
+    var defaultSoundID = AssetUtil.RESOURCE_ID_ZERO_VALUE
 
     init {
         this.context = context
@@ -32,10 +32,8 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
         this.createNotificationChannel()
     }
     companion object {
-        val notificationIntentKey = "LocalNotificationId"
-        var defaultSoundID = AssetUtil.RESOURCE_ID_ZERO_VALUE
-        var defaultSmallIconID = AssetUtil.RESOURCE_ID_ZERO_VALUE
-        val defaultNotificationChannelID = "default"
+        const val notificationIntentKey = "LocalNotificationId"
+        const val defaultNotificationChannelID = "default"
     }
 
     override fun schedule(jsonString: String) {
@@ -51,7 +49,7 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
         }
 
         notifications.forEach {
-            val channelId = it.channelId ?: "default"
+            val channelId = it.channelId ?: defaultNotificationChannelID
 
             val builder = NotificationCompat.Builder(context, channelId)
             builder.setContentTitle(it.title)
@@ -73,7 +71,7 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
         }
     }
 
-    fun createNotificationChannel() {
+    private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name: CharSequence = "Default"
             val description = "Default"
@@ -96,10 +94,10 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
         }
     }
 
-    fun getDefaultSoundUrl(context: Context): Uri? {
+    private fun getDefaultSoundUrl(context: Context): Uri? {
         val soundId = getDefaultSound(context)
         return if (soundId != AssetUtil.RESOURCE_ID_ZERO_VALUE) {
-            Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.getPackageName() + "/" + soundId)
+            Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + context.packageName + "/" + soundId)
         } else null
     }
 
@@ -112,7 +110,7 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
             resId = AssetUtil.getResourceID(context, smallIconConfigResourceName, "drawable")
         }
         if (resId == AssetUtil.RESOURCE_ID_ZERO_VALUE) {
-            resId = R.drawable.ic_dialog_info
+            resId = drawable.ic_dialog_info
         }
         defaultSmallIconID = resId
         return resId
@@ -156,6 +154,5 @@ class Notifications(context: android.content.Context) : NotificationsAPI {
                 alarmManager.setExact(AlarmManager.RTC, request.scheduleAt.time, pendingIntent);
             }
         }
-
     }
 }

@@ -5,14 +5,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import com.getcapacitor.JSObject
 import com.getcapacitor.Logger
-
 
 class TimedNotificationPublisher : BroadcastReceiver() {
     companion object {
-        val NOTIFICATION_KEY = "NotificationPublisher.notification"
-        val CRON_KEY = "NotificationPublisher.cron"
+        const val NOTIFICATION_KEY = "NotificationPublisher.notification"
     }
 
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -24,7 +21,7 @@ class TimedNotificationPublisher : BroadcastReceiver() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             notification = intent!!.getParcelableExtra(NOTIFICATION_KEY, android.app.Notification::class.java)
         } else {
-            notification = getParcelableExtraLegacy(intent!!, NOTIFICATION_KEY)
+            notification = getParcelableExtraLegacy(intent!!)
         }
 
         notification?.`when` = System.currentTimeMillis()
@@ -37,7 +34,7 @@ class TimedNotificationPublisher : BroadcastReceiver() {
         notificationManager.notify(id, notification)
     }
 
-    private fun getParcelableExtraLegacy(intent: Intent, string: String): android.app.Notification? {
+    private fun getParcelableExtraLegacy(intent: Intent): android.app.Notification? {
         return intent.getParcelableExtra(NOTIFICATION_KEY)
     }
 }
