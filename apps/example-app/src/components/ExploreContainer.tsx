@@ -114,45 +114,6 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
-  const onTestCurrentLocation = async () => {
-    try {
-      await BackgroundRunner.dispatchEvent({
-        label: "com.example.background.task",
-        event: "testCurrentLocation",
-        details: {},
-      });
-    } catch (err) {
-      alert(err);
-      console.error(err);
-    }
-  }
-
-  const onTestStartLiveLocation = async () => {
-    try {
-      await BackgroundRunner.dispatchEvent({
-        label: "com.example.background.task",
-        event: "testStartLocationWatch",
-        details: {},
-      });
-    } catch (err) {
-      alert(err);
-      console.error(err);
-    }
-  }
-
-  const onTestStopLiveLocation = async () => {
-    try {
-      await BackgroundRunner.dispatchEvent({
-        label: "com.example.background.task",
-        event: "testEndLocationWatch",
-        details: {},
-      });
-    } catch (err) {
-      alert(err);
-      console.error(err);
-    }
-  }
-
   const onMonitorLocation = async () => {
     try {
       await BackgroundRunner.dispatchEvent({
@@ -282,9 +243,6 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton onClick={onTestGetKV}>Test Get KV</IonButton>
       <IonButton onClick={onTestNotification}>Test Notification</IonButton>
       <IonButton onClick={onTestLocation}>GetLast Known Location</IonButton>
-      {/* <IonButton onClick={onTestCurrentLocation}>Get Current Location</IonButton> */}
-      {/* <IonButton onClick={onTestStartLiveLocation}>Start Live Location</IonButton> */}
-      {/* <IonButton onClick={onTestStopLiveLocation}>Stop Live Location</IonButton> */}
       <IonButton onClick={onMonitorLocation}>Record Location</IonButton>
       <IonButton onClick={onGetTrackedLocations}>Get Location Report</IonButton>
       <IonButton onClick={onCheckWatchReachable}>Check Watch Status</IonButton>
