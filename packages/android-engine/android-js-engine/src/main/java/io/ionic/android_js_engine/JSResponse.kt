@@ -1,7 +1,5 @@
 package io.ionic.android_js_engine
 
-import org.json.JSONObject
-
 class JSResponse(statusCode: Int, url: String, data: ByteArray?, error: String?) {
     public var ok: Boolean
     public var status: Int

@@ -1,6 +1,5 @@
 package io.ionic.android_js_engine
 
-import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -26,7 +25,7 @@ class ContextAPI {
 
         random.nextBytes(arr)
 
-        return arr;
+        return arr
     }
 
     fun randomHashCode(): Int {
@@ -69,7 +68,7 @@ class ContextAPI {
             builder.url(url)
 
             if (options != null) {
-                val contentType = options.headers["Content-Type"];
+                val contentType = options.headers["Content-Type"]
 
                 if (options.body != null) {
                     postBody =
@@ -89,9 +88,8 @@ class ContextAPI {
 
             return JSResponse(response.code, response.request.url.toString(), body?.bytes(), null)
         } catch (ex: Exception) {
-            print(ex.message);
+            print(ex.message)
             return JSResponse(-1, urlStr, null, ex.message)
         }
-
     }
 }

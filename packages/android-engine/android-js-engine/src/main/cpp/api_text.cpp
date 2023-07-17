@@ -1,8 +1,8 @@
 #include "api_text.h"
 
 #include "context.h"
-#include "quickjs/cutils.h"
 #include "errors.h"
+#include "quickjs/cutils.h"
 
 static JSClassID js_text_encoder_class_id;
 static JSClassID js_text_decoder_class_id;
@@ -144,14 +144,14 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
   jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
 
   if (JS_IsException(jni_exception)) {
-      return jni_exception;
+    return jni_exception;
   }
 
   jmethodID j_method = parent_ctx->env->GetMethodID(j_context_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
   jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
 
   if (JS_IsException(jni_exception)) {
-      return jni_exception;
+    return jni_exception;
   }
 
   auto encoding = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "label"));
@@ -159,28 +159,28 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
 
   jbyteArray byte_array = parent_ctx->env->NewByteArray(size);
 
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
-
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
-
-  parent_ctx->env->SetByteArrayRegion(byte_array, 0, size, reinterpret_cast<const jbyte *>(buf));
-
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
-
-    if (JS_IsException(jni_exception)) {
-        return jni_exception;
-    }
-
-  auto str = (jstring) parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method, byte_array, j_encoding);
   jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
 
   if (JS_IsException(jni_exception)) {
     return jni_exception;
   }
 
-  const char * c_str = parent_ctx->env->GetStringUTFChars(str, nullptr);
+  parent_ctx->env->SetByteArrayRegion(byte_array, 0, size, reinterpret_cast<const jbyte *>(buf));
+
+  jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
+
+  if (JS_IsException(jni_exception)) {
+    return jni_exception;
+  }
+
+  auto str = (jstring)parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method, byte_array, j_encoding);
+  jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
+
+  if (JS_IsException(jni_exception)) {
+    return jni_exception;
+  }
+
+  const char *c_str = parent_ctx->env->GetStringUTFChars(str, nullptr);
 
   ret_value = JS_NewString(ctx, c_str);
 

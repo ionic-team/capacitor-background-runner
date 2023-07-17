@@ -2,9 +2,7 @@
 
 #include "context.h"
 
-void write_to_logcat(android_LogPriority priority, const char *tag, const char *message) {
-  __android_log_write(priority, tag, message);
-}
+void write_to_logcat(android_LogPriority priority, const char *tag, const char *message) { __android_log_write(priority, tag, message); }
 
 JSValue api_console_log(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   int i;

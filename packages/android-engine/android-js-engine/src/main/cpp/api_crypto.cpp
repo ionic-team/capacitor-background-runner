@@ -1,7 +1,7 @@
 #include "api_crypto.h"
-#include "errors.h"
 
 #include "context.h"
+#include "errors.h"
 
 JSValue api_crypto_get_random_values(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   JSValue ret_value = JS_UNDEFINED;
@@ -20,7 +20,6 @@ JSValue api_crypto_get_random_values(JSContext *ctx, JSValueConst this_val, int 
   if (!buf) {
     return JS_EXCEPTION;
   }
-
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
@@ -62,7 +61,7 @@ JSValue api_crypto_get_random_values(JSContext *ctx, JSValueConst this_val, int 
 
 JSValue api_crypto_random_uuid(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   JSValue ret_value = JS_UNDEFINED;
-  JSValue  jni_exception;
+  JSValue jni_exception;
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
@@ -80,7 +79,7 @@ JSValue api_crypto_random_uuid(JSContext *ctx, JSValueConst this_val, int argc, 
     return jni_exception;
   }
 
-  auto str = (jstring) parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method);
+  auto str = (jstring)parent_ctx->env->CallObjectMethod(parent_ctx->api, j_method);
   jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
 
   if (JS_IsException(jni_exception)) {

@@ -24,7 +24,7 @@ class Context(name: String, runnerPtr: Long) {
     external fun start(ptr: Long)
     external fun stop(ptr: Long)
     external fun dispatchEvent(ptr: Long, event: String, details: String)
-    external fun registerGlobalFunction(ptr: Long, functionName: String,  function: JSFunction)
+    external fun registerGlobalFunction(ptr: Long, functionName: String, function: JSFunction)
     external fun initCapacitorAPI(ptr: Long, api: CapacitorAPI)
 
     fun start() {
@@ -39,7 +39,7 @@ class Context(name: String, runnerPtr: Long) {
 
     fun execute(code: String, returnValue: Boolean = false): JSValue {
         val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
-        val jsonString = this.evaluate(runnerPtr, code, returnValue);
+        val jsonString = this.evaluate(runnerPtr, code, returnValue)
 
         return JSValue(jsonString)
     }
@@ -50,7 +50,7 @@ class Context(name: String, runnerPtr: Long) {
         this.dispatchEvent(runnerPtr, event, details.toString(0))
     }
 
-    fun registerFunction(funcName:String, func: JSFunction) {
+    fun registerFunction(funcName: String, func: JSFunction) {
         val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
         this.registerGlobalFunction(runnerPtr, funcName, func)
     }

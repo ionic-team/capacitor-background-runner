@@ -12,7 +12,7 @@ JSValue api_kv_set(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
   auto *env = parent_ctx->getJNIEnv();
-    
+
   auto *kv = env->GetObjectField(parent_ctx->capacitor_api, parent_ctx->jni_classes->capacitor_api_kv_field);
 
   jmethodID j_kv_set_method = env->GetMethodID(parent_ctx->jni_classes->kv_api_class, "set", "(Ljava/lang/String;Ljava/lang/String;)V");
@@ -57,13 +57,13 @@ JSValue api_kv_get(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst
   jni_exception = check_and_throw_jni_exception(env, ctx);
 
   if (JS_IsException(jni_exception)) {
-      JS_FreeCString(ctx, key_c_str);
+    JS_FreeCString(ctx, key_c_str);
     return jni_exception;
   }
 
   if (value_j_str == nullptr) {
-      JS_FreeCString(ctx, key_c_str);
-      return JS_NULL;
+    JS_FreeCString(ctx, key_c_str);
+    return JS_NULL;
   }
 
   auto value_c_str = env->GetStringUTFChars(value_j_str, nullptr);
@@ -87,7 +87,6 @@ JSValue api_kv_remove(JSContext *ctx, JSValueConst this_val, int argc, JSValueCo
   auto *env = parent_ctx->getJNIEnv();
 
   auto *kv = env->GetObjectField(parent_ctx->capacitor_api, parent_ctx->jni_classes->capacitor_api_kv_field);
-
 
   jmethodID j_kv_remove_method = env->GetMethodID(parent_ctx->jni_classes->kv_api_class, "remove", "(Ljava/lang/String;)V");
   jni_exception = check_and_throw_jni_exception(env, ctx);
