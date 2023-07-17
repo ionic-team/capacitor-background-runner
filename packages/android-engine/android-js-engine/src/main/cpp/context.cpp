@@ -331,6 +331,13 @@ void Context::init_api_fetch() const {
 void Context::register_function(const std::string &func_name, jobject func) {
     JavaFunctionData func_data = JavaFunctionData(func_name, func);
     this->registered_functions.insert_or_assign(func_name, func_data);
+
+    JSValue global_obj = JS_GetGlobalObject(this->ctx);
+
+    JSValue ptr[1] = { JS_NewString(this->ctx, func_name.c_str()) };
+    JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
+
+    JS_FreeValue(this->ctx, global_obj);
 }
 
 void Context::init_capacitor_api(jobject cap_api)  {
@@ -339,6 +346,7 @@ void Context::init_capacitor_api(jobject cap_api)  {
     this->init_capacitor_kv_api();
     this->init_capacitor_geolocation_api();
     this->init_capacitor_notifications_api();
+    this->init_capacitor_device_api();
 }
 
 void Context::init_capacitor_kv_api() const {
@@ -363,6 +371,7 @@ void Context::init_capacitor_device_api() const {
 
     device = JS_NewObject(this->ctx);
     JS_SetPropertyStr(this->ctx, device, "getBatteryStatus", JS_NewCFunction(this->ctx, api_device_battery, "getBatteryStatus", 0));
+    JS_SetPropertyStr(this->ctx, device, "getNetworkStatus", JS_NewCFunction(this->ctx, api_device_network, "getNetworkStatus", 0));
 
     JS_SetPropertyStr(this->ctx, global_obj, "CapacitorDevice", device);
 

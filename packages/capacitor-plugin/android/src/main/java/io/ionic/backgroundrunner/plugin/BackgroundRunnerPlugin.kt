@@ -2,7 +2,6 @@ package io.ionic.backgroundrunner.plugin;
 
 import android.Manifest
 import android.util.Log
-import com.getcapacitor.JSArray
 import com.getcapacitor.JSObject
 import com.getcapacitor.Plugin
 import com.getcapacitor.PluginCall
@@ -13,9 +12,7 @@ import com.getcapacitor.annotation.PermissionCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import io.ionic.android_js_engine.api.Geolocation
-import io.ionic.backgroundrunner.plugin.api.Notifications
-import org.json.JSONObject
+
 
 @CapacitorPlugin(
     name = "BackgroundRunner",

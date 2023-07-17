@@ -12,14 +12,12 @@ JSValue api_notifications_schedule(JSContext *ctx, JSValueConst this_val, int ar
     auto options_json = parent_ctx->stringifyJSON(argv[0]);
 
     auto *notifications = env->GetObjectField(parent_ctx->capacitor_api, parent_ctx->jni_classes->capacitor_api_notification_field);
-
-    jclass j_notification_class = env->FindClass("io/ionic/android_js_engine/api/NotificationsAPI");
-    jmethodID j_notification_schedule_method = env->GetMethodID(j_notification_class, "schedule", "(Ljava/lang/String;)V");
+    jmethodID j_notification_schedule_method = env->GetMethodID(parent_ctx->jni_classes->notification_api_class, "schedule", "(Ljava/lang/String;)V");
 
     jstring j_options_json = env->NewStringUTF(options_json.c_str());
 
     env->CallVoidMethod(notifications, j_notification_schedule_method, j_options_json);
-    jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
+    jni_exception = check_and_throw_jni_exception(env, ctx);
 
     if (JS_IsException(jni_exception)) {
         return jni_exception;

@@ -5,16 +5,26 @@ JNIClasses::JNIClasses(JNIEnv *env)
 {
     // get all needed JNI classes and methods
 
+    jclass tempClass;
+
     // Context API
-    this->context_api_class = env->FindClass("io/ionic/android_js_engine/ContextAPI");
+    tempClass = env->FindClass("io/ionic/android_js_engine/ContextAPI");
     this->check_exception(env);
+    this->context_api_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
 
-    this->js_response_class = env->FindClass("io/ionic/android_js_engine/JSResponse");
+    tempClass = env->FindClass("io/ionic/android_js_engine/JSResponse");
     this->check_exception(env);
+    this->js_response_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
 
-    this->js_fetch_options_class = env->FindClass("io/ionic/android_js_engine/JSFetchOptions");
+    tempClass = env->FindClass("io/ionic/android_js_engine/JSFetchOptions");
     this->check_exception(env);
-    this->js_fetch_options_class = reinterpret_cast<jclass>(env->NewGlobalRef(this->js_fetch_options_class));
+    this->js_fetch_options_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
 
     this->context_api_fetch_method = env->GetMethodID(this->context_api_class, "fetch", "(Ljava/lang/String;Lio/ionic/android_js_engine/JSFetchOptions;)Lio/ionic/android_js_engine/JSResponse;");
     this->check_exception(env);
@@ -41,20 +51,47 @@ JNIClasses::JNIClasses(JNIEnv *env)
     this->check_exception(env);
 
     // Capacitor API
-    this->capacitor_api_class = env->FindClass("io/ionic/android_js_engine/api/CapacitorAPI");
+    tempClass = env->FindClass("io/ionic/android_js_engine/api/CapacitorAPI");
+    this->check_exception(env);
+    this->capacitor_api_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
+
+    this->capacitor_api_kv_field =  env->GetFieldID(this->capacitor_api_class, "kv", "Lio/ionic/android_js_engine/api/KVAPI;");
     this->check_exception(env);
 
-    this->capacitor_api_kv_field =  env->GetFieldID(this->capacitor_api_class, "kv", "Lio/ionic/android_js_engine/api/KV;");
+    this->capacitor_api_device_field = env->GetFieldID(this->capacitor_api_class, "device", "Lio/ionic/android_js_engine/api/DeviceAPI;");
     this->check_exception(env);
 
-    this->capacitor_api_device_field = env->GetFieldID(this->capacitor_api_class, "device", "Lio/ionic/android_js_engine/api/Device;");
-    this->check_exception(env);
-
-    this->capacitor_api_geolocation_field = env->GetFieldID(this->capacitor_api_class, "geolocation", "Lio/ionic/android_js_engine/api/Geolocation;");
+    this->capacitor_api_geolocation_field = env->GetFieldID(this->capacitor_api_class, "geolocation", "Lio/ionic/android_js_engine/api/GeolocationAPI;");
     this->check_exception(env);
 
     this->capacitor_api_notification_field = env->GetFieldID(this->capacitor_api_class, "notifications", "Lio/ionic/android_js_engine/api/NotificationsAPI;");
     this->check_exception(env);
+
+    tempClass = env->FindClass("io/ionic/android_js_engine/api/KVAPI");
+    this->check_exception(env);
+    this->kv_api_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
+
+    tempClass = env->FindClass("io/ionic/android_js_engine/api/NotificationsAPI");
+    this->check_exception(env);
+    this->notification_api_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
+
+    tempClass = env->FindClass("io/ionic/android_js_engine/api/DeviceAPI");
+    this->check_exception(env);
+    this->device_api_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
+
+    tempClass = env->FindClass("io/ionic/android_js_engine/api/GeolocationAPI");
+    this->check_exception(env);
+    this->geolocation_api_class = (jclass) env->NewGlobalRef(tempClass);
+    env->DeleteLocalRef(tempClass);
+    tempClass = nullptr;
 }
 
 void JNIClasses::check_exception(JNIEnv *env)

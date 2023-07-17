@@ -1,19 +1,19 @@
-package io.ionic.android_js_engine.api
+package io.ionic.backgroundrunner.plugin.api
 
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import io.ionic.android_js_engine.api.DeviceAPI
 import org.json.JSONObject
 
-
-class Device (context: android.content.Context) {
+class Device (context: android.content.Context) : DeviceAPI {
     private val context: android.content.Context
 
     init {
         this.context = context
     }
 
-    fun getBatteryStatus(): String {
+    override fun getBatteryStatus(): String {
         val batteryInfo = JSONObject()
         batteryInfo.put("batteryLevel", this.getBatteryLevel())
         batteryInfo.put("isCharging", this.isCharging())
@@ -21,7 +21,7 @@ class Device (context: android.content.Context) {
         return batteryInfo.toString()
     }
 
-    fun getNetworkStatus(): String {
+    override fun getNetworkStatus(): String {
         val networkInfo = JSONObject()
         networkInfo.put("connected", true)
         networkInfo.put("connectionType", "")

@@ -1,26 +1,27 @@
-package io.ionic.android_js_engine.api
+package io.ionic.backgroundrunner.plugin.api
 
 import android.content.Context
 import android.content.SharedPreferences
+import io.ionic.android_js_engine.api.KVAPI
 
-class KV (context: android.content.Context, label: String) {
+class KV (context: android.content.Context, label: String) : KVAPI {
     private val prefs: SharedPreferences
 
     init {
         this.prefs = context.getSharedPreferences(label, Context.MODE_PRIVATE)
     }
 
-    fun set(key: String, value: String) {
+    override fun set(key: String, value: String) {
         val editor: SharedPreferences.Editor = prefs.edit()
         editor.putString(key, value)
         editor.apply()
     }
 
-    fun get(key: String): String? {
+    override fun get(key: String): String? {
         return prefs.getString(key, null)
     }
 
-    fun remove(key: String) {
+    override fun remove(key: String) {
         val editor: SharedPreferences.Editor = prefs.edit()
         editor.remove(key)
         editor.apply()

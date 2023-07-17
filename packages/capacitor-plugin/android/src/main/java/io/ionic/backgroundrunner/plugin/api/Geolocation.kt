@@ -1,15 +1,14 @@
-package io.ionic.android_js_engine.api
+package io.ionic.backgroundrunner.plugin.api
 
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
-import android.os.SystemClock
 import androidx.core.location.LocationManagerCompat
+import io.ionic.android_js_engine.api.GeolocationAPI
 import org.json.JSONObject
 import java.lang.Exception
 
-
-class Geolocation(context: android.content.Context) {
+class Geolocation(context: android.content.Context) : GeolocationAPI {
     val manager: LocationManager
     val context: android.content.Context
 
@@ -25,8 +24,8 @@ class Geolocation(context: android.content.Context) {
         }
     }
 
-    fun getCurrentPosition(): String? {
-        if (!Geolocation.isEnabled(this.context)) {
+    override fun getCurrentPosition(): String? {
+        if (!isEnabled(this.context)) {
             throw Exception("Capacitor Geolocation location services not enabled")
         }
 
@@ -53,6 +52,4 @@ class Geolocation(context: android.content.Context) {
 
         return locationInfo.toString()
     }
-
-
 }
