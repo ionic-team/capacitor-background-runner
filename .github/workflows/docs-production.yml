@@ -1,0 +1,47 @@
+name: Deploy docs to production
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/docs-production.yml
+      - website/**
+
+permissions:
+  contents: read
+  deployments: write
+  id-token: write
+
+env:
+  SLUG: background-runner
+
+defaults:
+  run:
+    working-directory: website
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://ionic.io/docs/${{ env.SLUG }}
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: 'Setup Tools'
+        uses: ./.github/actions/setup-tools
+
+      - name: Build
+        run: pnpm run build-docs
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::319312831725:role/github-docs
+          aws-region: us-east-1
+
+      - name: Deploy
+        run: |
+          aws s3 sync build/ s3://ionic-docs/production/${{ env.SLUG }}/ --exclude '*.html' --cache-control max-age=31536000 --only-show-errors
+          aws s3 sync build/ s3://ionic-docs/production/${{ env.SLUG }}/ --exclude '*' --include '*.html' --cache-control max-age=60 --only-show-errors

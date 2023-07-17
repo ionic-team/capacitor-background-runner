@@ -37,17 +37,18 @@
     "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
     "swiftlint": "node-swiftlint",
     "docgen": "docgen --api BackgroundRunnerPlugin --output-readme README.md --output-json dist/docs.json",
-    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js && ./scripts/copy-native-sdks.sh && npm pack && mv ./ionic-enterprise-background-runner-*.tgz ../../",
+    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js",
+    "pack": "npm run build && && ./scripts/copy-native-sdks.sh && npm pack && mv ./ionic-enterprise-background-runner-*.tgz ../../",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
-    "@capacitor/android": "^4.7.3",
-    "@capacitor/cli": "^4.7.3",
-    "@capacitor/core": "^4.7.3",
+    "@capacitor/android": "^5.2.1",
+    "@capacitor/cli": "^5.2.1",
+    "@capacitor/core": "^5.2.1",
     "@capacitor/docgen": "^0.0.18",
-    "@capacitor/ios": "^4.7.3",
+    "@capacitor/ios": "^5.2.1",
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
@@ -56,11 +57,11 @@
     "prettier-plugin-java": "~2.1.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.32.0",
-    "swiftlint": "^1.0.1",
-    "typescript": "~4.1.5"
+    "swiftlint": "^1.0.2",
+    "typescript": "^5.1.6"
   },
   "peerDependencies": {
-    "@capacitor/core": "^4.0.0"
+    "@capacitor/core": "^5.0.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
