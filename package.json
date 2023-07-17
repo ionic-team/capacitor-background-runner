@@ -6,17 +6,23 @@
     "packages/*"
   ],
   "dependencies": {
-    "nx": "^16.1.4"
+    "nx": "^16.5.2"
   },
   "devDependencies": {
-    "lerna": "^6.6.2"
+    "lerna": "^7.1.4"
   },
   "engines": {
     "node": ">=18",
-    "pnpm": ">=7"
+    "pnpm": ">=8"
   },
   "scripts": {
-    "fmt": "nx run-many --target=fmt --parallel=5",
-    "lint": "nx run-many --target=lint --parallel=5"
+    "build": "nx run-many --target=build && nx run-many --target=build-docs",
+    "fmt": "nx run-many --target=fmt",
+    "lint": "nx run-many --target=lint",
+    "publish:dev": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid dev-$(date +\"%Y%m%dT%H%M%S\") --dist-tag dev --force-publish --no-verify-access --no-changelog --no-git-tag-version --no-push --yes",
+    "publish:rc": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid rc --dist-tag next --force-publish --no-verify-access --yes",
+    "publish:release-from-prerelease": "lerna publish --conventional-graduate --conventional-commits --dist-tag latest --force-publish --no-verify-access --yes",
+    "publish:latest": "lerna publish --conventional-commits --dist-tag latest --force-publish --no-verify-access --yes"
+    
   }
 }
