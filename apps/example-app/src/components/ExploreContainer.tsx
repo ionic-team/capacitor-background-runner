@@ -1,4 +1,4 @@
-import { BackgroundRunner } from "@ionic-enterprise/background-runner";
+import { BackgroundRunner } from "@capacitor/background-runner";
 import "./ExploreContainer.css";
 import { IonButton } from "@ionic/react";
 

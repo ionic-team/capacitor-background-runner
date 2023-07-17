@@ -1,7 +1,7 @@
 {
-  "name": "@ionic-enterprise/background-runner",
+  "name": "@capacitor/background-runner",
   "version": "0.0.1",
-  "description": "Ionic Enterprise Background Runner",
+  "description": "Capacitor Background Runner",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -11,7 +11,7 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "CapacitorPlugin.podspec"
+    "CapacitorBackgroundRunner.podspec"
   ],
   "author": "Ionic Team",
   "repository": {
@@ -37,7 +37,8 @@
     "prettier": "prettier \"**/*.{css,html,ts,js,java}\"",
     "swiftlint": "node-swiftlint",
     "docgen": "docgen --api BackgroundRunnerPlugin --output-readme README.md --output-json dist/docs.json",
-    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js && ./scripts/copy-native-sdks.sh && npm pack && mv ./ionic-enterprise-background-runner-*.tgz ../../",
+    "build-sdk": "./scripts/build-native-sdks.sh",
+    "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js && npm run build-sdk && ./scripts/copy-native-sdks.sh && npm pack && mv ./capacitor-background-runner-*.tgz ../../",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build"

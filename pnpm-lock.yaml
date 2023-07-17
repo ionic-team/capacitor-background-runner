@@ -26,6 +26,9 @@ importers:
       '@capacitor/app':
         specifier: 4.0.1
         version: 4.0.1(@capacitor/core@4.7.3)
+      '@capacitor/background-runner':
+        specifier: '*'
+        version: link:../../packages/capacitor-plugin
       '@capacitor/core':
         specifier: ^4.7.3
         version: 4.7.3
@@ -41,9 +44,6 @@ importers:
       '@capacitor/status-bar':
         specifier: 4.1.1
         version: 4.1.1(@capacitor/core@4.7.3)
-      '@ionic-enterprise/background-runner':
-        specifier: '*'
-        version: link:../../packages/capacitor-plugin
       '@ionic/react':
         specifier: ^6.0.0
         version: 6.0.0(react-dom@17.0.1)(react@17.0.1)

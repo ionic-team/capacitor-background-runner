@@ -1,6 +1,2 @@
 include ':capacitor-android'
 project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
-include ':android-js-engine'
-if (project(':android-js-engine').projectDir == null) {
-    project(":android-js-engine").projectDir = new File("../node_modules/@ionic-enterprise/background-runner/android/android-js-engine")
-}

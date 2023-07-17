@@ -58,7 +58,7 @@ class BackgroundRunner(context: android.content.Context) {
         val interval = config.interval ?: throw Exception("cannot register background task without a configured interval")
 
         if (!config.autoSchedule) {
-            return return
+            return
         }
 
         val data = Data.Builder()
@@ -149,7 +149,7 @@ class BackgroundRunner(context: android.content.Context) {
 
         val newContext  = runner!!.createContext(config.label)
 
-        val api = CapacitorAPI(context, config.label)
+        val api = CapacitorAPI(config.label)
         api.initNotificationsAPI(Notifications(context))
         api.initDeviceAPI(Device(context))
         api.initGeolocationAPI(Geolocation(context))
