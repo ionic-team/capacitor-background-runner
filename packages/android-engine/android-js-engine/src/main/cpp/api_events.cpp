@@ -1,6 +1,6 @@
 #include "api_events.h"
 
-#include "Context.h"
+#include "context.h"
 
 JSValue api_add_event_listener(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   const char *event = JS_ToCString(ctx, argv[0]);

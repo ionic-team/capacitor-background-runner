@@ -1,6 +1,6 @@
 package io.ionic.android_js_engine.api
 
-class CapacitorAPI(context: android.content.Context, contextLabel: String) {
+class CapacitorAPI(contextLabel: String) {
     private val label: String
 
     private var kv: KVAPI?

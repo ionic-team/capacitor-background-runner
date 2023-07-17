@@ -1,6 +1,6 @@
 #include "api_timeout.h"
 #include "errors.h"
-#include "Context.h"
+#include "context.h"
 
 JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, bool repeat) {
   JSValue ret_value = JS_UNDEFINED;
