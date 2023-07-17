@@ -41,7 +41,8 @@
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.js && npm run build-sdk && ./scripts/copy-native-sdks.sh && npm pack && mv ./capacitor-background-runner-*.tgz ../../",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "postinstall": "mkdir -p $INIT_CWD/android/app/libs/ && cp android/src/main/libs/android-js-engine-release.aar $INIT_CWD/android/app/libs/"
   },
   "devDependencies": {
     "@capacitor/android": "^4.7.3",
