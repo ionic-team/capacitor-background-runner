@@ -20,6 +20,7 @@ defaults:
 
 jobs:
   deploy:
+    if: false #remove this line when docs site is setup from Web team
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
