@@ -43,23 +43,6 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   };
 
-  const onRegisterTask = async () => {
-    try {
-      await BackgroundRunner.registerBackgroundTask({
-        runner: {
-          label: "com.example.background.task",
-          src: "background.js",
-          event: "updateSystem",
-          repeat: false,
-          interval: 2,
-        },
-      });
-    } catch (err) {
-      alert(err);
-      console.error(err);
-    }
-  };
-
   const onTestKV = async () => {
     try {
       await BackgroundRunner.dispatchEvent({
@@ -238,7 +221,6 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton color="danger" onClick={onDispatchEventWithFailure}>
         Dispatch Throwing Event
       </IonButton>
-      <IonButton onClick={onRegisterTask}>Register Task</IonButton>
       <IonButton onClick={onTestKV}>Test KV</IonButton>
       <IonButton onClick={onTestGetKV}>Test Get KV</IonButton>
       <IonButton onClick={onTestNotification}>Test Notification</IonButton>

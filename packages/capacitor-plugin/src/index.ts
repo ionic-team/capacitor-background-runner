@@ -10,4 +10,6 @@ const BackgroundRunner = registerPlugin<BackgroundRunnerPlugin>(
 );
 
 export * from './definitions';
+export * from "./apis";
+
 export { BackgroundRunner };

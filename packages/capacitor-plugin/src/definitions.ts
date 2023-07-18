@@ -90,3 +90,5 @@ declare module '@capacitor/cli' {
     BackgroundRunner?: BackgroundRunnerConfig
   }
 }
+
+
