@@ -12,13 +12,13 @@ export interface PermissionStatus {
 export interface DispatchEventOptions {
   /**
    * The runner label to dispatch the event to
-   * 
+   *
    * @since 1.0.0
    */
   label: string;
   /**
    * The name of the registered event listener.
-   * 
+   *
    * @since 1.0.0
    */
   event: string;
@@ -51,8 +51,8 @@ export interface BackgroundRunnerConfig {
    */
   repeat: boolean;
   /**
-   * The number of minutes after the the app is put into the background in which the background task should begin.  
-   * 
+   * The number of minutes after the the app is put into the background in which the background task should begin.
+   *
    * If `repeat` is true, this also specifies the number of minutes between each execution.
    */
   interval: number;
@@ -79,7 +79,7 @@ export interface BackgroundRunnerPlugin {
   ): Promise<PermissionStatus>;
   /**
    * Dispatches an event to the configured runner.
-   * @param options 
+   * @param options
    * @since 1.0.0
    */
   dispatchEvent(options: DispatchEventOptions): Promise<void>;
@@ -87,8 +87,6 @@ export interface BackgroundRunnerPlugin {
 
 declare module '@capacitor/cli' {
   export interface PluginsConfig {
-    BackgroundRunner?: BackgroundRunnerConfig
+    BackgroundRunner?: BackgroundRunnerConfig;
   }
 }
-
-
