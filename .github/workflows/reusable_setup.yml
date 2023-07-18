@@ -19,6 +19,11 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
 
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: 'Setup Tools'
         uses: ./.github/actions/setup-tools
         with:
