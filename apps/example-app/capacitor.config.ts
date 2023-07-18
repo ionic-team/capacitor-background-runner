@@ -1,3 +1,5 @@
+/// <reference types="@capacitor/background-runner" />
+
 import { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
