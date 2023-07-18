@@ -28,10 +28,10 @@ npx cap sync
 ### checkPermissions()
 
 ```typescript
-checkPermissions() => Promise<PermissionStatus>
+checkPermissions() => any
 ```
 
-**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -39,14 +39,14 @@ checkPermissions() => Promise<PermissionStatus>
 ### requestPermissions(...)
 
 ```typescript
-requestPermissions(options: RequestPermissionOptions) => Promise<PermissionStatus>
+requestPermissions(options: RequestPermissionOptions) => any
 ```
 
 | Param         | Type                                                                          |
 | ------------- | ----------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#requestpermissionoptions">RequestPermissionOptions</a></code> |
 
-**Returns:** <code>Promise&lt;<a href="#permissionstatus">PermissionStatus</a>&gt;</code>
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -54,12 +54,14 @@ requestPermissions(options: RequestPermissionOptions) => Promise<PermissionStatu
 ### dispatchEvent(...)
 
 ```typescript
-dispatchEvent(options: DispatchEventOptions) => Promise<void>
+dispatchEvent(options: DispatchEventOptions) => any
 ```
 
 | Param         | Type                                                                  |
 | ------------- | --------------------------------------------------------------------- |
 | **`options`** | <code><a href="#dispatcheventoptions">DispatchEventOptions</a></code> |
+
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -67,12 +69,14 @@ dispatchEvent(options: DispatchEventOptions) => Promise<void>
 ### registerBackgroundTask(...)
 
 ```typescript
-registerBackgroundTask(options: RegisterBackgroundTaskOptions) => Promise<void>
+registerBackgroundTask(options: RegisterBackgroundTaskOptions) => any
 ```
 
 | Param         | Type                                                                                    |
 | ------------- | --------------------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#registerbackgroundtaskoptions">RegisterBackgroundTaskOptions</a></code> |
+
+**Returns:** <code>any</code>
 
 --------------------
 
@@ -90,9 +94,9 @@ registerBackgroundTask(options: RegisterBackgroundTaskOptions) => Promise<void>
 
 #### RequestPermissionOptions
 
-| Prop       | Type               |
-| ---------- | ------------------ |
-| **`apis`** | <code>API[]</code> |
+| Prop       | Type            |
+| ---------- | --------------- |
+| **`apis`** | <code>{}</code> |
 
 
 #### DispatchEventOptions

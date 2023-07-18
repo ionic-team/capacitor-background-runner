@@ -1,4 +1,11 @@
-include ':capacitor-android'
-project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/android/capacitor')
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
 
-rootProject.name = "ionic-enterprise-runner-android-engine"
+rootProject.name = "Capacitor Background Runner"
+include ':app'
+include ':android-js-engine'

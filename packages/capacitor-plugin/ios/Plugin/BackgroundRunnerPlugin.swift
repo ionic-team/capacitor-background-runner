@@ -8,7 +8,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
     override public func load() {
         NotificationCenter.default.addObserver(
-            self, 
+            self,
             selector: #selector(didEnterBackground),
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
@@ -68,7 +68,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
                 do {
                     let result = try self.impl.execute(
                         config: config,
-                        event: runnerEvent, 
+                        event: runnerEvent,
                         inputArgs: details as [String: Any]
                     )
 

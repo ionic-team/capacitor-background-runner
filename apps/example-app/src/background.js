@@ -40,10 +40,12 @@ addEventListener("testLastKnownLocation", async (details) => {
 
   console.log("current location: " + JSON.stringify(location));
 
-  CapacitorNotifications.schedule({
-    title: "Enterprise Background Runner",
-    body: `Your current location: ${location.lat}, ${location.lng}`,
-  });
+  CapacitorNotifications.schedule([
+    {
+      title: "Enterprise Background Runner",
+      body: `Your current location: ${location.lat}, ${location.lng}`,
+    },
+  ]);
 
   CapacitorKV.set("testValue", JSON.stringify(location));
 
@@ -90,7 +92,7 @@ addEventListener("testNetworkStatus", (details) => {
 
 addEventListener("scheduleNotification", (details) => {
   let scheduleDate = new Date();
-  scheduleDate.setSeconds(scheduleDate.getSeconds() + 15);
+  scheduleDate.setSeconds(scheduleDate.getSeconds() + 30);
 
   CapacitorNotifications.schedule([
     {
@@ -100,6 +102,7 @@ addEventListener("scheduleNotification", (details) => {
       scheduleAt: scheduleDate,
     },
   ]);
+
   details.completed();
 });
 
@@ -122,10 +125,14 @@ addEventListener("monitorLocation", async (details) => {
 
   CapacitorKV.set("track", JSON.stringify(track));
 
-  CapacitorNotifications.schedule({
-    title: "Enterprise Background Runner",
-    body: "Recording your current location",
-  });
+  CapacitorNotifications.schedule([
+    {
+      id: 500,
+      title: "Enterprise Background Runner",
+      body: "Recording your current location",
+      scheduleAt: new Date(),
+    },
+  ]);
 
   details.completed();
 });
@@ -139,10 +146,12 @@ addEventListener("getSavedLocations", (details) => {
 addEventListener("remoteNotification", (details) => {
   console.log("received silent push notification");
 
-  CapacitorNotifications.schedule({
-    title: "Enterprise Background Runner",
-    body: "Received silent push notification",
-  });
+  CapacitorNotifications.schedule([
+    {
+      title: "Enterprise Background Runner",
+      body: "Received silent push notification",
+    },
+  ]);
 
   console.log(`details: ${JSON.stringify(details)}`);
 
@@ -190,10 +199,12 @@ addEventListener("WatchConnectivity_didReceiveUserInfo", (details) => {
 addEventListener("WatchConnectivity_didReceiveMessage", (details) => {
   const msg = details.message.result;
 
-  CapacitorNotifications.schedule({
-    title: "Enterprise Background Runner",
-    body: msg,
-  });
+  CapacitorNotifications.schedule([
+    {
+      title: "Enterprise Background Runner",
+      body: msg,
+    },
+  ]);
 
   console.log(`watch sent data: ${JSON.stringify(details)}`);
   details.completed();

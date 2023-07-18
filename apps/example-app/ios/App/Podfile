@@ -15,7 +15,7 @@ def capacitor_pods
   pod 'CapacitorHaptics', :path => '../../../../node_modules/.pnpm/@capacitor+haptics@4.1.0_@capacitor+core@4.7.3/node_modules/@capacitor/haptics'
   pod 'CapacitorKeyboard', :path => '../../../../node_modules/.pnpm/@capacitor+keyboard@4.1.1_@capacitor+core@4.7.3/node_modules/@capacitor/keyboard'
   pod 'CapacitorStatusBar', :path => '../../../../node_modules/.pnpm/@capacitor+status-bar@4.1.1_@capacitor+core@4.7.3/node_modules/@capacitor/status-bar'
-  pod 'IonicEnterpriseBackgroundRunner', :path => '../../../../packages/capacitor-plugin'
+  pod 'CapacitorBackgroundRunner', :path => '../../../../packages/capacitor-plugin'
 end
 
 target 'App' do

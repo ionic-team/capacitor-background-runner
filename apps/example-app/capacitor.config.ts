@@ -12,8 +12,7 @@ const config: CapacitorConfig = {
       event: "monitorLocation",
       repeat: true,
       interval: 2,
-      autoStart: true,
-      // TODO: Add Android / iOS constraints
+      autoStart: false,
     },
   },
 };

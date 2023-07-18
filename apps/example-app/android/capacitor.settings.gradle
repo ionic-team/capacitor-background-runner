@@ -14,5 +14,5 @@ project(':capacitor-keyboard').projectDir = new File('../../../node_modules/.pnp
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../../../node_modules/.pnpm/@capacitor+status-bar@4.1.1_@capacitor+core@4.7.3/node_modules/@capacitor/status-bar/android')
 
-include ':ionic-enterprise-background-runner'
-project(':ionic-enterprise-background-runner').projectDir = new File('../../../packages/capacitor-plugin/android')
+include ':capacitor-background-runner'
+project(':capacitor-background-runner').projectDir = new File('../../../packages/capacitor-plugin/android')

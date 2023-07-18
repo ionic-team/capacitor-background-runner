@@ -4,8 +4,6 @@ import android.content.Context
 import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import io.ionic.backgroundrunner.JSFunction
-import io.ionic.backgroundrunner.Runner
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
@@ -21,10 +19,19 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
                 throw Exception("label is empty")
             }
 
-            val config = RunnerConfig(label, src, event, false, false, 0)
+            val runnerConfigObj = JSONObject()
+            runnerConfigObj.put("label", label)
+            runnerConfigObj.put("src", src)
+            runnerConfigObj.put("event", event)
+            runnerConfigObj.put("autoStart", false)
+            runnerConfigObj.put("repeats", false)
+            runnerConfigObj.put("interval", 0)
+
+            val config = RunnerConfig(runnerConfigObj)
 
             runBlocking {
-                executeRunner(config, this@RunnerWorker.applicationContext, JSONObject())
+                val impl = BackgroundRunner.getInstance(this@RunnerWorker.applicationContext)
+                impl.execute(this@RunnerWorker.applicationContext, config, JSONObject())
             }
 
             return Result.success()
