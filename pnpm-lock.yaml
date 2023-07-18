@@ -1,9 +1,5 @@
 lockfileVersion: '6.0'
 
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
-
 importers:
 
   .:
@@ -32,7 +28,7 @@ importers:
         version: 4.0.1(@capacitor/core@4.7.3)
       '@capacitor/background-runner':
         specifier: ^4.0.0-rc.1
-        version: link:../../packages/capacitor-plugin
+        version: 4.0.0-rc.1(@capacitor/core@4.7.3)
       '@capacitor/core':
         specifier: ^4.7.3
         version: 4.7.3
@@ -1663,6 +1659,15 @@ packages:
     resolution: {integrity: sha512-frPft9TMJL70jWq5jmxwGSBddZVvsWxX5Agj2i19WJerk37aTgljB05HRr/YLg6mF1G/NIXmmFJZDY8MEgirDg==}
     peerDependencies:
       '@capacitor/core': ^4.0.0
+    dependencies:
+      '@capacitor/core': 4.7.3
+    dev: false
+
+  /@capacitor/background-runner@4.0.0-rc.1(@capacitor/core@4.7.3):
+    resolution: {integrity: sha512-ObDNIYgll6+8RJaChkoX70SBUgmxa0TMXNWagT45hvfKPvx/BmTbn6ChFSwYVxCGteZiC4PtzdmidWMCHqh9hw==}
+    requiresBuild: true
+    peerDependencies:
+      '@capacitor/core': ^5.0.0
     dependencies:
       '@capacitor/core': 4.7.3
     dev: false
@@ -14235,3 +14240,7 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: false
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
