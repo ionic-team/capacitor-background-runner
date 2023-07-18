@@ -165,6 +165,8 @@ Below is a list of the available Web APIs provided in Background Runner:
 - [clearInterval](https://developer.mozilla.org/en-US/docs/Web/API/clearInterval)
 - [crypto](https://developer.mozilla.org/en-US/docs/Web/API/Crypto)
 - [fetch](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+    - Request object not yet supported
+    - Only `method`, `headers` and `body` supported in options object
 
 In addition to the standard Web APIs, Background Runner also supports a number of custom APIs that expose relevant mobile device functionality:
 
@@ -205,7 +207,6 @@ It’s not possible to run persistent, always running background services on mob
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions(...)`](#requestpermissions)
 * [`dispatchEvent(...)`](#dispatchevent)
-* [`registerBackgroundTask(...)`](#registerbackgroundtask)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -220,7 +221,11 @@ It’s not possible to run persistent, always running background services on mob
 checkPermissions() => any
 ```
 
+Check permissions for the various Capacitor device APIs.
+
 **Returns:** <code>any</code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -231,11 +236,15 @@ checkPermissions() => any
 requestPermissions(options: RequestPermissionOptions) => any
 ```
 
+Request permission to display local notifications.
+
 | Param         | Type                                                                          |
 | ------------- | ----------------------------------------------------------------------------- |
 | **`options`** | <code><a href="#requestpermissionoptions">RequestPermissionOptions</a></code> |
 
 **Returns:** <code>any</code>
+
+**Since:** 1.0.0
 
 --------------------
 
@@ -246,26 +255,15 @@ requestPermissions(options: RequestPermissionOptions) => any
 dispatchEvent(options: DispatchEventOptions) => any
 ```
 
+Dispatches an event to the configured runner.
+
 | Param         | Type                                                                  |
 | ------------- | --------------------------------------------------------------------- |
 | **`options`** | <code><a href="#dispatcheventoptions">DispatchEventOptions</a></code> |
 
 **Returns:** <code>any</code>
 
---------------------
-
-
-### registerBackgroundTask(...)
-
-```typescript
-registerBackgroundTask(options: RegisterBackgroundTaskOptions) => any
-```
-
-| Param         | Type                                                                                    |
-| ------------- | --------------------------------------------------------------------------------------- |
-| **`options`** | <code><a href="#registerbackgroundtaskoptions">RegisterBackgroundTaskOptions</a></code> |
-
-**Returns:** <code>any</code>
+**Since:** 1.0.0
 
 --------------------
 
@@ -290,30 +288,11 @@ registerBackgroundTask(options: RegisterBackgroundTaskOptions) => any
 
 #### DispatchEventOptions
 
-| Prop          | Type                                 |
-| ------------- | ------------------------------------ |
-| **`label`**   | <code>string</code>                  |
-| **`event`**   | <code>string</code>                  |
-| **`details`** | <code>{ [key: string]: any; }</code> |
-
-
-#### RegisterBackgroundTaskOptions
-
-| Prop         | Type                                                                      |
-| ------------ | ------------------------------------------------------------------------- |
-| **`runner`** | <code><a href="#backgroundrunnerconfig">BackgroundRunnerConfig</a></code> |
-
-
-#### BackgroundRunnerConfig
-
-| Prop            | Type                 |
-| --------------- | -------------------- |
-| **`label`**     | <code>string</code>  |
-| **`src`**       | <code>string</code>  |
-| **`event`**     | <code>string</code>  |
-| **`repeat`**    | <code>boolean</code> |
-| **`interval`**  | <code>number</code>  |
-| **`autoStart`** | <code>boolean</code> |
+| Prop          | Type                                 | Description                                | Since |
+| ------------- | ------------------------------------ | ------------------------------------------ | ----- |
+| **`label`**   | <code>string</code>                  | The runner label to dispatch the event to  | 1.0.0 |
+| **`event`**   | <code>string</code>                  | The name of the registered event listener. | 1.0.0 |
+| **`details`** | <code>{ [key: string]: any; }</code> |                                            |       |
 
 
 ### Type Aliases
