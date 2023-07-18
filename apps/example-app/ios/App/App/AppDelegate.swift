@@ -1,7 +1,7 @@
 import UIKit
 import BackgroundTasks
 import Capacitor
-import IonicEnterpriseBackgroundRunner
+import CapacitorBackgroundRunner
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
