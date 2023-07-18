@@ -1,0 +1,26 @@
+name: Publish to Cocoapods
+
+on:
+  push:
+    tags:
+      - '*'
+
+defaults:
+  run:
+    working-directory: packages/capacitor-plugin
+
+jobs:
+  publish-to-cocoapods:
+    runs-on: macos-12
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+      - run: sudo xcode-select --switch /Applications/Xcode_14.1.app
+      - name: Install build dependencies
+        run: gem install cocoapods
+      - name: Validate podspec
+        run: pod spec lint
+      - name: Publish podspec
+        run: pod trunk push
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
