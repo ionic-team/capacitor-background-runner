@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -27,7 +31,7 @@ importers:
         specifier: 4.0.1
         version: 4.0.1(@capacitor/core@4.7.3)
       '@capacitor/background-runner':
-        specifier: '*'
+        specifier: ^4.0.0-rc.1
         version: link:../../packages/capacitor-plugin
       '@capacitor/core':
         specifier: ^4.7.3
