@@ -28,7 +28,7 @@ export interface NotificationScheduleOptions {
   threadIdentifier?: string;
   summaryArgument?: string;
   groupSummary?: string;
-  extra?: {};
+  extra?: unknown;
   ongoing?: boolean;
   autoCancel?: boolean;
   largeBody?: string;
