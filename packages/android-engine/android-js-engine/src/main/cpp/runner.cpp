@@ -41,9 +41,17 @@ void Runner::run_loop() {
   for (;;) {
     this->run_loop_mutex.lock();
     if (this->end_run_loop) {
+      this->run_loop_mutex.unlock();
       break;
     }
     this->run_loop_mutex.unlock();
+
+    if (this->rt == nullptr) {
+      this->run_loop_mutex.lock();
+      this->end_run_loop = true;
+      this->run_loop_mutex.unlock();
+      break;
+    }
 
     int status = JS_ExecutePendingJob(this->rt, &job_ctx);
     if (status < 0) {

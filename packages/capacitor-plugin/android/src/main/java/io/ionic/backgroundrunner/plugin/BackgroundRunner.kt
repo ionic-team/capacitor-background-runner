@@ -76,6 +76,7 @@ class BackgroundRunner(context: android.content.Context) {
             WorkManager.getInstance(androidContext).enqueueUniqueWork(config.label, ExistingWorkPolicy.REPLACE, work)
         } else {
             val work = PeriodicWorkRequest.Builder(RunnerWorker::class.java, interval.toLong(), TimeUnit.MINUTES)
+                .setInitialDelay(interval.toLong(), TimeUnit.MINUTES)
                 .setInputData(data)
                 .addTag(config.label)
                 .build()
