@@ -89,7 +89,7 @@ Note that even if the permission is present, users can still disable exact notif
 Read about [Setting Permissions](https://capacitorjs.com/docs/android/configuration#setting-permissions) in the [Android Guide](https://capacitorjs.com/docs/android) for more information on setting Android permissions.
 
 ## Using Background Runner
-Background Runner is an event based JavaScript environment that emits system or custom events to a javascript runner file that you designate in your capacitor config file.  If the runner finds a event handler corresponding to incoming event in your runner file, it will execute the event handler, then shutdown once `details.completed()` is called (or if the OS force kills your process).
+Background Runner is an event based JavaScript environment that emits events to a javascript runner file that you designate in your `capacitor.config.ts` file.  If the runner finds a event handler corresponding to incoming event in your runner file, it will execute the event handler, then shutdown once `details.completed()` is called (or if the OS force kills your process).
 
 #### Example Runner JS File
 
