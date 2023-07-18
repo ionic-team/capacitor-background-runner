@@ -16,7 +16,7 @@
   "author": "Ionic Team",
   "repository": {
     "type": "git",
-    "url": "git+https://ionic.io.git"
+    "url": "https://github.com/ionic-team/capacitor-background-runner.git"
   },
   "bugs": {
     "url": "https://ionic.io/issues"
