@@ -14,13 +14,13 @@ Background Runner has support for various device APIs that require permission fr
 
 On iOS you must enable the Background Modes capability. 
 
-![Enable Background Mode Capability in Xcode](docs/enable_background_mode_capability.png)
+![Enable Background Mode Capability in Xcode](https://github.com/ionic-team/capacitor-background-runner/raw/main/docs/enable_background_mode_capability.png)
 
 Once added, you must enable the `Background fetch` and `Background processing` modes at a minimum to enable the ability to register and schedule your background tasks.  
 
 If you will be making use of Geolocation or Push Notifications, enable `Location updates` or `Remote notifications` respectively.
 
-![Configure Background Modes in Xcode](docs/configure_background_modes.png)
+![Configure Background Modes in Xcode](https://github.com/ionic-team/capacitor-background-runner/raw/main/docs/configure_background_modes.png)
 
 After enabling the Background Modes capability, add the following to your app's `AppDelegate.swift`:
 
