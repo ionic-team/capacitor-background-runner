@@ -11,6 +11,7 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
+    "scripts/install_libs.js",
     "CapacitorBackgroundRunner.podspec"
   ],
   "author": "Ionic Team",
