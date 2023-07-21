@@ -43,7 +43,7 @@
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
     "prepublishOnly": "npm run build",
-    "postinstall": "mkdir -p $INIT_CWD/android/app/libs/ && cp -f android/src/main/libs/android-js-engine-release.aar $INIT_CWD/android/app/libs/"
+    "postinstall": "node ./scripts/install_libs.js"
   },
   "devDependencies": {
     "@capacitor/android": "^5.2.1",
