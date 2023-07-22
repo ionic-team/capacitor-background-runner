@@ -17,7 +17,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# 4.0.0-rc.1 (2023-07-18)
+# 1.0.0-rc.1 (2023-07-18)
 
 
 ### Features

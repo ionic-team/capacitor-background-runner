@@ -27,8 +27,8 @@ importers:
         specifier: 4.0.1
         version: 4.0.1(@capacitor/core@4.7.3)
       '@capacitor/background-runner':
-        specifier: ^4.0.0-rc.1
-        version: 4.0.0-rc.1(@capacitor/core@4.7.3)
+        specifier: ^1.0.0-rc.1
+        version: 1.0.0-rc.1(@capacitor/core@4.7.3)
       '@capacitor/core':
         specifier: ^4.7.3
         version: 4.7.3
@@ -1663,7 +1663,7 @@ packages:
       '@capacitor/core': 4.7.3
     dev: false
 
-  /@capacitor/background-runner@4.0.0-rc.1(@capacitor/core@4.7.3):
+  /@capacitor/background-runner@1.0.0-rc.1(@capacitor/core@4.7.3):
     resolution: {integrity: sha512-ObDNIYgll6+8RJaChkoX70SBUgmxa0TMXNWagT45hvfKPvx/BmTbn6ChFSwYVxCGteZiC4PtzdmidWMCHqh9hw==}
     requiresBuild: true
     peerDependencies:

@@ -7,7 +7,7 @@
     "@babel/plugin-transform-react-jsx": "^7.14.9",
     "@capacitor/android": "^4.7.3",
     "@capacitor/app": "4.0.1",
-    "@capacitor/background-runner": "^4.0.0-rc.1",
+    "@capacitor/background-runner": "^1.0.0-rc.1",
     "@capacitor/core": "^4.7.3",
     "@capacitor/haptics": "4.1.0",
     "@capacitor/ios": "^4.7.3",
