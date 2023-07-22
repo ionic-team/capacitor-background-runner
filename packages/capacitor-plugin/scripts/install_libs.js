@@ -7,9 +7,10 @@ if (!workingDir) {
 }
 
 if (!fs.existsSync(path.join(workingDir, 'android'))) {
-  throw new Error(
+  console.warn(
     'cannot install android-js-engine library: @capacitor/android not installed, or in wrong parent directory.',
   );
+  return;
 }
 
 const releaseAARPath = path.join(
