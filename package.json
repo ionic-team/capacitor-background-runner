@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "dependencies": {
-    "nx": "^16.5.2"
+    "nx": "^16.5.5"
   },
   "devDependencies": {
     "lerna": "^7.1.4"
@@ -22,6 +22,5 @@
     "publish:rc": "lerna publish prerelease --conventional-commits --conventional-prerelease --preid rc --dist-tag next --force-publish --no-verify-access --yes",
     "publish:release-from-prerelease": "lerna publish --conventional-graduate --conventional-commits --dist-tag latest --force-publish --no-verify-access --yes",
     "publish:latest": "lerna publish --conventional-commits --dist-tag latest --force-publish --no-verify-access --yes"
-    
   }
 }
