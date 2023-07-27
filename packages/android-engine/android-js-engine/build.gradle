@@ -3,7 +3,10 @@ ext {
     androidxAppCompatVersion = project.hasProperty('androidxAppCompatVersion') ? rootProject.ext.androidxAppCompatVersion : '1.6.1'
     androidxJunitVersion = project.hasProperty('androidxJunitVersion') ? rootProject.ext.androidxJunitVersion : '1.1.5'
     androidxEspressoCoreVersion = project.hasProperty('androidxEspressoCoreVersion') ? rootProject.ext.androidxEspressoCoreVersion : '3.5.1'
-    androidxCoreKTXVersion = project.hasProperty('androidxCoreKTXVersion') ? rootProject.ext.androidxCoreKTXVersion : '1.10.1'}
+    androidxCoreKTXVersion = project.hasProperty('androidxCoreKTXVersion') ? rootProject.ext.androidxCoreKTXVersion : '1.10.0'
+    androidxMaterialVersion = project.hasProperty('androidxMaterialVersion') ? rootProject.ext.androidxMaterialVersion : '1.8.0'
+    okHttpVersion = project.hasProperty('okHttpVersion') ? rootProject.ext.okHttpVersion : '4.11.0'
+}
 
 buildscript {
     ext.kotlin_version = project.hasProperty("kotlin_version") ? rootProject.ext.kotlin_version : '1.8.20'
@@ -13,7 +16,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.0.2'
+        classpath 'com.android.tools.build:gradle:8.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
@@ -67,10 +70,10 @@ repositories {
 }
 
 dependencies {
-    implementation "com.squareup.okhttp3:okhttp:4.11.0"
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
     implementation "androidx.core:core-ktx:$androidxCoreKTXVersion"
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
-    implementation 'com.google.android.material:material:1.9.0'
+    implementation "com.google.android.material:material:$androidxMaterialVersion"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
