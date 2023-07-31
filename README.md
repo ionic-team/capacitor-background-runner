@@ -186,6 +186,11 @@ In addition to the standard Web APIs, Background Runner also supports a number o
 
 Currently, the runners are designed for performing periodic bursts of work while your app is in the background, or for executing asynchronous work in a separate thread from your UI while your app is in the foreground.  As a result, runners are not long lived.  State is not maintained between calls to events in the runner.  Each call to `dispatchEvent()` creates a new context in with your runner code is loaded and executed, and once `completed()` is called, the context is destroyed.
 
+## Android Battery Optimizations
+Some Android vendors offer built-in battery optimization settings that go beyond what stock Android provides.  Some of these optimizations must be disabled by your end users in order for your background tasks to work properly.
+
+Visit [Don't kill my app!](https://dontkillmyapp.com) for more information on the affected manufacturers and steps required by your users to adjust the settings.
+
 ## Limitations of Background Tasks
 
 It’s not possible to run persistent, always running background services on mobile operating systems.  Due to the limitations imposed by iOS and Android designed to reduce battery and data consumption, background tasks are constrained with various limitations that you must keep in mind while designing and implementing your background task.
