@@ -5,14 +5,14 @@
   "dependencies": {
     "@babel/plugin-syntax-flow": "^7.22.5",
     "@babel/plugin-transform-react-jsx": "^7.22.5",
-    "@capacitor/android": "^4.8.1",
-    "@capacitor/app": "4.0.1",
+    "@capacitor/android": "^5.2.2",
+    "@capacitor/app": "^5.0.6",
     "@capacitor/background-runner": "workspace:^",
-    "@capacitor/core": "^4.8.1",
-    "@capacitor/haptics": "4.1.0",
-    "@capacitor/ios": "^4.8.1",
-    "@capacitor/keyboard": "4.1.1",
-    "@capacitor/status-bar": "4.1.1",
+    "@capacitor/core": "^5.2.2",
+    "@capacitor/haptics": "^5.0.6",
+    "@capacitor/ios": "^5.2.2",
+    "@capacitor/keyboard": "^5.0.6",
+    "@capacitor/status-bar": "^5.0.6",
     "@ionic/react": "^6.7.5",
     "@ionic/react-router": "^6.7.5",
     "@testing-library/dom": "^9.3.1",
@@ -71,7 +71,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "4.1.0"
+    "@capacitor/cli": "^5.2.2"
   },
   "description": "An Ionic project"
 }
