@@ -143,10 +143,6 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
             pendingCurrentLocationCalls.removeValue(forKey: callId)
             callback(.success(locations.last))
         }
-
-        if let location = locations.last {
-            print("\(location.coordinate.latitude),\(location.coordinate.longitude)")
-        }
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

@@ -1,9 +1,11 @@
 import Foundation
 import JavaScriptCore
+import OSLog
 
 public class Context {
     let name: String
     let ctx: JSContext
+    let logger: ContextLogger
 
     private var timers = [Int: Timer]()
     private var eventListeners = [String: [JSValue]]()
@@ -18,6 +20,7 @@ public class Context {
 
         name = ctxName
         ctx = newCtx
+        logger = ContextLogger(name: name)
 
         try setupWebAPI()
     }
@@ -32,6 +35,7 @@ public class Context {
         let value = ctx.evaluateScript(code)
 
         if let exception = thrownException {
+            self.logger.execute.error("JS Exception: \(String(describing: exception))")
             throw EngineError.jsException(details: String(describing: exception))
         }
 
@@ -71,13 +75,16 @@ public class Context {
                 }
 
                 if let exception = thrownException {
+                    self.logger.execute.error("JS Exception: \(String(describing: exception))")
                     throw EngineError.jsException(details: String(describing: exception))
                 }
             }
         }
     }
+    
     private func setupWebAPI() throws {
-        let consoleObj = JSConsole(name: name)
+        let consoleObj = JSConsole(name: name, logger: self.logger.console)
+        
         let addEventListenerFunc: @convention(block)(String, JSValue) -> Void = { type, listener in
             return self.addEventListener(eventName: type, callback: listener)
         }
@@ -91,7 +98,7 @@ public class Context {
             return self.clearTimeout(id: id)
         }
         let fetchFunc: @convention(block) (JSValue, JSValue) -> JSValue = { resource, options in
-            return fetch(resource: resource, options: options)
+            return fetch(resource: resource, options: options, logger: self.logger.fetch)
         }
         let newTextEncoderConst: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoderConst: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
@@ -106,7 +113,6 @@ public class Context {
         ctx.setObject(clearTimeoutFunc, forKeyedSubscript: "clearInterval" as NSString)
         ctx.setObject(newTextEncoderConst, forKeyedSubscript: "TextEncoder" as NSString)
         ctx.setObject(newTextDecoderConst, forKeyedSubscript: "TextDecoder" as NSString)
-
     }
 
     private func addEventListener(eventName: String, callback: JSValue) {

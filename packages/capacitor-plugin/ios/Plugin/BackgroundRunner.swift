@@ -2,6 +2,7 @@ import Foundation
 import Capacitor
 import BackgroundTasks
 import JavaScriptCore
+import OSLog
 
 public class BackgroundRunner {
     public static let shared = BackgroundRunner()
@@ -14,30 +15,32 @@ public class BackgroundRunner {
     private var started: Bool {
         return runner != nil && context != nil
     }
+    
+    private let logger = Logger(subsystem: "BackgroundRunnerPlugin", category: "BackgroundRunner")
 
     public init() {
         do {
             config = try self.loadRunnerConfig()
         } catch {
-            print("could not initialize BackgroundRunner: \(error)")
+            logger.error("could not initialize BackgroundRunner: \(error)")
         }
     }
 
     public func registerBackgroundTask() {
         guard let config = config else {
-            print("no runner to register")
+            logger.error("no runner to register")
             return
         }
 
         if config.event == nil {
-            print("cannot register background task without a event to call")
+            logger.error("cannot register background task without a event to call")
             return
         }
 
         BGTaskScheduler.shared.register(forTaskWithIdentifier: config.label, using: nil) { task in
             do {
                 task.expirationHandler = {
-                    print("task timed out")
+                    self.logger.warning("task for \(config.label) has timed out")
                 }
 
                 guard let event = config.event else {
@@ -46,9 +49,10 @@ public class BackgroundRunner {
 
                 _ = try BackgroundRunner.shared.execute(config: config, event: event)
 
+                self.logger.debug("task for \(config.label) completed successfully")
                 task.setTaskCompleted(success: true)
             } catch {
-                print("background task error: \(error)")
+                self.logger.error("task for \(config.label) failed with error: \(error)")
                 task.setTaskCompleted(success: false)
             }
         }
@@ -56,11 +60,12 @@ public class BackgroundRunner {
 
     public func scheduleBackgroundTasks() {
         guard let config = config else {
+            logger.error("no runner config loaded")
             return
         }
 
         guard let interval = config.interval else {
-            print("cannot register background task without a configured interval")
+            logger.error("cannot register background task without a configured interval")
             return
         }
 
@@ -68,19 +73,18 @@ public class BackgroundRunner {
         request.earliestBeginDate = Date(timeIntervalSinceNow: Double(interval) * 60)
 
         do {
-            print("Scheduling \(config.label)")
-
+            logger.debug("Scheduling task \(config.label)")
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            print("Could not schedule app refresh: \(error)")
+            logger.error("could not schedule task \(config.label): \(error)")
         }
     }
 
     public func start() throws {
-        print("starting runner and loading contexts...")
+        logger.debug("starting runner and loading contexts")
 
         guard let config = config else {
-            print("...no runner config to start")
+            logger.error("no runner config loaded")
             return
         }
 
@@ -90,7 +94,8 @@ public class BackgroundRunner {
     }
 
     public func stop() {
-        print("...stopping runner and removing all contexts")
+        logger.debug("stopping runner and removing all contexts")
+        
         guard let runner = runner, let config = config else {
             return
         }
@@ -121,7 +126,6 @@ public class BackgroundRunner {
                     _ = try self.execute(config: config, event: event, inputArgs: inputArgs)
                 } catch {
                     err = error
-                    print("[\(config.label)]: \(error)")
                 }
 
                 waitGroup.leave()
@@ -180,7 +184,6 @@ public class BackgroundRunner {
 
             return result
         } catch {
-            print("error executing task: \(error)")
             throw error
         }
     }

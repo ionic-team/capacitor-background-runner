@@ -1,5 +1,6 @@
 import Foundation
 import JavaScriptCore
+import OSLog
 
 @objc protocol JSConsoleExports: JSExport {
     func log (_ msg: String)
@@ -11,28 +12,30 @@ import JavaScriptCore
 
 class JSConsole: NSObject, JSConsoleExports {
     let contextName: String
+    let contextLogger: Logger
 
-    init(name: String) {
+    init(name: String, logger: Logger) {
         contextName = name
+        contextLogger = logger
     }
 
     func log(_ msg: String) {
-        print("[\(contextName)] [LOG] \(msg)")
+        contextLogger.log("\(msg)")
     }
 
     func info(_ msg: String) {
-        print("[\(contextName)] [INFO] \(msg)")
+        contextLogger.info("\(msg)")
     }
 
     func warn(_ msg: String) {
-        print("[\(contextName)] [WARN] \(msg)")
+        contextLogger.warning("\(msg)")
     }
 
     func error(_ msg: String) {
-        print("[\(contextName)] [ERR] \(msg)")
+        contextLogger.error("\(msg)")
     }
 
     func debug(_ msg: String) {
-        debugPrint("[\(contextName)] [DEBUG] \(msg)")
+        contextLogger.debug("\(msg)")
     }
 }

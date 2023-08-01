@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 import WatchConnectivity
+import OSLog
 
 @objc(BackgroundRunnerPlugin)
 public class BackgroundRunnerPlugin: CAPPlugin {
@@ -40,9 +41,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
                 if permissions.contains("geolocation") {
                     let geolocation = CapacitorGeolocation()
-                    print("geolocation requested...")
-                    try await geolocation.requestPermission()
-                    print("geolocation requested...done")
+                    try await geolocation.requestPermission()                    
                 }
 
                 self.checkPermissions(call)
@@ -135,12 +134,11 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
             events["currentLocation"] = details
         }
-
-        print("emit events: \(events)")
-
     }
 
     private func initWatchConnectivity() {
+        let logger = Logger(subsystem: "BackgroundRunnerPlugin", category: "WatchConnectivity")
+
         if !WCSession.isSupported() {
             return
         }
@@ -156,6 +154,6 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         WCSession.default.delegate = self
         WCSession.default.activate()
 
-        print("Watch Connectivity Enabled")
+        logger.debug("BackgroundRunner + Watch Connectivity Enabled")        
     }
 }

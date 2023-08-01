@@ -1,6 +1,7 @@
 import JavaScriptCore
+import OSLog
 
-func fetch(resource: JSValue, options: JSValue) -> JSValue {
+func fetch(resource: JSValue, options: JSValue, logger: Logger) -> JSValue {    
     let session = URLSession.shared
 
     var url: URL?
@@ -27,14 +28,14 @@ func fetch(resource: JSValue, options: JSValue) -> JSValue {
     return JSValue(newPromiseIn: JSContext.current()) { resolve, reject in
         let task = session.dataTask(with: request) { data, response, err in
             if let err = err {
-                print("fetch failed: \(err.localizedDescription)")
+                logger.error("fetch failed: \(err.localizedDescription)")
                 let jsErr = JSError(message: err.localizedDescription)
                 reject?.call(withArguments: [jsErr as Any])
                 return
             }
 
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("HTTPURLResponse was nil")
+                logger.error("HTTPURLResponse was nil")
                 let jsErr = JSError(message: "native response was nil")
                 reject?.call(withArguments: [jsErr as Any])
                 return
