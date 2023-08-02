@@ -5,7 +5,7 @@ import OSLog
 
 @objc(BackgroundRunnerPlugin)
 public class BackgroundRunnerPlugin: CAPPlugin {
-    private let impl = BackgroundRunner()
+    private let impl = BackgroundRunner.shared
 
     override public func load() {
         NotificationCenter.default.addObserver(
@@ -14,6 +14,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
+        
         initWatchConnectivity()
     }
 

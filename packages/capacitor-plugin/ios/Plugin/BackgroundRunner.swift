@@ -21,6 +21,7 @@ public class BackgroundRunner {
     public init() {
         do {
             config = try self.loadRunnerConfig()
+            logger.debug("background runner config loaded successfully")
         } catch {
             logger.error("could not initialize BackgroundRunner: \(error)")
         }
@@ -209,11 +210,7 @@ public class BackgroundRunner {
             throw BackgroundRunnerPluginError.runnerError(reason: "runner is not initialized")
         }
 
-        guard let srcFileURL = Bundle.main.url(forResource: config.src, withExtension: nil, subdirectory: "public") else {
-            throw BackgroundRunnerPluginError.runnerError(reason: "source file not found")
-        }
-
-        let srcFile = try String(contentsOf: srcFileURL)
+        let srcFile = try String(contentsOf: config.src)
 
         let context = try runner.createContext(name: config.label)
 

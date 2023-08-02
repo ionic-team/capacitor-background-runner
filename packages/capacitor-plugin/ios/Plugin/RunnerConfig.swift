@@ -3,7 +3,7 @@ import Capacitor
 
 public struct RunnerConfig {
     let label: String
-    let src: String
+    let src: URL
     var autoSchedule: Bool
     let event: String?
     let repeats: Bool?
@@ -19,6 +19,10 @@ public struct RunnerConfig {
         guard let src = jsObject["src"] as? String else {
             throw BackgroundRunnerPluginError.invalidRunnerConfig(reason: "runner source file path is missing or invalid")
         }
+        
+        guard let srcFileURL = Bundle.main.url(forResource: src, withExtension: nil, subdirectory: "public") else {
+            throw BackgroundRunnerPluginError.runnerError(reason: "runner source file not found")
+        }
 
         let event = jsObject["event"] as? String
         let repeats = jsObject["repeat"] as? Bool
@@ -26,7 +30,7 @@ public struct RunnerConfig {
         let autoStart = jsObject["autoStart"] as? Bool
 
         self.label = label
-        self.src = src
+        self.src = srcFileURL
         self.event = event
         self.repeats = repeats
         self.interval = interval
