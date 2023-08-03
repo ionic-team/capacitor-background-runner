@@ -37,6 +37,7 @@ static JSValue api_text_decoder_constructor(JSContext *ctx, JSValueConst new_tar
   ret_value = JS_NewObjectProtoClass(ctx, proto, js_text_decoder_class_id);
 
   JS_FreeValue(ctx, proto);
+
   if (JS_IsException(ret_value)) {
     JS_FreeValue(ctx, ret_value);
     return JS_EXCEPTION;
@@ -154,7 +155,8 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
     return jni_exception;
   }
 
-  auto encoding = JS_ToCString(ctx, JS_GetPropertyStr(ctx, this_val, "label"));
+  auto labelPropStr = JS_GetPropertyStr(ctx, this_val, "label");
+  auto encoding = JS_ToCString(ctx, labelPropStr);
   jstring j_encoding = parent_ctx->env->NewStringUTF(encoding);
 
   jbyteArray byte_array = parent_ctx->env->NewByteArray(size);

@@ -182,6 +182,7 @@ JSValue Context::parseJSON(const std::string &json_string) const {
     }
 
     JS_FreeValue(this->ctx, val);
+    JS_FreeAtom(ctx, atom);
     JS_FreeCString(this->ctx, key);
   }
 
@@ -206,7 +207,6 @@ std::string Context::stringifyJSON(JSValue object) const {
   std::string json(c_str);
 
   JS_FreeCString(this->ctx, c_str);
-
   JS_FreeValue(this->ctx, str_value);
   JS_FreeValue(this->ctx, stringify_func_obj);
   JS_FreeValue(this->ctx, global_obj);
@@ -412,9 +412,10 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
   JNIEnv *thread_env = nullptr;
   JSValue func_name_obj = func_data[0];
 
-  auto func_name = JS_ToCString(ctx, func_name_obj);
+  const auto *func_name = JS_ToCString(ctx, func_name_obj);
   auto func_name_str = std::string(func_name);
   JS_FreeCString(ctx, func_name);
+  JS_FreeValue(ctx, func_name_obj);
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
