@@ -16,6 +16,7 @@ public:
 
     jmethodID context_api_fetch_method;
     jmethodID context_api_byteArrayToString_method;
+    jmethodID context_api_randomHashCode_method;
     jmethodID js_fetch_options_constructor;
 
     jfieldID js_response_ok_field;

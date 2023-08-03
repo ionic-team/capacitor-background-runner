@@ -32,6 +32,9 @@ JNIClasses::JNIClasses(JNIEnv *env) {
   this->context_api_byteArrayToString_method = env->GetMethodID(this->context_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
   this->check_exception(env);
 
+  this->context_api_randomHashCode_method = env->GetMethodID(this->context_api_class, "randomHashCode", "()I");
+  this->check_exception(env);
+
   this->js_fetch_options_constructor = env->GetMethodID(this->js_fetch_options_class, "<init>", "(Ljava/lang/String;)V");
   this->check_exception(env);
 
