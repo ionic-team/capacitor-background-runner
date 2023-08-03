@@ -50,6 +50,7 @@ class BackgroundRunner(context: android.content.Context) {
 
         runner = Runner()
         context = initContext(config, androidContext)
+        context?.start()
     }
 
     fun scheduleBackgroundTask(androidContext: android.content.Context) {
@@ -157,7 +158,6 @@ class BackgroundRunner(context: android.content.Context) {
         api.initKVAPI(KV(context, config.label))
 
         newContext.setCapacitorAPI(api)
-
 
         newContext.execute(srcFile, false)
 
