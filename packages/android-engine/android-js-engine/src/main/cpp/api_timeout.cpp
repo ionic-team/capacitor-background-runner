@@ -21,8 +21,10 @@ JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueCon
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
 
-  int unique = parent_ctx->env->CallIntMethod(parent_ctx->api, parent_ctx->jni_classes->context_api_randomHashCode_method);
-  jni_exception = check_and_throw_jni_exception(parent_ctx->env, ctx);
+  auto *env = parent_ctx->getJNIEnv();
+
+  int unique = env->CallIntMethod(parent_ctx->api, parent_ctx->jni_classes->context_api_randomHashCode_method);
+  jni_exception = check_and_throw_jni_exception(env, ctx);
 
   if (JS_IsException(jni_exception)) {
     return jni_exception;

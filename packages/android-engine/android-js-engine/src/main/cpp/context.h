@@ -90,6 +90,8 @@ private:
     void init_capacitor_device_api() const;
     void init_capacitor_notifications_api() const;
     void init_capacitor_geolocation_api() const;
+
+    void init_callbacks(JSValue callbacks) const;
 };
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H

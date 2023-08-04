@@ -150,15 +150,26 @@ JSValue Context::parseJSON(const std::string &json_string) const {
 
   JSValue parsed = JS_Call(this->ctx, parse_func_obj, global_obj, 1, &json);
 
+  ret_value = JS_DupValue(this->ctx, parsed);
+
+  JS_FreeValue(this->ctx, parsed);
+  JS_FreeValue(this->ctx, json);
+  JS_FreeValue(this->ctx, parse_func_obj);
+  JS_FreeValue(this->ctx, global_obj);
+
+  return ret_value;
+}
+
+void Context::init_callbacks(JSValue callbacks) const {
   // look for __cbr:: and replace with JSFunction
   JSPropertyEnum *properties;
   uint32_t count;
-  JS_GetOwnPropertyNames(this->ctx, &properties, &count, parsed, JS_GPN_STRING_MASK | JS_GPN_SYMBOL_MASK | JS_GPN_ENUM_ONLY);
+  JS_GetOwnPropertyNames(this->ctx, &properties, &count, callbacks, JS_GPN_STRING_MASK | JS_GPN_SYMBOL_MASK | JS_GPN_ENUM_ONLY);
   for (uint32_t i = 0; i < count; i++) {
     JSAtom atom = properties[i].atom;
     const char *key = JS_AtomToCString(ctx, atom);
 
-    JSValue val = JS_GetProperty(ctx, parsed, atom);
+    JSValue val = JS_GetProperty(ctx, callbacks, atom);
 
     if (JS_IsString(val)) {
       const char *c_str_val = JS_ToCString(ctx, val);
@@ -173,7 +184,7 @@ JSValue Context::parseJSON(const std::string &json_string) const {
 
           JSValue ptr[1] = {JS_NewString(this->ctx, global_func_name.c_str())};
 
-          JS_SetPropertyStr(this->ctx, parsed, key, JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
+          JS_SetPropertyStr(this->ctx, callbacks, key, JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
         } catch (std::exception &ex) {
         }
       }
@@ -185,15 +196,6 @@ JSValue Context::parseJSON(const std::string &json_string) const {
     JS_FreeAtom(ctx, atom);
     JS_FreeCString(this->ctx, key);
   }
-
-  ret_value = JS_DupValue(this->ctx, parsed);
-
-  JS_FreeValue(this->ctx, parsed);
-  JS_FreeValue(this->ctx, json);
-  JS_FreeValue(this->ctx, parse_func_obj);
-  JS_FreeValue(this->ctx, global_obj);
-
-  return ret_value;
 }
 
 std::string Context::stringifyJSON(JSValue object) const {
@@ -247,20 +249,36 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
   JSValue ret_value = JS_UNDEFINED;
   JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
+  JSValue dataArgs = JS_GetPropertyStr(this->ctx, details, "dataArgs");
+  JSValue callbacks = JS_GetPropertyStr(this->ctx, details, "callbacks");
+  this->init_callbacks(callbacks);
+
   auto range = this->event_listeners.equal_range(event);
   for (auto itr = range.first; itr != range.second; ++itr) {
     auto callback = (JSValue)itr->second;
 
-    JSValue value = JS_Call(this->ctx, callback, global_obj, 1, &details);
+    JSValue resolveFunc = JS_GetPropertyStr(ctx, callbacks, "resolve");
+    JSValue rejectFunc = JS_GetPropertyStr(ctx, callbacks, "reject");
+
+    JSValueConst args[3];
+    args[0] = resolveFunc;
+    args[1] = rejectFunc;
+    args[2] = dataArgs;
+
+    JSValue value = JS_Call(this->ctx, callback, global_obj, 3, args);
     if (JS_IsException(value)) {
       ret_value = JS_DupValue(this->ctx, value);
       JS_FreeValue(this->ctx, value);
       break;
     }
 
+    JS_FreeValue(this->ctx, resolveFunc);
+    JS_FreeValue(this->ctx, rejectFunc);
     JS_FreeValue(this->ctx, value);
   }
 
+  JS_FreeValue(this->ctx, callbacks);
+  JS_FreeValue(this->ctx, dataArgs);
   JS_FreeValue(this->ctx, global_obj);
   return ret_value;
 }
@@ -444,7 +462,25 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
 
   JSValue args = argv[0];
   if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
-    auto json_string = parent_ctx->stringifyJSON(args);
+
+    std::string json_string;
+
+    if (JS_IsError(ctx, args)) {
+      auto error_object = JS_NewObject(ctx);
+
+      auto error_name = JS_GetPropertyStr(ctx, args, "name");
+      auto error_message = JS_GetPropertyStr(ctx, args, "message");
+
+      JS_SetPropertyStr(ctx, error_object, "name", error_name);
+      JS_SetPropertyStr(ctx, error_object, "message", error_message);
+
+      json_string = parent_ctx->stringifyJSON(error_object);
+
+      JS_FreeValue(ctx, error_object);
+    } else {
+      json_string = parent_ctx->stringifyJSON(args);
+    }
+
     jstring j_json_string = thread_env->NewStringUTF(json_string.c_str());
 
     // create a JSONObject
