@@ -32,6 +32,7 @@ public class Context {
         }
         
         thread.name = "[\(name)] context thread"
+        thread.qualityOfService = .userInitiated
         thread.start()
 
         try setupWebAPI()
