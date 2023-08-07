@@ -11,9 +11,7 @@ extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Runner_destr
   auto *runner = (Runner *)ptr;
   delete runner;
 }
-extern "C"
-JNIEXPORT void JNICALL
-Java_io_ionic_android_1js_1engine_Runner_stopRunLoop(JNIEnv *env, jobject thiz, jlong ptr) {
+extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Runner_stopRunLoop(JNIEnv *env, jobject thiz, jlong ptr) {
   auto *runner = (Runner *)ptr;
   runner->stop_run_loop();
 }

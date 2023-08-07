@@ -87,7 +87,7 @@ JSValue js_response_to_value(JSContext *ctx, jobject response) {
   auto env = parent_ctx->getJNIEnv();
 
   if (env == nullptr) {
-      return JS_UNDEFINED;
+    return JS_UNDEFINED;
   }
 
   jni_exception = check_and_throw_jni_exception(env, ctx);

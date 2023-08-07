@@ -149,7 +149,7 @@ public class BackgroundRunner {
 
             var result: [String: Any]?
             var rejectionErr: JSError?
-            
+
             let resolveFunc: @convention(block)(JavaScriptCore.JSValue) -> Void = { returnObj in
                 if !returnObj.isUndefined && !returnObj.isNull {
                     var dict: [String: Any] = [:]
@@ -164,11 +164,11 @@ public class BackgroundRunner {
                 waitGroup.leave()
                 return
             }
-            
+
             let rejectFunc: @convention(block)(JavaScriptCore.JSValue) -> Void = { rejectObj in
                 var rejectionTitle = "Error"
                 var rejectionMessage = ""
-                
+
                 if !rejectObj.isUndefined && !rejectObj.isNull {
                     if let errStr = rejectObj.toString() {
                         let split = errStr.split(separator: ":", maxSplits: 1)
@@ -179,30 +179,30 @@ public class BackgroundRunner {
                             rejectionMessage = String(split.last ?? "")
                         }
                     }
-                    
+
                     if rejectObj.isObject, let errDict = rejectObj.toDictionary() {
                         if let errTitle = errDict["name"] as? String {
                             rejectionTitle = errTitle
                         }
-                        
+
                         if let errMsg = errDict["message"] as? String {
                             rejectionMessage = errMsg
                         }
                     }
                 }
-                
+
                 rejectionErr = JSError(message: "\(rejectionTitle): \(rejectionMessage)")
 
                 waitGroup.leave()
                 return
             }
-            
+
             var args: [String: Any] = [:]
-            
+
             var callbacks: [String: Any] = [:]
             callbacks["__cbr::resolve"] = resolveFunc
             callbacks["__cbr::reject"] = rejectFunc
-            
+
             args["callbacks"] = callbacks
             args["dataArgs"] = inputArgs
 
@@ -211,9 +211,9 @@ public class BackgroundRunner {
             try context.dispatchEvent(event: event, details: args)
 
             waitGroup.wait()
-            
+
             if let rejection = rejectionErr {
-                throw EngineError.jsException(details: rejection.message)                
+                throw EngineError.jsException(details: rejection.message)
             }
 
             return result

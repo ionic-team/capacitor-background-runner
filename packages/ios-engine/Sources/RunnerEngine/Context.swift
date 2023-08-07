@@ -20,17 +20,17 @@ public class Context {
 
         name = ctxName
         ctx = newCtx
-        
+
         thread = Thread { [weak self] in
             self?.runLoop = RunLoop.current
-            
-            while (self != nil && !self!.thread.isCancelled) {
+
+            while self != nil && !self!.thread.isCancelled {
                 self?.runLoop.run(mode: .default, before: .distantFuture)
             }
-            
+
             Thread.exit()
         }
-        
+
         thread.name = "[\(name)] context thread"
         thread.qualityOfService = .userInitiated
         thread.start()
@@ -58,7 +58,7 @@ public class Context {
         if let eventHandler = eventListeners[event] {
             let dataArgs = details?["dataArgs"] as? [String: Any]
             var callbackFunctions: [String: JSValue] = [:]
-            
+
             if let callbacks = details?["callbacks"] as? [String: Any] {
                 callbacks.keys.forEach { key in
                     if key.hasPrefix("__cbr::") {
@@ -67,30 +67,30 @@ public class Context {
                     }
                 }
             }
-        
+
             var thrownException: JSValue?
-            
+
             self.ctx.exceptionHandler = { _, exception in
                 thrownException = exception
             }
-            
+
             let resolveFunc = callbackFunctions["resolve"]
             let rejectFunc = callbackFunctions["reject"]
-            
+
             if let dataArgs = dataArgs {
                 guard let jsDataArgs = JSValue(object: dataArgs, in: self.ctx) else {
                     throw EngineError.jsValueError
                 }
-                
+
                 eventHandler.call(withArguments: [resolveFunc!, rejectFunc!, jsDataArgs])
             } else {
                 eventHandler.call(withArguments: [resolveFunc!, rejectFunc as Any])
             }
-            
+
             if let exception = thrownException {
                 throw EngineError.jsException(details: String(describing: exception))
             }
-            
+
         }
     }
     private func setupWebAPI() throws {
@@ -110,7 +110,7 @@ public class Context {
         let fetchFunc: @convention(block) (JSValue, JSValue) -> JSValue = { resource, options in
             return fetch(resource: resource, options: options)
         }
-    
+
         let newTextEncoderConst: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoderConst: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
 
@@ -142,7 +142,7 @@ public class Context {
 
         let timerId = Int(Int32.init(truncatingIfNeeded: timer.hashValue))
         timers[timerId] = timer
-        
+
         self.runLoop.add(timer, forMode: .default)
         self.runLoop.add(timer, forMode: .common)
 

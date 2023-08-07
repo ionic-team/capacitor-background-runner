@@ -462,7 +462,6 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
 
   JSValue args = argv[0];
   if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
-
     std::string json_string;
 
     if (JS_IsError(ctx, args)) {
