@@ -67,11 +67,12 @@ JSValue api_kv_get(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst
   }
 
   auto value_c_str = env->GetStringUTFChars(value_j_str, nullptr);
+  auto value_str_obj = JS_NewString(ctx, value_c_str);
 
-  ret_value = JS_NewString(ctx, value_c_str);
+  ret_value = JS_NewObject(ctx);
+  JS_SetPropertyStr(ctx, ret_value, "value", value_str_obj);
 
   env->ReleaseStringUTFChars(value_j_str, value_c_str);
-
   JS_FreeCString(ctx, key_c_str);
 
   return ret_value;
