@@ -376,7 +376,7 @@ void Context::init_capacitor_kv_api() const {
   kv = JS_NewObject(this->ctx);
   JS_SetPropertyStr(this->ctx, kv, "set", JS_NewCFunction(this->ctx, api_kv_set, "set", 2));
   JS_SetPropertyStr(this->ctx, kv, "get", JS_NewCFunction(this->ctx, api_kv_get, "get", 1));
-  JS_SetPropertyStr(this->ctx, kv, "remove", JS_NewCFunction(this->ctx, api_kv_get, "remove", 1));
+  JS_SetPropertyStr(this->ctx, kv, "remove", JS_NewCFunction(this->ctx, api_kv_remove, "remove", 1));
 
   JS_SetPropertyStr(this->ctx, global_obj, "CapacitorKV", kv);
 
@@ -488,6 +488,11 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
     jmethodID json_object_cnstrctr = thread_env->GetMethodID(json_object_c, "<init>", "(Ljava/lang/String;)V");
 
     jobject json_object = thread_env->NewObject(json_object_c, json_object_cnstrctr, j_json_string);
+    jni_exception = check_and_throw_jni_exception(thread_env, ctx);
+
+    if (JS_IsException(jni_exception)) {
+      return jni_exception;
+    }
 
     jfieldID args_field = thread_env->GetFieldID(j_function_class, "args", "Lorg/json/JSONObject;");
 
