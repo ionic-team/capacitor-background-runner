@@ -316,6 +316,7 @@ Dispatches an event to the configured runner.
 
 ### Interfaces
 
+
 #### CapacitorDevice
 
 Get information on the device, such as network connectivity and battery status.
@@ -325,6 +326,7 @@ Get information on the device, such as network connectivity and battery status.
 | **`getBatteryStatus`** | <code>() =&gt; <a href="#batterystatus">BatteryStatus</a></code> | Get the current battery status for the device. | 1.0.0 |
 | **`getNetworkStatus`** | <code>() =&gt; <a href="#networkstatus">NetworkStatus</a></code> | Get the current network status for the device. | 1.0.0 |
 
+
 #### BatteryStatus
 
 | Prop               | Type                 |
@@ -332,12 +334,14 @@ Get information on the device, such as network connectivity and battery status.
 | **`batteryLevel`** | <code>number</code>  |
 | **`isCharging`**   | <code>boolean</code> |
 
+
 #### NetworkStatus
 
 | Prop                 | Type                 |
 | -------------------- | -------------------- |
 | **`connected`**      | <code>boolean</code> |
 | **`connectionType`** | <code>string</code>  |
+
 
 #### CapacitorKV
 
@@ -349,6 +353,7 @@ A simple string key / value store backed by UserDefaults on iOS and Shared Prefe
 | **`get`**    | <code>(key: string) =&gt; string</code>              | Get a string value for the given key.  | 1.0.0 |
 | **`remove`** | <code>(key: string) =&gt; void</code>                | Remove a value with the given key.     | 1.0.0 |
 
+
 #### CapacitorNotifications
 
 Send basic local notifications.
@@ -356,6 +361,7 @@ Send basic local notifications.
 | Prop           | Type                                  | Description                   | Since |
 | -------------- | ------------------------------------- | ----------------------------- | ----- |
 | **`schedule`** | <code>(options: {}) =&gt; void</code> | Schedule a local notification | 1.0.0 |
+
 
 #### NotificationScheduleOptions
 
@@ -380,6 +386,7 @@ Send basic local notifications.
 | **`largeIcon`**        | <code>string</code>  | Set a large icon for notifications. Icons should be placed in your app's `res/drawable` folder. The value for this option should be the drawable resource ID, which is the filename without an extension. Only available for Android.                                                                                                                                                                                                                                                                                                                                                                                           | 1.0.0 |
 | **`channelId`**        | <code>string</code>  | Specifies the channel the notification should be delivered on. If channel with the given name does not exist then the notification will not fire. If not provided, it will use the default channel. Calls `setChannelId()` on [`NotificationCompat.Builder`](https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder) with the provided value. Only available for Android 26+.                                                                                                                                                                                                                     | 1.0.0 |
 
+
 #### CapacitorGeolocation
 
 Get access to device location information.
@@ -387,6 +394,7 @@ Get access to device location information.
 | Prop                     | Type                                                                                   | Description                          | Since |
 | ------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------ | ----- |
 | **`getCurrentLocation`** | <code>() =&gt; <a href="#getcurrentpositionresult">GetCurrentPositionResult</a></code> | Get the device's last known location | 1.0.0 |
+
 
 #### GetCurrentPositionResult
 
