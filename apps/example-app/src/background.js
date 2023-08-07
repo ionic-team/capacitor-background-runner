@@ -1,211 +1,234 @@
-addEventListener("updateSystem", (details) => {
-  console.log("do something to update the system here");
-  details.completed();
+// basic functionality
+
+addEventListener("syncTest", (resolve, reject, args) => {
+  console.log("calling sync test");
+  setTimeout(() => {
+    console.log("tick");
+    resolve();
+  }, 3000);
 });
 
-addEventListener("updateSystemWithDetails", (details) => {
-  console.log("accepted this data: " + JSON.stringify(details.user));
-  const updatedUser = details.user;
-  updatedUser.firstName = updatedUser.firstName + " HELLO";
-  updatedUser.lastName = updatedUser.lastName + " WORLD";
-
-  details.completed(updatedUser);
-});
-
-addEventListener("updateSystemThrow", () => {
-  throw new Error("an error was thrown from javascript");
-});
-
-addEventListener("testKVStore", (details) => {
-  CapacitorKV.set("testValue", "hello world");
-  const result = CapacitorKV.get("testValue");
-
-  console.log("test value is: " + result);
-
-  details.completed();
-});
-
-addEventListener("testGetKVStore", (details) => {
-  const value = CapacitorKV.get("testValue");
-
-  CapacitorKV.set("testValue", null);
-
-  details.completed({
-    value,
+addEventListener("asyncTest", async (resolve, reject, args) => {
+  console.log("calling async test");
+  await new Promise((res) => {
+    setTimeout(() => {
+      console.log("tick");
+      res();
+    }, 3000);
   });
+  console.log("returning async result");
+  resolve();
 });
 
-addEventListener("testLastKnownLocation", async (details) => {
-  const location = CapacitorGeolocation.getCurrentPosition();
+addEventListener("argsTest", async (resolve, reject, args) => {
+  try {
+    console.log("accepted these args: " + JSON.stringify(args));
+    const updatedUser = args.user;
+    updatedUser.firstName = updatedUser.firstName + " HELLO";
+    updatedUser.lastName = updatedUser.lastName + " WORLD";
 
-  console.log("current location: " + JSON.stringify(location));
-
-  CapacitorNotifications.schedule([
-    {
-      title: "Enterprise Background Runner",
-      body: `Your current location: ${location.lat}, ${location.lng}`,
-    },
-  ]);
-
-  CapacitorKV.set("testValue", JSON.stringify(location));
-
-  details.completed();
-});
-
-addEventListener("testCurrentLocation", async (details) => {
-  console.log("getting current location...");
-  const location = await CapacitorGeolocation.getCurrentPosition();
-
-  console.log("current location: " + JSON.stringify(location));
-  details.completed();
-});
-
-addEventListener("testStartLocationWatch", (details) => {
-  CapacitorGeolocation.startWatchingPosition(false);
-
-  details.completed();
-});
-
-addEventListener("testEndLocationWatch", (details) => {
-  CapacitorGeolocation.stopWatchingPosition();
-
-  details.completed();
-});
-
-addEventListener("currentLocation", (details) => {
-  console.log("current live location: " + JSON.stringify(details.locations));
-
-  details.completed();
-});
-
-addEventListener("testBatteryStatus", (details) => {
-  const info = CapacitorDevice.getBatteryStatus();
-  console.log(JSON.stringify(info));
-  details.completed(info);
-});
-
-addEventListener("testNetworkStatus", (details) => {
-  const info = CapacitorDevice.getNetworkStatus();
-  console.log(JSON.stringify(info));
-  details.completed(info);
-});
-
-addEventListener("scheduleNotification", (details) => {
-  let scheduleDate = new Date();
-  scheduleDate.setSeconds(scheduleDate.getSeconds() + 30);
-
-  CapacitorNotifications.schedule([
-    {
-      id: 100,
-      title: "Enterprise Background Runner",
-      body: "A test message from the Enterprise Background Runner",
-      scheduleAt: scheduleDate,
-    },
-  ]);
-
-  details.completed();
-});
-
-addEventListener("monitorLocation", async (details) => {
-  console.log("recording location...");
-  const location = await CapacitorGeolocation.getCurrentPosition();
-  const timestamp = Math.floor(Date.now() / 1000);
-
-  let track = CapacitorKV.get("track");
-  if (!track) {
-    track = [];
-  } else {
-    track = JSON.parse(track);
+    resolve(updatedUser);
+  } catch (err) {
+    console.error(err);
+    reject(err);
   }
-
-  track.push({
-    timestamp,
-    location,
-  });
-
-  CapacitorKV.set("track", JSON.stringify(track));
-
-  CapacitorNotifications.schedule([
-    {
-      id: 500,
-      title: "Enterprise Background Runner",
-      body: "Recording your current location",
-      scheduleAt: new Date(),
-    },
-  ]);
-
-  details.completed();
 });
 
-addEventListener("getSavedLocations", (details) => {
-  let track = CapacitorKV.get("track");
-
-  details.completed({ track: track });
+addEventListener("errorTest", async (resolve, reject, args) => {
+  try {
+    const undefinedObject = args.myUndefinedObject;
+    undefinedObject.fakeFunc();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
 });
 
-addEventListener("remoteNotification", (details) => {
+addEventListener("fetchTest", async (resolve, reject, args) => {
+  try {
+    const res = await fetch("https://jsonplaceholder.typicode.com/todos/1");
+
+    if (!res.ok) {
+      throw new Error("Fetch GET request failed");
+    }
+
+    const todo = await res.json();
+    resolve(todo);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+// capacitor APIs
+addEventListener("testCapKV", async (resolve, reject, args) => {
+  try {
+    CapacitorKV.set("testValue", "hello world");
+
+    const result = CapacitorKV.get("testValue");
+    console.log("test value is: " + result);
+
+    resolve(result);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapNotification", async (resolve, reject, args) => {
+  try {
+    let scheduleDate = new Date();
+    scheduleDate.setSeconds(scheduleDate.getSeconds() + 30);
+
+    CapacitorNotifications.schedule([
+      {
+        id: 100,
+        title: "Enterprise Background Runner",
+        body: "A test message from the Enterprise Background Runner",
+        scheduleAt: scheduleDate,
+      },
+    ]);
+
+    resolve();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorGeolocation", async (resolve, reject, args) => {
+  try {
+    const location = await CapacitorGeolocation.getCurrentPosition();
+    console.log("current location: " + JSON.stringify(location));
+    resolve(location);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener(
+  "testCapacitorDeviceBatteryStatus",
+  async (resolve, reject, args) => {
+    try {
+      const info = CapacitorDevice.getBatteryStatus();
+      console.log(JSON.stringify(info));
+      resolve(info);
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  }
+);
+
+addEventListener(
+  "testCapacitorDeviceNetworkStatus",
+  async (resolve, reject, args) => {
+    try {
+      const info = CapacitorDevice.getNetworkStatus();
+      console.log(JSON.stringify(info));
+      resolve(info);
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  }
+);
+
+addEventListener("remoteNotification", (resolve, reject, args) => {
   console.log("received silent push notification");
 
   CapacitorNotifications.schedule([
     {
+      id: 1000,
       title: "Enterprise Background Runner",
       body: "Received silent push notification",
     },
   ]);
 
-  console.log(`details: ${JSON.stringify(details)}`);
+  console.log(`details: ${JSON.stringify(args)}`);
 
-  details.completed();
+  resolve();
 });
 
-addEventListener("checkWatchReachability", (details) => {
-  const reachable = CapacitorWearable.isReachable();
+addEventListener("checkWatchReachability", (resolve, reject, args) => {
+  try {
+    const reachable = CapacitorWearable.isReachable();
 
-  details.completed({
-    reachable: reachable,
-  });
+    resolve({
+      reachable: reachable,
+    });
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
 });
 
-addEventListener("sendMessageToWearable", (details) => {
-  console.log("sending message to watch...");
+addEventListener("sendMessageToWearable", (resolve, reject, args) => {
+  try {
+    console.log("sending message to watch...");
 
-  CapacitorWearable.send({
-    msg: "Hello World",
-  });
+    CapacitorWearable.send({
+      msg: "Hello World",
+    });
 
-  details.completed();
+    resolve();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
 });
 
-addEventListener("WatchConnectivity_activationDidCompleteWith", (details) => {
-  console.log("watch paired completed");
-  details.completed();
-});
+addEventListener(
+  "WatchConnectivity_activationDidCompleteWith",
+  (resolve, reject, args) => {
+    console.log("watch paired completed");
+    resolve();
+  }
+);
 
-addEventListener("WatchConnectivity_sessionDidBecomeInactive", (details) => {
-  console.log("watch session is inactive");
-  details.completed();
-});
+addEventListener(
+  "WatchConnectivity_sessionDidBecomeInactive",
+  (resolve, reject, args) => {
+    console.log("watch session is inactive");
+    resolve();
+  }
+);
 
-addEventListener("WatchConnectivity_sessionDidDeactivate", (details) => {
-  console.log("watch session is deactivated");
-  details.completed();
-});
+addEventListener(
+  "WatchConnectivity_sessionDidDeactivate",
+  (resolve, reject, args) => {
+    console.log("watch session is deactivated");
+    resolve();
+  }
+);
 
-addEventListener("WatchConnectivity_didReceiveUserInfo", (details) => {
-  console.log(`watch sent user info: ${JSON.stringify(details)}`);
-  details.completed();
-});
+addEventListener(
+  "WatchConnectivity_didReceiveUserInfo",
+  (resolve, reject, args) => {
+    console.log(`watch sent user info: ${JSON.stringify(args)}`);
+    resolve();
+  }
+);
 
-addEventListener("WatchConnectivity_didReceiveMessage", (details) => {
-  const msg = details.message.result;
+addEventListener(
+  "WatchConnectivity_didReceiveMessage",
+  (resolve, reject, args) => {
+    try {
+      const msg = args.message.result;
 
-  CapacitorNotifications.schedule([
-    {
-      title: "Enterprise Background Runner",
-      body: msg,
-    },
-  ]);
+      CapacitorNotifications.schedule([
+        {
+          title: "Enterprise Background Runner",
+          body: msg,
+        },
+      ]);
 
-  console.log(`watch sent data: ${JSON.stringify(details)}`);
-  details.completed();
-});
+      console.log(`watch sent data: ${JSON.stringify(args)}`);
+      resolve();
+    } catch (err) {
+      console.error(err);
+      reject(err);
+    }
+  }
+);
