@@ -76,7 +76,7 @@ JSValue js_response_json_promise(JSContext *ctx, JSValueConst this_val, int argc
   return promise;
 }
 
-JSValue js_response_to_value(JSContext *ctx, JNIEnv *env, jobject response) {
+JSValue js_response_to_value(JSContext *ctx, jobject response) {
   int flags = JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_BACKTRACE_BARRIER;
   uint8_t *buf;
   size_t elem, len, offset, buf_size;
@@ -84,6 +84,16 @@ JSValue js_response_to_value(JSContext *ctx, JNIEnv *env, jobject response) {
   JSValue jni_exception, js_response;
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto env = parent_ctx->getJNIEnv();
+
+  if (env == nullptr) {
+      return JS_UNDEFINED;
+  }
+
+  jni_exception = check_and_throw_jni_exception(env, ctx);
+  if (JS_IsException(jni_exception)) {
+    return jni_exception;
+  }
 
   auto j_ok = env->GetBooleanField(response, parent_ctx->jni_classes->js_response_ok_field);
   auto j_status = env->GetIntField(response, parent_ctx->jni_classes->js_response_status_field);
@@ -201,7 +211,7 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
     return JS_UNDEFINED;
   }
 
-  auto res = js_response_to_value(ctx, env, response);
+  auto res = js_response_to_value(ctx, response);
 
   JSValue err = JS_GetPropertyStr(ctx, res, "error");
   if (JS_IsString(err)) {
