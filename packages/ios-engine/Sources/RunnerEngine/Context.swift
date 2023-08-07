@@ -6,7 +6,9 @@ public class Context {
     let ctx: JSContext
 
     private var timers = [Int: Timer]()
-    private var eventListeners = [String: [JSValue]]()
+    private var eventListeners = [String: JSValue]()
+    private var thread: Thread!
+    private var runLoop: RunLoop!
 
     // swiftlint:disable:next identifier_name
     public init(vm: JSVirtualMachine, ctxName: String) throws {
@@ -18,6 +20,19 @@ public class Context {
 
         name = ctxName
         ctx = newCtx
+        
+        thread = Thread { [weak self] in
+            self?.runLoop = RunLoop.current
+            
+            while (self != nil && !self!.thread.isCancelled) {
+                self?.runLoop.run(mode: .default, before: .distantFuture)
+            }
+            
+            Thread.exit()
+        }
+        
+        thread.name = "[\(name)] context thread"
+        thread.start()
 
         try setupWebAPI()
     }
@@ -39,41 +54,42 @@ public class Context {
     }
 
     public func dispatchEvent(event: String, details: [String: Any]? = nil) throws {
-        if let callbacks = eventListeners[event] {
-            try callbacks.forEach { jsFunc in
-                var thrownException: JSValue?
-
-                self.ctx.exceptionHandler = { _, exception in
-                    thrownException = exception
-                }
-
-                if let detailsObj = details {
-                    var callbackFunctions: [String: Any] = [:]
-
-                    detailsObj.keys.forEach { key in
-                        if key.hasPrefix("__ebr::") {
-                            let funcName = key.replacingOccurrences(of: "__ebr::", with: "")
-                            callbackFunctions[funcName] = detailsObj[key]
-                        }
+        if let eventHandler = eventListeners[event] {
+            let dataArgs = details?["dataArgs"] as? [String: Any]
+            var callbackFunctions: [String: JSValue] = [:]
+            
+            if let callbacks = details?["callbacks"] as? [String: Any] {
+                callbacks.keys.forEach { key in
+                    if key.hasPrefix("__cbr::") {
+                        let funcName = key.replacingOccurrences(of: "__cbr::", with: "")
+                        callbackFunctions[funcName] = JSValue.init(object: callbacks[key], in: self.ctx)
                     }
-
-                    guard let jsDetailsObj = JSValue(object: detailsObj, in: self.ctx) else {
-                        throw EngineError.jsValueError
-                    }
-
-                    callbackFunctions.forEach { (funcName: String, jsFunc: Any) in
-                        jsDetailsObj.setValue(jsFunc, forProperty: funcName)
-                    }
-
-                    jsFunc.call(withArguments: [jsDetailsObj])
-                } else {
-                    jsFunc.call(withArguments: [])
-                }
-
-                if let exception = thrownException {
-                    throw EngineError.jsException(details: String(describing: exception))
                 }
             }
+        
+            var thrownException: JSValue?
+            
+            self.ctx.exceptionHandler = { _, exception in
+                thrownException = exception
+            }
+            
+            let resolveFunc = callbackFunctions["resolve"]
+            let rejectFunc = callbackFunctions["reject"]
+            
+            if let dataArgs = dataArgs {
+                guard let jsDataArgs = JSValue(object: dataArgs, in: self.ctx) else {
+                    throw EngineError.jsValueError
+                }
+                
+                eventHandler.call(withArguments: [resolveFunc!, rejectFunc!, jsDataArgs])
+            } else {
+                eventHandler.call(withArguments: [resolveFunc!, rejectFunc as Any])
+            }
+            
+            if let exception = thrownException {
+                throw EngineError.jsException(details: String(describing: exception))
+            }
+            
         }
     }
     private func setupWebAPI() throws {
@@ -93,6 +109,7 @@ public class Context {
         let fetchFunc: @convention(block) (JSValue, JSValue) -> JSValue = { resource, options in
             return fetch(resource: resource, options: options)
         }
+    
         let newTextEncoderConst: @convention(block) () -> JSTextEncoder = JSTextEncoder.init
         let newTextDecoderConst: @convention(block) (String?, [AnyHashable: Any]?) -> JSTextDecoder = JSTextDecoder.init
 
@@ -110,15 +127,11 @@ public class Context {
     }
 
     private func addEventListener(eventName: String, callback: JSValue) {
-        if eventListeners[eventName] == nil {
-            eventListeners[eventName] = [callback]
-        } else {
-            eventListeners[eventName]?.append(callback)
-        }
+        eventListeners[eventName] = callback
     }
 
     private func initTimer(callback: JSValue, timeout: Int, isInterval: Bool) -> Int {
-        let timer = Timer.scheduledTimer(withTimeInterval: TimeInterval(timeout / 1000), repeats: isInterval) { t in
+        let timer = Timer(timeInterval: TimeInterval(timeout / 1000), repeats: isInterval) { t in
             callback.call(withArguments: [])
             if !isInterval {
                 let timerId = Int(Int32.init(truncatingIfNeeded: t.hashValue))
@@ -127,10 +140,10 @@ public class Context {
         }
 
         let timerId = Int(Int32.init(truncatingIfNeeded: timer.hashValue))
-
-        RunLoop.current.add(timer, forMode: .common)
-
         timers[timerId] = timer
+        
+        self.runLoop.add(timer, forMode: .default)
+        self.runLoop.add(timer, forMode: .common)
 
         return timerId
     }

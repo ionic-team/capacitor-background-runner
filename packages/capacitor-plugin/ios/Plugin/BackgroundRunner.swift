@@ -145,17 +145,12 @@ public class BackgroundRunner {
                 throw BackgroundRunnerPluginError.runnerError(reason: "no loaded context for config")
             }
 
-            var inputArgsWithCallback = inputArgs
-
-            if inputArgsWithCallback == nil {
-                inputArgsWithCallback = [:]
-            }
-
             let waitGroup = DispatchGroup()
 
             var result: [String: Any]?
-
-            let completedFunc: @convention(block)(JavaScriptCore.JSValue) -> Void = { returnObj in
+            var rejectionErr: JSError?
+            
+            let resolveFunc: @convention(block)(JavaScriptCore.JSValue) -> Void = { returnObj in
                 if !returnObj.isUndefined && !returnObj.isNull {
                     var dict: [String: Any] = [:]
 
@@ -169,14 +164,57 @@ public class BackgroundRunner {
                 waitGroup.leave()
                 return
             }
+            
+            let rejectFunc: @convention(block)(JavaScriptCore.JSValue) -> Void = { rejectObj in
+                var rejectionTitle = "Error"
+                var rejectionMessage = ""
+                
+                if !rejectObj.isUndefined && !rejectObj.isNull {
+                    if let errStr = rejectObj.toString() {
+                        let split = errStr.split(separator: ":", maxSplits: 1)
+                        if split.count == 0 {
+                            rejectionMessage = String(split.first ?? "")
+                        } else {
+                            rejectionTitle = String(split.first ?? "Error")
+                            rejectionMessage = String(split.last ?? "")
+                        }
+                    }
+                    
+                    if rejectObj.isObject, let errDict = rejectObj.toDictionary() {
+                        if let errTitle = errDict["name"] as? String {
+                            rejectionTitle = errTitle
+                        }
+                        
+                        if let errMsg = errDict["message"] as? String {
+                            rejectionMessage = errMsg
+                        }
+                    }
+                }
+                
+                rejectionErr = JSError(message: "\(rejectionTitle): \(rejectionMessage)")
 
-            inputArgsWithCallback?["__ebr::completed"] = completedFunc
+                waitGroup.leave()
+                return
+            }
+            
+            var args: [String: Any] = [:]
+            
+            var callbacks: [String: Any] = [:]
+            callbacks["__cbr::resolve"] = resolveFunc
+            callbacks["__cbr::reject"] = rejectFunc
+            
+            args["callbacks"] = callbacks
+            args["dataArgs"] = inputArgs
 
             waitGroup.enter()
 
-            try context.dispatchEvent(event: event, details: inputArgsWithCallback)
+            try context.dispatchEvent(event: event, details: args)
 
             waitGroup.wait()
+            
+            if let rejection = rejectionErr {
+                throw EngineError.jsException(details: rejection.message)                
+            }
 
             return result
         } catch {
