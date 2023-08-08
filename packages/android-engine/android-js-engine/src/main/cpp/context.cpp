@@ -255,9 +255,9 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
   JSValue event_handler;
 
   try {
-      event_handler = this->event_listeners.at(event);
+    event_handler = this->event_listeners.at(event);
   } catch (std::exception &ex) {
-      event_handler = JS_NULL;
+    event_handler = JS_NULL;
   }
 
   if (!JS_IsNull(event_handler)) {
