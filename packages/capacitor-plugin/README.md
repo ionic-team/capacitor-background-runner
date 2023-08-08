@@ -212,11 +212,11 @@ It’s not possible to run persistent, always running background services on mob
 
 <docgen-index>
 
-- [`checkPermissions()`](#checkpermissions)
-- [`requestPermissions(...)`](#requestpermissions)
-- [`dispatchEvent(...)`](#dispatchevent)
-- [Interfaces](#interfaces)
-- [Type Aliases](#type-aliases)
+* [`checkPermissions()`](#checkpermissions)
+* [`requestPermissions(...)`](#requestpermissions)
+* [`dispatchEvent(...)`](#dispatchevent)
+* [Interfaces](#interfaces)
+* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
@@ -235,7 +235,8 @@ Check permissions for the various Capacitor device APIs.
 
 **Since:** 1.0.0
 
----
+--------------------
+
 
 ### requestPermissions(...)
 
@@ -253,7 +254,8 @@ Request permission to display local notifications.
 
 **Since:** 1.0.0
 
----
+--------------------
+
 
 ### dispatchEvent(...)
 
@@ -271,9 +273,11 @@ Dispatches an event to the configured runner.
 
 **Since:** 1.0.0
 
----
+--------------------
+
 
 ### Interfaces
+
 
 #### PermissionStatus
 
@@ -282,11 +286,13 @@ Dispatches an event to the configured runner.
 | **`geolocation`**   | <code><a href="#permissionstate">PermissionState</a></code> |
 | **`notifications`** | <code><a href="#permissionstate">PermissionState</a></code> |
 
+
 #### RequestPermissionOptions
 
 | Prop       | Type            |
 | ---------- | --------------- |
 | **`apis`** | <code>{}</code> |
+
 
 #### DispatchEventOptions
 
@@ -296,11 +302,14 @@ Dispatches an event to the configured runner.
 | **`event`**   | <code>string</code>                  | The name of the registered event listener. | 1.0.0 |
 | **`details`** | <code>{ [key: string]: any; }</code> |                                            |       |
 
+
 ### Type Aliases
+
 
 #### PermissionState
 
 <code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
+
 
 #### API
 

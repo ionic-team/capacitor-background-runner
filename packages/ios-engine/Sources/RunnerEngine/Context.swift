@@ -8,7 +8,7 @@ public class Context {
     private var timers = [Int: Timer]()
     private var eventListeners = [String: JSValue]()
     private var thread: Thread!
-    private var runLoop: RunLoop!
+    private var runLoop: RunLoop?
 
     // swiftlint:disable:next identifier_name
     public init(vm: JSVirtualMachine, ctxName: String) throws {
@@ -24,8 +24,8 @@ public class Context {
         thread = Thread { [weak self] in
             self?.runLoop = RunLoop.current
 
-            while self != nil && !self!.thread.isCancelled {
-                self?.runLoop.run(mode: .default, before: .distantFuture)
+            while self != nil && !self!.thread.isCancelled && self!.runLoop != nil {
+                self?.runLoop?.run(mode: .default, before: .distantFuture)
             }
 
             Thread.exit()
@@ -56,7 +56,11 @@ public class Context {
 
     public func dispatchEvent(event: String, details: [String: Any]? = nil) throws {
         if let eventHandler = eventListeners[event] {
-            let dataArgs = details?["dataArgs"] as? [String: Any]
+            var dataArgs = details?["dataArgs"] as? [String: Any]
+            if dataArgs == nil {
+                dataArgs = details
+            }
+
             var callbackFunctions: [String: JSValue] = [:]
 
             if let callbacks = details?["callbacks"] as? [String: Any] {
@@ -74,18 +78,23 @@ public class Context {
                 thrownException = exception
             }
 
-            let resolveFunc = callbackFunctions["resolve"]
-            let rejectFunc = callbackFunctions["reject"]
+            var callArgs: [Any] = []
+
+            if let resolveFunc = callbackFunctions["resolve"],
+               let rejectFunc = callbackFunctions["reject"] {
+                callArgs.append(resolveFunc)
+                callArgs.append(rejectFunc)
+            }
 
             if let dataArgs = dataArgs {
                 guard let jsDataArgs = JSValue(object: dataArgs, in: self.ctx) else {
                     throw EngineError.jsValueError
                 }
 
-                eventHandler.call(withArguments: [resolveFunc!, rejectFunc!, jsDataArgs])
-            } else {
-                eventHandler.call(withArguments: [resolveFunc!, rejectFunc as Any])
+                callArgs.append(jsDataArgs)
             }
+
+            eventHandler.call(withArguments: callArgs)
 
             if let exception = thrownException {
                 throw EngineError.jsException(details: String(describing: exception))
@@ -143,8 +152,13 @@ public class Context {
         let timerId = Int(Int32.init(truncatingIfNeeded: timer.hashValue))
         timers[timerId] = timer
 
-        self.runLoop.add(timer, forMode: .default)
-        self.runLoop.add(timer, forMode: .common)
+        if let runLoop = self.runLoop {
+            runLoop.add(timer, forMode: .default)
+            runLoop.add(timer, forMode: .common)
+        } else {
+            RunLoop.current.add(timer, forMode: .default)
+            RunLoop.current.add(timer, forMode: .common)
+        }
 
         return timerId
     }
