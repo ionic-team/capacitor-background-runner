@@ -46,7 +46,7 @@ public:
     jobject api;
     jobject capacitor_api;
 
-    std::unordered_multimap<std::string, JSValue> event_listeners;
+    std::unordered_map<std::string, JSValue> event_listeners;
     std::unordered_map<int, Timer> timers;
     std::unordered_map<std::string, JavaFunctionData> registered_functions;
 

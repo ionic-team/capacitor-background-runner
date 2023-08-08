@@ -50,9 +50,13 @@ Context::~Context() {
     JS_FreeValue(this->ctx, kv.second);
   }
 
+  this->event_listeners.clear();
+
   for (const auto &kv : this->timers) {
     JS_FreeValue(this->ctx, kv.second.js_func);
   }
+
+  this->timers.clear();
 
   this->registered_functions.clear();
 
@@ -120,7 +124,6 @@ void Context::run_loop() {
 
         if (duration.count() >= kv.second.timeout) {
           this->timers[kv.first].start = std::chrono::system_clock::now();
-
           JSValue value = JS_Call(this->ctx, this->timers[kv.first].js_func, global_obj, 0, nullptr);
           JS_FreeValue(this->ctx, value);
 
@@ -167,12 +170,12 @@ void Context::init_callbacks(JSValue callbacks) const {
   JS_GetOwnPropertyNames(this->ctx, &properties, &count, callbacks, JS_GPN_STRING_MASK | JS_GPN_SYMBOL_MASK | JS_GPN_ENUM_ONLY);
   for (uint32_t i = 0; i < count; i++) {
     JSAtom atom = properties[i].atom;
-    const char *key = JS_AtomToCString(ctx, atom);
+    const char *key = JS_AtomToCString(this->ctx, atom);
 
-    JSValue val = JS_GetProperty(ctx, callbacks, atom);
+    JSValue val = JS_GetProperty(this->ctx, callbacks, atom);
 
     if (JS_IsString(val)) {
-      const char *c_str_val = JS_ToCString(ctx, val);
+      const char *c_str_val = JS_ToCString(this->ctx, val);
       std::string str_value = std::string(c_str_val);
 
       std::string prefix = str_value.substr(0, 7);
@@ -193,7 +196,7 @@ void Context::init_callbacks(JSValue callbacks) const {
     }
 
     JS_FreeValue(this->ctx, val);
-    JS_FreeAtom(ctx, atom);
+    JS_FreeAtom(this->ctx, atom);
     JS_FreeCString(this->ctx, key);
   }
 }
@@ -249,36 +252,54 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
   JSValue ret_value = JS_UNDEFINED;
   JSValue global_obj = JS_GetGlobalObject(this->ctx);
 
-  JSValue dataArgs = JS_GetPropertyStr(this->ctx, details, "dataArgs");
-  JSValue callbacks = JS_GetPropertyStr(this->ctx, details, "callbacks");
-  this->init_callbacks(callbacks);
+  JSValue event_handler;
 
-  auto range = this->event_listeners.equal_range(event);
-  for (auto itr = range.first; itr != range.second; ++itr) {
-    auto callback = (JSValue)itr->second;
+  try {
+      event_handler = this->event_listeners.at(event);
+  } catch (std::exception &ex) {
+      event_handler = JS_NULL;
+  }
 
-    JSValue resolveFunc = JS_GetPropertyStr(ctx, callbacks, "resolve");
-    JSValue rejectFunc = JS_GetPropertyStr(ctx, callbacks, "reject");
-
+  if (!JS_IsNull(event_handler)) {
     JSValueConst args[3];
-    args[0] = resolveFunc;
-    args[1] = rejectFunc;
-    args[2] = dataArgs;
 
-    JSValue value = JS_Call(this->ctx, callback, global_obj, 3, args);
+    JSValue dataArgs = JS_GetPropertyStr(this->ctx, details, "dataArgs");
+    JSValue callbacks = JS_GetPropertyStr(this->ctx, details, "callbacks");
+
+    int nextArgIndex = 0;
+
+    if (!JS_IsNull(callbacks) && !JS_IsUndefined(callbacks)) {
+      this->init_callbacks(callbacks);
+
+      JSValue resolveFunc = JS_GetPropertyStr(this->ctx, callbacks, "resolve");
+      JSValue rejectFunc = JS_GetPropertyStr(this->ctx, callbacks, "reject");
+
+      args[0] = resolveFunc;
+      args[1] = rejectFunc;
+      nextArgIndex = 2;
+
+      JS_FreeValue(this->ctx, resolveFunc);
+      JS_FreeValue(this->ctx, rejectFunc);
+    }
+
+    if (JS_IsNull(dataArgs) || JS_IsUndefined(dataArgs)) {
+      dataArgs = JS_DupValue(this->ctx, details);
+    }
+
+    args[nextArgIndex] = dataArgs;
+
+    JSValue value = JS_Call(this->ctx, event_handler, global_obj, 3, args);
+
     if (JS_IsException(value)) {
       ret_value = JS_DupValue(this->ctx, value);
       JS_FreeValue(this->ctx, value);
-      break;
     }
 
-    JS_FreeValue(this->ctx, resolveFunc);
-    JS_FreeValue(this->ctx, rejectFunc);
+    JS_FreeValue(this->ctx, callbacks);
+    JS_FreeValue(this->ctx, dataArgs);
     JS_FreeValue(this->ctx, value);
   }
 
-  JS_FreeValue(this->ctx, callbacks);
-  JS_FreeValue(this->ctx, dataArgs);
   JS_FreeValue(this->ctx, global_obj);
   return ret_value;
 }
@@ -432,7 +453,7 @@ JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue
 
   const auto *func_name = JS_ToCString(ctx, func_name_obj);
   auto func_name_str = std::string(func_name);
-  JS_FreeCString(ctx, func_name);
+
   JS_FreeValue(ctx, func_name_obj);
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
