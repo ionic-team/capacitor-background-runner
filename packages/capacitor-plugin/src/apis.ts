@@ -305,7 +305,7 @@ export interface CapacitorDevice {
 
 /**
  * Send basic local notifications.
- */
+*/
 export interface CapacitorNotifications {
   /**
    * Schedule a local notification
@@ -317,9 +317,19 @@ export interface CapacitorNotifications {
   schedule: (options: NotificationScheduleOptions[]) => void;
 }
 
+export interface CapcacitorWatch {
+  sendMessage: (options: []) => void;
+  transferUserInfo: (options: []) => void;
+  updateApplicationContext: (options: []) => void;
+  isReachable: boolean;
+  updateWatchUI: (options: { watchUI: string }) => void;
+  updateWatchData: (options: { data: { [key: string]: string } }) => void;
+}
+
 export interface CapacitorAPI {
   CapacitorDevice: CapacitorDevice;
   CapacitorKV: CapacitorKV;
   CapacitorNotifications: CapacitorNotifications;
   CapacitorGeolocation: CapacitorGeolocation;
+  CapacitorWatch: CapcacitorWatch;
 }

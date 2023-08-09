@@ -144,11 +144,11 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
     }
   }
 
-  const onSendWearableMsg = async() => {
+  const onSendWatchMsg = async() => {
     try {
       await BackgroundRunner.dispatchEvent({
         label: "com.example.background.task",
-        event: "sendMessageToWearable",
+        event: "sendMessageToWatch",
         details: {},
       }) as any;      
     } catch (err) {
@@ -228,7 +228,7 @@ const ExploreContainer: React.FC<ContainerProps> = ({ name }) => {
       <IonButton onClick={onMonitorLocation}>Record Location</IonButton>
       <IonButton onClick={onGetTrackedLocations}>Get Location Report</IonButton>
       <IonButton onClick={onCheckWatchReachable}>Check Watch Status</IonButton>
-      <IonButton onClick={onSendWearableMsg}>Send Message to Watch</IonButton>
+      <IonButton onClick={onSendWatchMsg}>Send Message to Watch</IonButton>
       <IonButton onClick={onTestBatteryStatus}>Get Battery Status</IonButton>
       <IonButton onClick={onTestNetworkStatus}>Get Network Status</IonButton>
       

@@ -159,17 +159,17 @@ addEventListener("remoteNotification", (details) => {
 });
 
 addEventListener("checkWatchReachability", (details) => {
-  const reachable = CapacitorWearable.isReachable();
+  const reachable = CapacitorWatch.isReachable();
 
   details.completed({
     reachable: reachable,
   });
 });
 
-addEventListener("sendMessageToWearable", (details) => {
+addEventListener("sendMessageToWatch", (details) => {
   console.log("sending message to watch...");
 
-  CapacitorWearable.send({
+  CapacitorWatch.send({
     msg: "Hello World",
   });
 

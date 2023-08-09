@@ -2,14 +2,14 @@ import Foundation
 import JavaScriptCore
 import WatchConnectivity
 
-@objc protocol CapacitorWearableExports: JSExport {
-    func send(_ dataDict: JSValue) -> JSValue
+@objc protocol CapacitorWatchExports: JSExport {
+    func sendMessage(_ dataDict: JSValue) -> JSValue
     func transferUserInfo(_ userInfo: JSValue) -> JSValue
     func isReachable() -> JSValue
 }
 
-class CapacitorWearable: NSObject, CapacitorWearableExports {
-    func send(_ dataDict: JSValue) -> JSValue {
+class CapacitorWatch: NSObject, CapacitorWatchExports {
+    func sendMessage(_ dataDict: JSValue) -> JSValue {
         var dict: [String: Any] = [:]
 
         if dataDict.isObject {
@@ -37,6 +37,20 @@ class CapacitorWearable: NSObject, CapacitorWearableExports {
         return JSValue(undefinedIn: JSContext.current())
     }
 
+    func updateApplicationContext(_ appContext: JSValue) -> JSValue {
+        var dict: [String: Any] = [:]
+
+        if userInfo.isObject {
+            if let convertedDict = appContext.toDictionary() as? [String: Any] {
+                dict = convertedDict
+            }
+        }
+
+        _ = WCSession.default.updateApplicationContext(dict)
+
+        return JSValue(undefinedIn: JSContext.current())
+    }
+
     func isReachable() -> JSValue {
         if WCSession.default.isReachable {
             return JSValue(bool: true, in: JSContext.current())
@@ -44,5 +58,7 @@ class CapacitorWearable: NSObject, CapacitorWearableExports {
 
         return JSValue(bool: false, in: JSContext.current())
     }
+
+    
 
 }
