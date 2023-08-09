@@ -46,7 +46,7 @@ public:
     jobject api;
     jobject capacitor_api;
 
-    std::unordered_multimap<std::string, JSValue> event_listeners;
+    std::unordered_map<std::string, JSValue> event_listeners;
     std::unordered_map<int, Timer> timers;
     std::unordered_map<std::string, JavaFunctionData> registered_functions;
 
@@ -90,6 +90,8 @@ private:
     void init_capacitor_device_api() const;
     void init_capacitor_notifications_api() const;
     void init_capacitor_geolocation_api() const;
+
+    void init_callbacks(JSValue callbacks) const;
 };
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H

@@ -33,10 +33,12 @@ extern "C" JNIEXPORT jstring JNICALL Java_io_ionic_android_1js_1engine_Context_e
   }
 
   const char *json_string = JS_ToCString(ctx->ctx, value);
+  auto *j_json_string = env->NewStringUTF(json_string);
 
+  JS_FreeCString(ctx->ctx, json_string);
   JS_FreeValue(ctx->ctx, value);
 
-  return env->NewStringUTF(json_string);
+  return j_json_string;
 }
 extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Context_start(JNIEnv *env, jobject thiz, jlong ptr) {
   auto *ctx = (Context *)ptr;

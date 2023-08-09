@@ -28,31 +28,31 @@ class Context(name: String, runnerPtr: Long) {
     external fun initCapacitorAPI(ptr: Long, api: CapacitorAPI)
 
     fun start() {
-        val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
-        start(runnerPtr)
+        val ptr = this.ptr ?: throw Exception("context pointer is null")
+        start(ptr)
     }
 
     fun stop() {
-        val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
-        stop(runnerPtr)
+        val ptr = this.ptr ?: throw Exception("context pointer is null")
+        stop(ptr)
     }
 
     fun execute(code: String, returnValue: Boolean = false): JSValue {
-        val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
-        val jsonString = this.evaluate(runnerPtr, code, returnValue)
+        val ptr = this.ptr ?: throw Exception("context pointer is null")
+        val jsonString = this.evaluate(ptr, code, returnValue)
 
         return JSValue(jsonString)
     }
 
     fun dispatchEvent(event: String, details: JSONObject) {
-        val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
+        val ptr = this.ptr ?: throw Exception("context pointer is null")
 
-        this.dispatchEvent(runnerPtr, event, details.toString(0))
+        this.dispatchEvent(ptr, event, details.toString(0))
     }
 
     fun registerFunction(funcName: String, func: JSFunction) {
-        val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
-        this.registerGlobalFunction(runnerPtr, funcName, func)
+        val ptr = this.ptr ?: throw Exception("context pointer is null")
+        this.registerGlobalFunction(ptr, funcName, func)
     }
 
     fun setCapacitorAPI(capAPI: CapacitorAPI) {
@@ -62,8 +62,8 @@ class Context(name: String, runnerPtr: Long) {
     }
 
     fun destroy() {
-        val runnerPtr = this.ptr ?: return
+        val ptr = this.ptr ?: return
         this.stop()
-        this.destroyContext(runnerPtr)
+        this.destroyContext(ptr)
     }
 }

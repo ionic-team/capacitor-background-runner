@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/ionic-team/capacitor-background-runner/compare/1.0.0...1.0.1) (2023-08-09)
+
+
+### Bug Fixes
+
+* Updating to Gradle 8 ([#17](https://github.com/ionic-team/capacitor-background-runner/issues/17)) ([353dbe3](https://github.com/ionic-team/capacitor-background-runner/commit/353dbe331f5ed2344ded407041e001e440b9d0ee))
+
+
+
+
+
 # 1.0.0 (2023-07-18)
 
 

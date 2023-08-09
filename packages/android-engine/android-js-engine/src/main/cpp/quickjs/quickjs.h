@@ -27,6 +27,12 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <android/log.h>
+
+// NDK Logging
+#define  LOG_TAG    "android-js-engine-qjs"
+
+#define printf(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__);
 
 #ifdef __cplusplus
 extern "C" {
