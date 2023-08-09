@@ -137,7 +137,7 @@ final class ContextTests: XCTestCase {
 
         wait(for: [expectation2], timeout: 1)
 
-        XCTAssertEqual(successCallbackCalled, 2)
+        XCTAssertEqual(successCallbackCalled, 1)
         XCTAssertEqual(altSuccessCallbackCalled, 1)
 
         var detailsObject = [String: String]()

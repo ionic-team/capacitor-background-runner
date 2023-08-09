@@ -50,6 +50,7 @@ class BackgroundRunner(context: android.content.Context) {
 
         runner = Runner()
         context = initContext(config, androidContext)
+        context?.start()
     }
 
     fun scheduleBackgroundTask(androidContext: android.content.Context) {
@@ -84,7 +85,7 @@ class BackgroundRunner(context: android.content.Context) {
         }
     }
 
-    suspend fun execute(androidContext: android.content.Context, config: RunnerConfig, args: JSONObject = JSONObject()): JSONObject? {
+    suspend fun execute(androidContext: android.content.Context, config: RunnerConfig, dataArgs: JSONObject = JSONObject()): JSONObject? {
         if (!started) {
             start(androidContext)
         }
@@ -93,17 +94,37 @@ class BackgroundRunner(context: android.content.Context) {
 
         val future = MutableStateFlow<Result<JSONObject?>?>(null)
 
-        class CompletionCallback : JSFunction(jsName = "completed") {
+        class ResolveCallback : JSFunction(jsName = "resolve") {
             override fun run() {
                 super.run()
                 future.value = Result.success(this.args)
             }
         }
 
-        val callback = CompletionCallback()
-        context!!.registerFunction("_backgroundCallback", callback)
+        class RejectCallback : JSFunction(jsName = "reject") {
+            override fun run() {
+                super.run()
+                val rejectionTitle = this.args?.optString("name", "Error") ?: "Error"
+                val rejectionMessage = this.args?.optString("message") ?: ""
+                val error = Exception("$rejectionTitle: $rejectionMessage")
 
-        args.put("completed", "__cbr::_backgroundCallback")
+                future.value = Result.failure(error)
+            }
+        }
+
+        val resolve = ResolveCallback()
+        val reject = RejectCallback()
+        context!!.registerFunction("_resolveCallback", resolve)
+        context!!.registerFunction("_rejectCallback", reject)
+
+        val args = JSONObject()
+
+        val callbacks = JSONObject();
+        callbacks.put("resolve", "__cbr::_resolveCallback")
+        callbacks.put("reject", "__cbr::_rejectCallback")
+
+        args.put("callbacks", callbacks)
+        args.put("dataArgs", dataArgs)
 
         context!!.dispatchEvent(config.event, args)
 
@@ -157,7 +178,6 @@ class BackgroundRunner(context: android.content.Context) {
         api.initKVAPI(KV(context, config.label))
 
         newContext.setCapacitorAPI(api)
-
 
         newContext.execute(srcFile, false)
 

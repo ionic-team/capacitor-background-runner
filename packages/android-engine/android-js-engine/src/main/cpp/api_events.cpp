@@ -13,8 +13,17 @@ JSValue api_add_event_listener(JSContext *ctx, JSValueConst this_val, int argc, 
 
   callback = JS_DupValue(ctx, callback);
 
-  Context *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
-  parent_ctx->event_listeners.emplace(event, callback);
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto itr = parent_ctx->event_listeners.find(event);
+
+  if (itr == parent_ctx->event_listeners.end()) {
+    parent_ctx->event_listeners.emplace(event, callback);
+  } else {
+    JS_FreeValue(ctx, itr->second);
+    itr->second = callback;
+  }
+
+  JS_FreeCString(ctx, event);
 
   return JS_UNDEFINED;
 }

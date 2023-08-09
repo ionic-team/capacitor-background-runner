@@ -10,7 +10,7 @@ class JSResponse(statusCode: Int, url: String, data: ByteArray?, error: String?)
 
     init {
         this.status = statusCode
-        this.ok = statusCode in 201..299
+        this.ok = statusCode in 200..299
         this.url = url
         this.data = data
         this.error = error
