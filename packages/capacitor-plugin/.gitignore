@@ -12,7 +12,6 @@ xcuserdata
 .DS_Store
 
 android/android-js-engine
-ios/Plugin/RunnerEngine
 
 # Based on Android gitignore template: https://github.com/github/gitignore/blob/HEAD/Android.gitignore
 
