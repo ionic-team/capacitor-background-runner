@@ -20,7 +20,7 @@
 		023723772A003F5C009B91C9 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 023723702A003F5C009B91C9 /* Context.swift */; };
 		0237237B2A004051009B91C9 /* KV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237A2A004051009B91C9 /* KV.swift */; };
 		0237237D2A0041B2009B91C9 /* Geolocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237C2A0041B2009B91C9 /* Geolocation.swift */; };
-		0237237F2A00431F009B91C9 /* Wearable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237E2A00431F009B91C9 /* Wearable.swift */; };
+		0237237F2A00431F009B91C9 /* Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0237237E2A00431F009B91C9 /* Watch.swift */; };
 		027BCF202A16ABA8009884A0 /* BackgroundRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */; };
 		027BCF232A17DE2C009884A0 /* JSResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF212A17DE2C009884A0 /* JSResponse.swift */; };
 		027BCF242A17DE2C009884A0 /* JSFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 027BCF222A17DE2C009884A0 /* JSFetch.swift */; };
@@ -62,7 +62,7 @@
 		023723702A003F5C009B91C9 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
 		0237237A2A004051009B91C9 /* KV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KV.swift; sourceTree = "<group>"; };
 		0237237C2A0041B2009B91C9 /* Geolocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Geolocation.swift; sourceTree = "<group>"; };
-		0237237E2A00431F009B91C9 /* Wearable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wearable.swift; sourceTree = "<group>"; };
+		0237237E2A00431F009B91C9 /* Watch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watch.swift; sourceTree = "<group>"; };
 		027BCF1F2A16ABA8009884A0 /* BackgroundRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundRunner.swift; sourceTree = "<group>"; };
 		027BCF212A17DE2C009884A0 /* JSResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSResponse.swift; sourceTree = "<group>"; };
 		027BCF222A17DE2C009884A0 /* JSFetch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSFetch.swift; sourceTree = "<group>"; };
@@ -131,11 +131,11 @@
 			isa = PBXGroup;
 			children = (
 				0296D4AE2A45FCE500FCD31A /* Device.swift */,
-				0296D4AF2A45FCE500FCD31A /* Reachability.swift */,
-				0237237A2A004051009B91C9 /* KV.swift */,
 				0237237C2A0041B2009B91C9 /* Geolocation.swift */,
-				0237237E2A00431F009B91C9 /* Wearable.swift */,
+				0237237A2A004051009B91C9 /* KV.swift */,
 				02D65FBE2A141B7D007A46A2 /* Notifications.swift */,
+				0296D4AF2A45FCE500FCD31A /* Reachability.swift */,
+				0237237E2A00431F009B91C9 /* Watch.swift */,
 			);
 			path = CapacitorAPI;
 			sourceTree = "<group>";
@@ -400,7 +400,7 @@
 				0296D4B02A45FCE500FCD31A /* Device.swift in Sources */,
 				023723752A003F5C009B91C9 /* Errors.swift in Sources */,
 				0237234D29FC33A9009B91C9 /* WatchConnectivtySessionDelegate.swift in Sources */,
-				0237237F2A00431F009B91C9 /* Wearable.swift in Sources */,
+				0237237F2A00431F009B91C9 /* Watch.swift in Sources */,
 				02D65FBF2A141B7D007A46A2 /* Notifications.swift in Sources */,
 				023723762A003F5C009B91C9 /* Runner.swift in Sources */,
 				0296D4B12A45FCE500FCD31A /* Reachability.swift in Sources */,

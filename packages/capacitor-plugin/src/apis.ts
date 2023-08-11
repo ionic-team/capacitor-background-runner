@@ -317,9 +317,53 @@ export interface CapacitorNotifications {
   schedule: (options: NotificationScheduleOptions[]) => void;
 }
 
+/**
+ * Interact with a watch paired with this app
+ *
+ * sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapactiorWatch Watch application.
+ * They could be used if a native watch app is developed as a companion app to a Capacitor app
+ */
+export interface CapcacitorWatch {
+  /**
+   * Sends a message to the watch with the sendMessage() WCSession delegate method
+   *
+   * This has no effect on a CapacitorWatch watch app
+   */
+  sendMessage: (options: []) => void;
+  /**
+   * Sends information to the watch with the transferUserInfo() WCSession delegate method
+   *
+   * This has no effect on a CapacitorWatch watch app
+   */
+  transferUserInfo: (options: []) => void;
+  /**
+   * Updates the application context on the watch with the updateApplicationContext() WCSession delegate method
+   *
+   * This has no effect on a CapacitorWatch watch app
+   */
+  updateApplicationContext: (options: []) => void;
+  /**
+   * Checks to see if the compaion watch is reachable
+   */
+  isReachable: boolean;
+  /**
+   * Replaces the current UI on the watch with what is specified here.
+   * @param options the new WatchUI you want to show on the watch
+   * @returns void
+   */
+  updateWatchUI: (options: { watchUI: string }) => void;
+  /**
+   * Updates the data the watch is using to display variables in text and button fields
+   * @param options the new data to send to the watch
+   * @returns void
+   */
+  updateWatchData: (options: { data: { [key: string]: string } }) => void;
+}
+
 export interface CapacitorAPI {
   CapacitorDevice: CapacitorDevice;
   CapacitorKV: CapacitorKV;
   CapacitorNotifications: CapacitorNotifications;
   CapacitorGeolocation: CapacitorGeolocation;
+  CapacitorWatch: CapcacitorWatch;
 }

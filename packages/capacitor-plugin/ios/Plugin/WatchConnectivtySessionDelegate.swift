@@ -18,6 +18,8 @@ extension BackgroundRunnerPlugin: WCSessionDelegate {
         try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_sessionDidDeactivate", inputArgs: nil)
     }
 
+    // DCG Note - documentation for these events are contained within the CapacitorWatch documentation
+
     public func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         var args: [String: Any] = [:]
         args["userInfo"] = userInfo
@@ -30,5 +32,12 @@ extension BackgroundRunnerPlugin: WCSessionDelegate {
         args["message"] = message
 
         try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveMessage", inputArgs: args)
+    }
+
+    public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
+        var args: [String: Any] = [:]
+        args["message"] = applicationContext
+
+        try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveApplicationContext", inputArgs: args)
     }
 }

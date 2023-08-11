@@ -152,8 +152,7 @@ addEventListener("remoteNotification", (resolve, reject, args) => {
 });
 
 addEventListener("checkWatchReachability", (resolve, reject, args) => {
-  try {
-    const reachable = CapacitorWearable.isReachable();
+  const reachable = CapacitorWatch.isReachable();
 
     resolve({
       reachable: reachable,
@@ -164,13 +163,12 @@ addEventListener("checkWatchReachability", (resolve, reject, args) => {
   }
 });
 
-addEventListener("sendMessageToWearable", (resolve, reject, args) => {
-  try {
-    console.log("sending message to watch...");
+addEventListener("sendMessageToWatch", (resolve, reject, args) => {
+  console.log("sending message to watch...");
 
-    CapacitorWearable.send({
-      msg: "Hello World",
-    });
+  CapacitorWatch.send({
+    msg: "Hello World",
+  });
 
     resolve();
   } catch (err) {
