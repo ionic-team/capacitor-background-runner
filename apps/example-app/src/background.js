@@ -151,7 +151,7 @@ addEventListener("remoteNotification", (resolve, reject, args) => {
   resolve();
 });
 
-addEventListener("checkWatchReachability", (resolve, reject, args) => void {
+addEventListener("checkWatchReachability", (resolve, reject, args) {
   const reachable = CapacitorWatch.isReachable();
 
     resolve({
@@ -163,7 +163,7 @@ addEventListener("checkWatchReachability", (resolve, reject, args) => void {
   }
 });
 
-addEventListener("sendMessageToWatch", (resolve, reject, args) => void {
+addEventListener("sendMessageToWatch", (resolve, reject, args) {
   console.log("sending message to watch...");
 
   CapacitorWatch.send({
