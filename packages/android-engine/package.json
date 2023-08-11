@@ -17,5 +17,5 @@
     "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java}\"",
     "clang-format": "clang-format --glob=android-js-engine/src/main/cpp/**/*.{cpp,h}"
   },
-  "version": "1.0.0"
+  "version": "1.0.4"
 }

@@ -10,5 +10,5 @@
     "@ionic/swiftlint-config": "^1.1.2",
     "swiftlint": "^1.0.2"
   },
-  "version": "1.0.0"
+  "version": "1.0.4"
 }

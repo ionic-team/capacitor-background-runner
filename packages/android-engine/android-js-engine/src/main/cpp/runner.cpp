@@ -40,7 +40,7 @@ void Runner::run_loop() {
 
   for (;;) {
     this->run_loop_mutex.lock();
-    if (this->end_run_loop) {
+    if (this->end_run_loop && !JS_IsJobPending(this->rt)) {
       this->run_loop_mutex.unlock();
       break;
     }

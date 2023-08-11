@@ -175,11 +175,14 @@ class ContextTests {
         assertEquals("John Doe", returnedDetails?.getString("name"))
 
         // basic event listener with registered global function as callback arg
-        val callbackObject = JSONObject()
-        callbackObject.put("completed", "__cbr::successCallbackFunction")
+        val args = JSONObject()
+        val callbacks = JSONObject();
+        callbacks.put("resolve", "__cbr::successCallbackFunction")
 
-        context.execute("addEventListener('myEventCallback', (details) => { details.completed() });")
-        context.dispatchEvent("myEventCallback", callbackObject)
+        args.put("callbacks", callbacks)
+
+        context.execute("addEventListener('myEventCallback', (resolve) => { resolve() });")
+        context.dispatchEvent("myEventCallback", args)
         assertEquals(1, future4.get(5, TimeUnit.SECONDS))
 
         runner.destroy()

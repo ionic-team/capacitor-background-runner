@@ -25,7 +25,7 @@ JSValue api_geolocation_current_location(JSContext *ctx, JSValueConst this_val, 
 
   auto value_c_str = env->GetStringUTFChars(value_j_str, nullptr);
 
-  ret_value = JS_NewString(ctx, value_c_str);
+  ret_value = parent_ctx->parseJSON(value_c_str);
 
   env->ReleaseStringUTFChars(value_j_str, value_c_str);
 

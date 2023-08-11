@@ -15,7 +15,7 @@ import JavaScriptCore
     dynamic var status: Int
     // swiftlint:disable:next identifier_name
     dynamic var ok: Bool {
-        return status > 200 && status <= 299
+        return status >= 200 && status <= 299
     }
 
     private let data: Data?

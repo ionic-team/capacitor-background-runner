@@ -10,6 +10,7 @@ class Runner {
     }
 
     private external fun initRunner(): Long
+    private external fun stopRunLoop(ptr: Long)
     private external fun destroyRunner(ptr: Long)
 
     fun createContext(name: String): Context {
@@ -29,6 +30,8 @@ class Runner {
 
     fun destroy() {
         val runnerPtr = this.ptr ?: return
+
+        this.stopRunLoop(runnerPtr)
 
         if (this.contexts.isNotEmpty()) {
             this.contexts.forEach { (_, ctx) ->
