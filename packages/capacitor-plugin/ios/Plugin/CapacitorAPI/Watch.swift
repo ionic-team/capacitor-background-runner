@@ -49,21 +49,21 @@ class CapacitorWatch: NSObject, CapacitorWatchExports {
 
     func updateWatchUI(_ call: JSValue) {
         let dict = jsValueToDict(call)
-        
+
         guard let newUI = dict["data"] as? [String: String] else {
             return
         }
-        
-        WCSession.default.transferUserInfo([UI_KEY : newUI])
+
+        WCSession.default.transferUserInfo([UI_KEY: newUI])
     }
 
     func updateWatchData(_ call: JSValue) {
         let dict = jsValueToDict(call)
-        
+
         guard let newData = dict["data"] as? [String: String] else {
             return
         }
-        
+
         WCSession.default.transferUserInfo([DATA_KEY: newData])
     }
 
@@ -80,7 +80,7 @@ class CapacitorWatch: NSObject, CapacitorWatchExports {
     }
 }
 
-enum WatchDataError : Error {
+enum WatchDataError: Error {
     case JSValIsNotObject
     case CouldNotConvertJSVal
 }

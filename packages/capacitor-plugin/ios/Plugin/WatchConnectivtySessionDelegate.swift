@@ -33,7 +33,7 @@ extension BackgroundRunnerPlugin: WCSessionDelegate {
 
         try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveMessage", inputArgs: args)
     }
-    
+
     public func session(_ session: WCSession, didReceiveApplicationContext applicationContext: [String: Any]) {
         var args: [String: Any] = [:]
         args["message"] = applicationContext
