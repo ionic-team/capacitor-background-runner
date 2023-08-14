@@ -100,6 +100,52 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
         }
     }
 
+    fileprivate static func handleNotificationOptions(_ notificationOptions: [[String: Any?]]) {
+        for option in notificationOptions {
+            guard let notificationOption = try? NotificationOption(from: option) else { return }
+
+            let content = UNMutableNotificationContent()
+            content.title = NSString.localizedUserNotificationString(forKey: notificationOption.title, arguments: nil)
+            content.body = NSString.localizedUserNotificationString(forKey: notificationOption.body, arguments: nil)
+            content.userInfo = [:]
+
+            if let extra = notificationOption.extra {
+                content.userInfo["cap_extra"] = extra
+            }
+
+            if let actionTypeId = notificationOption.actionTypeId {
+                content.categoryIdentifier = actionTypeId
+            }
+
+            if let threadIdentifier = notificationOption.threadIdentifier {
+                content.threadIdentifier = threadIdentifier
+            }
+
+            if let summaryArgument = notificationOption.summaryArgument {
+                content.summaryArgument = summaryArgument
+            }
+
+            if let sound = notificationOption.sound {
+                content.sound = UNNotificationSound(named: UNNotificationSoundName(sound))
+            }
+
+            var notificationDate = notificationOption.scheduleAt
+
+            if notificationDate < Date() {
+                notificationDate = Date()
+            }
+
+            let dateInfo = Calendar.current.dateComponents(in: TimeZone.current, from: notificationDate)
+            // swiftlint:disable:next force_unwrapping
+            let dateInterval = DateInterval(start: Date(), end: dateInfo.date!)
+
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: dateInterval.duration, repeats: false)
+            let request = UNNotificationRequest(identifier: "\(notificationOption.id)", content: content, trigger: trigger)
+
+            UNUserNotificationCenter.current().add(request)
+        }
+    }
+
     static func schedule(_ options: JSValue) {
         do {
             if CapacitorNotifications.checkPermission() != "granted" {
@@ -115,48 +161,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             }
 
             if let notificationOptions = options.toArray() as? [[String: Any?]] {
-                for option in notificationOptions {
-                    let notificationOption = try NotificationOption(from: option)
-
-                    let content = UNMutableNotificationContent()
-                    content.title = NSString.localizedUserNotificationString(forKey: notificationOption.title, arguments: nil)
-                    content.body = NSString.localizedUserNotificationString(forKey: notificationOption.body, arguments: nil)
-                    content.userInfo = [:]
-
-                    if let extra = notificationOption.extra {
-                        content.userInfo["cap_extra"] = extra
-                    }
-
-                    if let actionTypeId = notificationOption.actionTypeId {
-                        content.categoryIdentifier = actionTypeId
-                    }
-
-                    if let threadIdentifier = notificationOption.threadIdentifier {
-                        content.threadIdentifier = threadIdentifier
-                    }
-
-                    if let summaryArgument = notificationOption.summaryArgument {
-                        content.summaryArgument = summaryArgument
-                    }
-
-                    if let sound = notificationOption.sound {
-                        content.sound = UNNotificationSound(named: UNNotificationSoundName(sound))
-                    }
-
-                    var notificationDate = notificationOption.scheduleAt
-
-                    if notificationDate < Date() {
-                        notificationDate = Date()
-                    }
-
-                    let dateInfo = Calendar.current.dateComponents(in: TimeZone.current, from: notificationDate)
-                    let dateInterval = DateInterval(start: Date(), end: dateInfo.date!)
-
-                    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: dateInterval.duration, repeats: false)
-                    let request = UNNotificationRequest(identifier: "\(notificationOption.id)", content: content, trigger: trigger)
-
-                    UNUserNotificationCenter.current().add(request)
-                }
+                handleNotificationOptions(notificationOptions)
             }
         } catch {
             JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())

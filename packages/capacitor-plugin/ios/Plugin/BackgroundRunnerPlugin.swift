@@ -64,7 +64,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
                 throw BackgroundRunnerPluginError.runnerError(reason: "no runner config loaded")
             }
 
-            DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+            DispatchQueue.global(qos: .userInitiated).async { [self] in
                 do {
                     let result = try self.impl.execute(
                         config: config,

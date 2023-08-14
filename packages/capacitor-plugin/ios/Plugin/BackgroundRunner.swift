@@ -116,6 +116,7 @@ public class BackgroundRunner {
 
             var err: Error?
 
+            // swiftlint:disable:next unowned_variable_capture
             DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
                 do {
                     _ = try self.execute(config: config, event: event, inputArgs: inputArgs)
@@ -135,6 +136,7 @@ public class BackgroundRunner {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity function_body_length
     public func execute(config: RunnerConfig, event: String, inputArgs: [String: Any]? = nil) throws -> [String: Any]? {
         do {
             if !started {
