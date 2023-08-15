@@ -6,6 +6,6 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application>
-        <receiver android:name=".api.TimedNotificationPublisher" />
+        <receiver android:name="io.ionic.backgroundrunner.plugin.api.TimedNotificationPublisher" />
     </application>
 </manifest>
