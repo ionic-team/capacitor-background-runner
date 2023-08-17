@@ -11,7 +11,9 @@ import WatchConnectivity
     func updateWatchData(_ call: JSValue)
 }
 
+// swiftlint:disable:next identifier_name
 public let UI_KEY = "watchUI"
+// swiftlint:disable:next identifier_name
 public let DATA_KEY = "viewData"
 
 class CapacitorWatch: NSObject, CapacitorWatchExports {
@@ -82,5 +84,6 @@ class CapacitorWatch: NSObject, CapacitorWatchExports {
 
 enum WatchDataError: Error {
     case JSValIsNotObject
+    // swiftlint:disable:next identifier_name
     case CouldNotConvertJSVal
 }

@@ -64,6 +64,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
                 throw BackgroundRunnerPluginError.runnerError(reason: "no runner config loaded")
             }
 
+            // swiftlint:disable:next unowned_variable_capture
             DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
                 do {
                     let result = try self.impl.execute(
