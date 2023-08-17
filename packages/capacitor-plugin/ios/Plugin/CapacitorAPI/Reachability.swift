@@ -251,6 +251,7 @@ public extension Reachability {
 fileprivate extension Reachability {
 
     func setReachabilityFlags() throws {
+        // swiftlint:disable:next unowned_variable_capture
         try reachabilitySerialQueue.sync { [unowned self] in
             var flags = SCNetworkReachabilityFlags()
             if !SCNetworkReachabilityGetFlags(self.reachabilityRef, &flags) {
@@ -265,6 +266,7 @@ fileprivate extension Reachability {
     func notifyReachabilityChanged() {
         let notify = { [weak self] in
             guard let self = self else { return }
+            // swiftlint:disable:next void_function_in_ternary
             self.connection != .unavailable ? self.whenReachable?(self) : self.whenUnreachable?(self)
             self.notificationCenter.post(name: .reachabilityChanged, object: self)
         }

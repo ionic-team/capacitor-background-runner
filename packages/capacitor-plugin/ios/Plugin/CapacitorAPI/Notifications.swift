@@ -100,6 +100,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     static func schedule(_ options: JSValue) {
         do {
             if CapacitorNotifications.checkPermission() != "granted" {
@@ -150,6 +151,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
                     }
 
                     let dateInfo = Calendar.current.dateComponents(in: TimeZone.current, from: notificationDate)
+                    // swiftlint:disable:next force_unwrapping
                     let dateInterval = DateInterval(start: Date(), end: dateInfo.date!)
 
                     let trigger = UNTimeIntervalNotificationTrigger(timeInterval: dateInterval.duration, repeats: false)
