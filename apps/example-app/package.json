@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "private": true,
   "dependencies": {
     "@babel/plugin-syntax-flow": "^7.22.5",

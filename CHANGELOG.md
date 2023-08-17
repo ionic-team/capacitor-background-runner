@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.5](https://github.com/ionic-team/capacitor-background-runner/compare/1.0.4...1.0.5) (2023-08-17)
+
+
+### Bug Fixes
+
+* using fully qualitifed class name for TimedNotificationPublisher ([c4b3bd8](https://github.com/ionic-team/capacitor-background-runner/commit/c4b3bd8c9f4fb881bfab05b2c95c2e0d7387cee8))
+
+
+
+
+
 ## [1.0.4](https://github.com/ionic-team/capacitor-background-runner/compare/1.0.3...1.0.4) (2023-08-10)
 
 **Note:** Version bump only for package root
