@@ -33,7 +33,7 @@ jobs:
       - name: 'Running Android Unit Tests'
         uses: reactivecircus/android-emulator-runner@v2        
         with:
-          api-level: 22
+          api-level: 30
           working-directory: ./packages/android-engine
           emulator-options: -no-window -no-audio -no-boot-anim -accel on -no-snapshot-save
           profile: pixel_6
