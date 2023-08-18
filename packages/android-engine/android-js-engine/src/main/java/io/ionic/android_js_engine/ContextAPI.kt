@@ -1,11 +1,9 @@
 package io.ionic.android_js_engine
 
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.lang.Exception
+import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
 import java.security.SecureRandom
@@ -58,38 +56,36 @@ class ContextAPI {
     }
 
     fun fetch(urlStr: String, options: JSFetchOptions?): JSResponse {
+        val url = URL(urlStr)
+        val connection = url.openConnection() as HttpURLConnection
+
         try {
-            val url = URL(urlStr)
-            val client = OkHttpClient()
-
-            var postBody: RequestBody? = null
-
-            val builder = Request.Builder()
-            builder.url(url)
-
             if (options != null) {
-                val contentType = options.headers["Content-Type"]
-
-                if (options.body != null) {
-                    postBody =
-                        options.body!!.toRequestBody(contentType?.toMediaType(), 0, options.body!!.size)
-                }
-
-                builder.method(options.httpMethod, postBody)
+                connection.requestMethod = options.httpMethod
 
                 options.headers.forEach {
-                    builder.addHeader(it.key, it.value)
+                    connection.setRequestProperty(it.key, it.value)
+                }
+
+                if (options.body != null) {
+                    connection.doOutput = true
+                    connection.setChunkedStreamingMode(0)
+
+                    val output = BufferedOutputStream(connection.outputStream)
+                    output.write(options.body)
+                    output.flush()
                 }
             }
 
-            val response = client.newCall(builder.build()).execute()
+            val input = BufferedInputStream(connection.inputStream)
+            val bodyBytes = input.readBytes()
 
-            val body = response.body
-
-            return JSResponse(response.code, response.request.url.toString(), body?.bytes(), null)
+            return JSResponse(connection.responseCode, connection.url.toString(), bodyBytes, null)
         } catch (ex: Exception) {
             print(ex.message)
             return JSResponse(-1, urlStr, null, ex.message)
+        } finally {
+            connection.disconnect()
         }
     }
 }
