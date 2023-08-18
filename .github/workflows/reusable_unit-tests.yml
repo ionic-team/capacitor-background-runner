@@ -21,3 +21,13 @@ jobs:
         run: sudo xcode-select -switch /Applications/Xcode_14.3.1.app && /usr/bin/xcodebuild -version
       - name: Run ios-engine unit tests
         run: cd ./packages/ios-engine && swift package clean && swift test
+  unit-test-android:
+    runs-on: macos-13
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}      
+      - name: Run android-engine unit tests
+        run: cd ./packages/android-engine && ./gradlew connectedCheck
