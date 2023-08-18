@@ -36,6 +36,7 @@ jobs:
           api-level: 22
           working-directory: ./packages/android-engine
           emulator-options: -no-window -no-audio -no-boot-anim -accel on -no-snapshot-save
+          profile: pixel_6
           script: ./gradlew connectedCheck
 
         
