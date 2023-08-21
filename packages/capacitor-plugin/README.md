@@ -25,6 +25,11 @@ If you will be making use of Geolocation or Push Notifications, enable `Location
 
 After enabling the Background Modes capability, add the following to your app's `AppDelegate.swift`:
 
+At the top of the file, under `import Capacitor` add:
+```swift
+import CapacitorBackgroundRunner
+```
+
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
 
