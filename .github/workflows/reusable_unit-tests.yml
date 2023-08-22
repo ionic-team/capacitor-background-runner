@@ -21,3 +21,22 @@ jobs:
         run: sudo xcode-select -switch /Applications/Xcode_14.3.1.app && /usr/bin/xcodebuild -version
       - name: Run ios-engine unit tests
         run: cd ./packages/ios-engine && swift package clean && swift test
+        
+  unit-test-android:
+    runs-on: macos-13
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}      
+      - name: 'Running Android Unit Tests'
+        uses: reactivecircus/android-emulator-runner@v2        
+        with:
+          api-level: 29
+          working-directory: ./packages/android-engine
+          emulator-options: -no-window -no-audio -no-boot-anim -accel on -no-snapshot-save
+          profile: pixel_6
+          script: ./gradlew connectedCheck
+
+        
