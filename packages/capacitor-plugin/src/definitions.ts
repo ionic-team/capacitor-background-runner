@@ -46,8 +46,8 @@ export interface BackgroundRunnerConfig {
 declare module '@capacitor/cli' {
   export interface PluginsConfig {
     /**
-     * On load, Background Runner will automatically register a 
-     * background task that will be scheduled and ran once your app is 
+     * On load, Background Runner will automatically register a
+     * background task that will be scheduled and ran once your app is
      * backgrounded.
      */
     BackgroundRunner?: {
