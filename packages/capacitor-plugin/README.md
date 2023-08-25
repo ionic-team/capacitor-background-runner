@@ -153,22 +153,65 @@ Calling `resolve()` \ `reject()` is **required** within every event handler call
 
 ## Configuring Background Runner
 
-On load, Background Runner will automatically register a background task that will be scheduled and ran once your app is backgrounded. The settings for this behavior is defined in your `capacitor.config.ts` file:
+<docgen-config>
+<!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+On load, Background Runner will automatically register a 
+background task that will be scheduled and ran once your app is 
+backgrounded.
+
+| Prop            | Type                 | Description                                                                                                                                                                                          | Since |
+| --------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| **`label`**     | <code>string</code>  | The name of the runner, used in logs.                                                                                                                                                                | 1.0.0 |
+| **`src`**       | <code>string</code>  | The path to the runner JavaScript file, relative to the app bundle.                                                                                                                                  | 1.0.0 |
+| **`event`**     | <code>string</code>  | The name of the event that will be called when the OS executes the background task.                                                                                                                  | 1.0.0 |
+| **`repeat`**    | <code>boolean</code> | If background task should repeat based on the interval set in `interval`.                                                                                                                            | 1.0.0 |
+| **`interval`**  | <code>number</code>  | The number of minutes after the the app is put into the background in which the background task should begin. If `repeat` is true, this also specifies the number of minutes between each execution. | 1.0.0 |
+| **`autoStart`** | <code>boolean</code> | Automatically register and schedule background task on app load.                                                                                                                                     | 1.0.0 |
+
+### Examples
+
+In `capacitor.config.json`:
+
+```json
+{
+  "plugins": {
+    "BackgroundRunner": {
+      "label": "com.example.background.task",
+      "src": "runners/background.js",
+      "event": "myCustomEvent",
+      "repeat": true,
+      "interval": 15,
+      "autoStart": true
+    }
+  }
+}
+```
+
+In `capacitor.config.ts`:
 
 ```ts
+/// <reference types="@capacitor/background-runner" />
+
+import { CapacitorConfig } from '@capacitor/cli';
+
 const config: CapacitorConfig = {
   plugins: {
     BackgroundRunner: {
-      label: 'com.example.background.task',
-      src: 'background.js',
-      event: 'myCustomEvent',
+      label: "com.example.background.task",
+      src: "runners/background.js",
+      event: "myCustomEvent",
       repeat: true,
-      interval: 2,
-      autoStart: false,
+      interval: 15,
+      autoStart: true,
     },
   },
 };
+
+export default config;
 ```
+
+</docgen-config>
 
 ## JavaScript API
 
