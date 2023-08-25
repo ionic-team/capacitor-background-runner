@@ -101,12 +101,12 @@ Read about [Setting Permissions](https://capacitorjs.com/docs/android/configurat
 ## About Background Runner
 During the corse of building complex applications, its sometimes necessary to perform work while the application is not in the foreground.  The challenge with standard Capacitor applications is that the webview is not available when these background events occur, requiring you to write native code to handle these events. This is where the Background Runner plugin comes in.
 
-Background Runner makes it easy to write JavaScript code to handle native background events.  All you need to do is create your runner JavaScript file and [define your configuration](#Configuring-Background-Runner), and the Background Runner plugin will automatically configure and schedule a native background task that will be executed according to your config and the rules of the platform.  No modification to your UI code or necessary!
+Background Runner makes it easy to write JavaScript code to handle native background events.  All you need to do is create your runner JavaScript file and [define your configuration](#Configuring-Background-Runner), and the Background Runner plugin will automatically configure and schedule a native background task that will be executed according to your config and the rules of the platform.  No modification to your UI code is necessary.
 
 
 ## Using Background Runner
 
-Background Runner is an event based JavaScript environment that emits events to a javascript runner file that you designate in your `capacitor.config.ts` file. If the runner finds a event handler corresponding to incoming event in your runner file, it will execute the event handler, then shutdown once `resolve()` or `reject()` are called (or if the OS force kills your process).
+Background Runner contains a headless JavaScript environment that calls event handlers in javascript file that you designate in your `capacitor.config.ts` file. If the runner finds a event handler corresponding to incoming event in your runner file, it will execute the event handler, then shutdown once `resolve()` or `reject()` are called (or if the OS force kills your process).
 
 #### Example Runner JS File
 
