@@ -364,7 +364,7 @@ A simple string key / value store backed by UserDefaults on iOS and Shared Prefe
 | Prop         | Type                                                 | Description                            | Since |
 | ------------ | ---------------------------------------------------- | -------------------------------------- | ----- |
 | **`set`**    | <code>(key: string, value: string) =&gt; void</code> | Set a string value with the given key. | 1.0.0 |
-| **`get`**    | <code>(key: string) =&gt; string</code>              | Get a string value for the given key.  | 1.0.0 |
+| **`get`**    | <code>(key: string) =&gt; { value: string; }</code>  | Get a string value for the given key.  | 1.0.0 |
 | **`remove`** | <code>(key: string) =&gt; void</code>                | Remove a value with the given key.     | 1.0.0 |
 
 

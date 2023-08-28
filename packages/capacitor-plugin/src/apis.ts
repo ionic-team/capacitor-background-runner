@@ -275,7 +275,7 @@ export interface CapacitorKV {
    * @returns
    * @since 1.0.0
    */
-  get: (key: string) => string;
+  get: (key: string) => { value: string };
   /**
    * Remove a value with the given key.
    * @param key
