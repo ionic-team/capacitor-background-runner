@@ -35,6 +35,7 @@ Context::Context(const std::string &name, JSRuntime *rt, JNIEnv *env, jobject ap
   this->init_api_timeout();
   this->init_api_text();
   this->init_api_fetch();
+  this->init_api_blob();
 
   JS_SetContextOpaque(this->ctx, this);
 
@@ -366,6 +367,10 @@ void Context::init_api_fetch() const {
   JS_SetPropertyStr(this->ctx, global_obj, "fetch", JS_NewCFunction(this->ctx, api_fetch_promise, "fetch", 2));
 
   JS_FreeValue(this->ctx, global_obj);
+}
+
+void Context::init_api_blob() const {
+//    init_blob_class(this->ctx);
 }
 
 void Context::register_function(const std::string &func_name, jobject func) {

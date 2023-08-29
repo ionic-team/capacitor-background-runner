@@ -17,6 +17,7 @@
 #include "api_timeout.h"
 #include "api_text.h"
 #include "api_fetch.h"
+#include "api_blob.h"
 
 #include "api_kv.h"
 #include "api_device.h"
@@ -85,6 +86,7 @@ private:
     void init_api_timeout() const;
     void init_api_text() const;
     void init_api_fetch() const;
+    void init_api_blob() const;
 
     void init_capacitor_kv_api() const;
     void init_capacitor_device_api() const;

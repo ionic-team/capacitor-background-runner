@@ -324,6 +324,23 @@ class ContextTests {
     }
 
     @Test
+    fun testAPI_Blob() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val basicBlobExample = """
+            const obj = { hello: "world" };
+            const blob = new Blob([JSON.stringify(obj, null, 2)], {
+              type: "application/json",
+            });
+        """.trimIndent()
+
+        context.execute(basicBlobExample)
+
+        runner.destroy()
+    }
+
+    @Test
     fun testAPI_Fetch() {
         val runner = Runner()
         val context = runner.createContext("io.ionic.android_js_engine")
