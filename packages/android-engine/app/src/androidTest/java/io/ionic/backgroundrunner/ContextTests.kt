@@ -333,6 +333,8 @@ class ContextTests {
             const blob = new Blob([JSON.stringify(obj, null, 2)], {
               type: "application/json",
             });
+            blob.text().then((text) => console.log(text));
+              
         """.trimIndent()
 
         context.execute(basicBlobExample)

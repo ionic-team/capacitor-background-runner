@@ -9,6 +9,46 @@
 #include "context.h"
 #include "errors.h"
 
+JSValue js_response_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
+  JSValue resolve, reject, data;
+
+  resolve = argv[0];
+  reject = argv[1];
+  data = argv[2];
+
+  uint8_t *buf;
+  size_t elem, len, offset, buf_size;
+  int size;
+
+  JSValue t_arr = JS_GetTypedArrayBuffer(ctx, data, &offset, &len, &elem);
+
+  size = len;
+
+  buf = JS_GetArrayBuffer(ctx, &buf_size, t_arr);
+
+  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *env = parent_ctx->getJNIEnv();
+
+  jstring encoding = env->NewStringUTF("utf-8");
+  jbyteArray j_byte_array = env->NewByteArray(size);
+
+  env->SetByteArrayRegion(j_byte_array, 0, size, reinterpret_cast<const jbyte *>(buf));
+
+  auto *text_string = (jstring)env->CallObjectMethod(parent_ctx->api, parent_ctx->jni_classes->context_api_byteArrayToString_method, j_byte_array, encoding);
+
+  const char *text_c_string = env->GetStringUTFChars(text_string, nullptr);
+
+  JSValue text_value = JS_NewString(ctx,text_c_string);
+
+  JSValue global_obj = JS_GetGlobalObject(ctx);
+  JS_FreeValue(ctx, JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&text_value));
+  JS_FreeValue(ctx, global_obj);
+  JS_FreeValue(ctx, t_arr);
+  JS_FreeValue(ctx, text_value);
+
+  env->ReleaseStringUTFChars(text_string, text_c_string);
+}
+
 JSValue js_response_json_job(JSContext *ctx, int argc, JSValueConst *argv) {
   JSValue resolve, reject, data;
 
@@ -49,6 +89,31 @@ JSValue js_response_json_job(JSContext *ctx, int argc, JSValueConst *argv) {
   env->ReleaseStringUTFChars(json_string, json_c_string);
 
   return JS_UNDEFINED;
+}
+
+JSValue js_response_text_promise(JSContext *ctx, JSValueConst this_val, int argc, JSValue *argv) {
+  JSValue promise, resolving_funcs[2];
+  JSValueConst args[3];
+
+  promise = JS_NewPromiseCapability(ctx, resolving_funcs);
+  if (JS_IsException(promise)) {
+    JS_Throw(ctx, promise);
+    return JS_UNDEFINED;
+  }
+
+  JSValue data = JS_GetPropertyStr(ctx, this_val, "_data");
+
+  args[0] = resolving_funcs[0];
+  args[1] = resolving_funcs[1];
+  args[2] = data;
+
+  JS_EnqueueJob(ctx, js_response_text_job, 4, args);
+
+  JS_FreeValue(ctx, resolving_funcs[0]);
+  JS_FreeValue(ctx, resolving_funcs[1]);
+  JS_FreeValue(ctx, data);
+
+  return promise;
 }
 
 JSValue js_response_json_promise(JSContext *ctx, JSValueConst this_val, int argc, JSValue *argv) {
@@ -143,6 +208,7 @@ JSValue js_response_to_value(JSContext *ctx, jobject response) {
   env->ReleaseStringUTFChars(j_url, c_url);
 
   JS_SetPropertyStr(ctx, js_response, "json", JS_NewCFunction(ctx, js_response_json_promise, "json", 0));
+  JS_SetPropertyStr(ctx, js_response, "text", JS_NewCFunction(ctx, js_response_text_promise, "text", 0));
 
   return js_response;
 }

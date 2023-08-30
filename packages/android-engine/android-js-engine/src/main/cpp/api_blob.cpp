@@ -2,13 +2,23 @@
 #include "quickjs/cutils.h"
 
 struct blob_data {
-    JSValue arr;
+    uint8_t *data;
+    size_t size;
+    JSContext *ctx;
 };
 
 static JSClassID js_blob_class_id;
 
+static void js_blob_data_finalizer(JSRuntime *rt, JSValue val) {
+    auto *blob = (blob_data*)JS_GetOpaque(val, js_blob_class_id);
+    if (blob != nullptr) {
+        delete blob;
+    }
+}
+
 static JSClassDef js_blob_class = {
-        "Blob"
+        "Blob",
+        .finalizer = js_blob_data_finalizer
 };
 
 static JSValue api_blob_get_array_buffer(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
@@ -16,6 +26,10 @@ static JSValue api_blob_get_array_buffer(JSContext *ctx, JSValueConst this_val, 
 }
 
 static JSValue api_blob_get_text(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+    auto *blob = (blob_data*)JS_GetOpaque(this_val, js_blob_class_id);
+    if (blob == nullptr) {
+        return JS_UNDEFINED;
+    }
 
 
 }
@@ -37,10 +51,23 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
         input_arr = JS_NewArray(ctx);
     }
 
+    JS_GetA
+
+    uint8_t *data;
+    size_t size, offset, bytes;
+
+    auto typed_arr = JS_GetTypedArrayBuffer(ctx, input_arr , &offset, &size, &bytes);
+
+    data = JS_GetArrayBuffer(ctx, &size, typed_arr);
+
     auto * blob = new blob_data;
-    blob->arr = input_arr;
+    blob->data = data;
+    blob->size = size;
+    blob->ctx = ctx;
 
     JS_SetOpaque(ret_value, blob);
+
+    JS_FreeValue(ctx, proto);
 
     return ret_value;
 }

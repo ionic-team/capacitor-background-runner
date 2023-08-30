@@ -370,7 +370,7 @@ void Context::init_api_fetch() const {
 }
 
 void Context::init_api_blob() const {
-//    init_blob_class(this->ctx);
+    init_blob_class(this->ctx);
 }
 
 void Context::register_function(const std::string &func_name, jobject func) {
