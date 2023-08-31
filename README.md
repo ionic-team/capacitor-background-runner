@@ -98,9 +98,15 @@ Note that even if the permission is present, users can still disable exact notif
 
 Read about [Setting Permissions](https://capacitorjs.com/docs/android/configuration#setting-permissions) in the [Android Guide](https://capacitorjs.com/docs/android) for more information on setting Android permissions.
 
+## About Background Runner
+During the corse of building complex applications, its sometimes necessary to perform work while the application is not in the foreground.  The challenge with standard Capacitor applications is that the webview is not available when these background events occur, requiring you to write native code to handle these events. This is where the Background Runner plugin comes in.
+
+Background Runner makes it easy to write JavaScript code to handle native background events.  All you need to do is create your runner JavaScript file and [define your configuration](#configuring-background-runner), then the Background Runner plugin will automatically configure and schedule a native background task that will be executed according to your config and the rules of the platform.  No modification to your UI code is necessary.
+
+
 ## Using Background Runner
 
-Background Runner is an event based JavaScript environment that emits events to a javascript runner file that you designate in your `capacitor.config.ts` file. If the runner finds a event handler corresponding to incoming event in your runner file, it will execute the event handler, then shutdown once `resolve()` or `reject()` are called (or if the OS force kills your process).
+Background Runner contains a headless JavaScript environment that calls event handlers in javascript file that you designate in your `capacitor.config.ts` file. If the runner finds a event handler corresponding to incoming event in your runner file, it will execute the event handler, then shutdown once `resolve()` or `reject()` are called (or if the OS force kills your process).
 
 #### Example Runner JS File
 
@@ -147,22 +153,65 @@ Calling `resolve()` \ `reject()` is **required** within every event handler call
 
 ## Configuring Background Runner
 
-On load, Background Runner will automatically register a background task that will be scheduled and ran once your app is backgrounded. The settings for this behavior is defined in your `capacitor.config.ts` file:
+<docgen-config>
+<!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
+
+On load, Background Runner will automatically register a
+background task that will be scheduled and ran once your app is
+backgrounded.
+
+| Prop            | Type                 | Description                                                                                                                                                                                          | Since |
+| --------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| **`label`**     | <code>string</code>  | The name of the runner, used in logs.                                                                                                                                                                | 1.0.0 |
+| **`src`**       | <code>string</code>  | The path to the runner JavaScript file, relative to the app bundle.                                                                                                                                  | 1.0.0 |
+| **`event`**     | <code>string</code>  | The name of the event that will be called when the OS executes the background task.                                                                                                                  | 1.0.0 |
+| **`repeat`**    | <code>boolean</code> | If background task should repeat based on the interval set in `interval`.                                                                                                                            | 1.0.0 |
+| **`interval`**  | <code>number</code>  | The number of minutes after the the app is put into the background in which the background task should begin. If `repeat` is true, this also specifies the number of minutes between each execution. | 1.0.0 |
+| **`autoStart`** | <code>boolean</code> | Automatically register and schedule background task on app load.                                                                                                                                     | 1.0.0 |
+
+### Examples
+
+In `capacitor.config.json`:
+
+```json
+{
+  "plugins": {
+    "BackgroundRunner": {
+      "label": "com.example.background.task",
+      "src": "runners/background.js",
+      "event": "myCustomEvent",
+      "repeat": true,
+      "interval": 15,
+      "autoStart": true
+    }
+  }
+}
+```
+
+In `capacitor.config.ts`:
 
 ```ts
+/// <reference types="@capacitor/background-runner" />
+
+import { CapacitorConfig } from '@capacitor/cli';
+
 const config: CapacitorConfig = {
   plugins: {
     BackgroundRunner: {
-      label: 'com.example.background.task',
-      src: 'background.js',
-      event: 'myCustomEvent',
+      label: "com.example.background.task",
+      src: "runners/background.js",
+      event: "myCustomEvent",
       repeat: true,
-      interval: 2,
-      autoStart: false,
+      interval: 15,
+      autoStart: true,
     },
   },
 };
+
+export default config;
 ```
+
+</docgen-config>
 
 ## JavaScript API
 
