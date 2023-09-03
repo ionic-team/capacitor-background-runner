@@ -456,7 +456,7 @@ Get access to device location information.
 
 | Prop                     | Type                                                                                   | Description                          | Since |
 | ------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------ | ----- |
-| **`getCurrentLocation`** | <code>() =&gt; <a href="#getcurrentpositionresult">GetCurrentPositionResult</a></code> | Get the device's last known location | 1.0.0 |
+| **`getCurrentPosition`** | <code>() =&gt; <a href="#getcurrentpositionresult">GetCurrentPositionResult</a></code> | Get the device's last known location | 1.0.0 |
 
 
 #### GetCurrentPositionResult
