@@ -1,50 +1,50 @@
 #include "errors.h"
 
-bool check_and_throw_js_exception(JNIEnv *env, JSContext *ctx, JSValue value) {
-  if (JS_IsException(value)) {
-    JS_FreeValue(ctx, value);
+bool throw_js_exception_in_jvm(JNIEnv *env, JSContext *ctx, JSValue value) {
+    if (JS_IsException(value)) {
+        JS_FreeValue(ctx, value);
 
-    jclass c = env->FindClass("io/ionic/android_js_engine/EngineErrors$JavaScriptException");
+        jclass error_class = env->FindClass("io/ionic/android_js_engine/EngineErrors$JavaScriptException");
 
-    JSValue exception = JS_GetException(ctx);
+        JSValue exception = JS_GetException(ctx);
 
-    JSValue err_message = JS_GetPropertyStr(ctx, exception, "message");
-    const char *err_str = JS_ToCString(ctx, err_message);
+        JSValue err_message = JS_GetPropertyStr(ctx, exception, "message");
+        const char *err_message_c_str = JS_ToCString(ctx, err_message);
 
-    env->ThrowNew(c, err_str);
+        env->ThrowNew(error_class, err_message_c_str);
 
-    JS_FreeCString(ctx, err_str);
+        JS_FreeCString(ctx, err_message_c_str);
 
-    JS_FreeValue(ctx, err_message);
-    JS_FreeValue(ctx, exception);
+        JS_FreeValue(ctx, err_message);
+        JS_FreeValue(ctx, exception);
 
-    return true;
-  }
+        return true;
+    }
 
-  return false;
+    return false;
 }
 
-JSValue check_and_throw_jni_exception(JNIEnv *env, JSContext *ctx) {
-  if (!env->ExceptionCheck()) {
-    return JS_NULL;
-  }
+bool throw_jvm_exception_in_js(JNIEnv *env, JSContext *ctx) {
+    if (!env->ExceptionCheck()) {
+        return JS_NULL;
+    }
 
-  auto throwable = env->ExceptionOccurred();
-  env->ExceptionClear();
+    auto throwable = env->ExceptionOccurred();
+    env->ExceptionClear();
 
-  jclass c = env->FindClass("java/lang/Exception");
-  jmethodID cnstrctr = env->GetMethodID(c, "<init>", "(Ljava/lang/Throwable;)V");
-  jmethodID getMessage = env->GetMethodID(c, "getMessage", "()Ljava/lang/String;");
+    jclass exception_class = env->FindClass("java/lang/Exception");
+    jmethodID exception_constructor = env->GetMethodID(exception_class, "<init>", "(Ljava/lang/Throwable;)V");
+    jmethodID get_message_method = env->GetMethodID(exception_class, "getMessage", "()Ljava/lang/String;");
 
-  auto errObj = env->NewObject(c, cnstrctr, throwable);
-  auto errMsg = (jstring)env->CallObjectMethod(errObj, getMessage);
+    auto err_obj = env->NewObject(exception_class, exception_constructor, throwable);
+    auto err_msg = (jstring)env->CallObjectMethod(err_obj, get_message_method);
 
-  auto c_errMsg = env->GetStringUTFChars(errMsg, nullptr);
+    auto c_errMsg = env->GetStringUTFChars(err_msg, nullptr);
 
-  JSValue exceptionValue = JS_NewError(ctx);
-  JS_SetPropertyStr(ctx, exceptionValue, "message", JS_NewString(ctx, c_errMsg));
+    JSValue exception_value = JS_NewError(ctx);
+    JS_SetPropertyStr(ctx, exception_value, "message", JS_NewString(ctx, c_errMsg));
 
-  env->ReleaseStringUTFChars(errMsg, c_errMsg);
+    env->ReleaseStringUTFChars(err_msg, c_errMsg);
 
-  return JS_Throw(ctx, exceptionValue);
+    return JS_Throw(ctx, exception_value);
 }

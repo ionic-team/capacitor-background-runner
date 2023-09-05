@@ -1,44 +1,60 @@
 package io.ionic.android_js_engine
 
 class Runner {
-    private val ptr: Long?
     private val contexts: HashMap<String, Context> = HashMap()
+
+    private var ptr: Long? = null
 
     init {
         System.loadLibrary("android_js_engine")
-        this.ptr = this.initRunner()
+
+        this.ptr = initRunner()
     }
 
     private external fun initRunner(): Long
-    private external fun stopRunLoop(ptr: Long)
+    private external fun startRunner(ptr: Long)
+    private external fun stopRunner(ptr: Long)
     private external fun destroyRunner(ptr: Long)
 
     fun createContext(name: String): Context {
-        val runnerPtr = this.ptr ?: throw Exception("runner pointer is null")
-        val newCtx = Context(name, runnerPtr)
+        val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
 
-        contexts[name] = newCtx
+        if (contexts.containsKey(name)) {
+            throw EngineErrors.RunnerException("context with name $name already exists")
+        }
 
-        return newCtx
+        val context = Context(name, runnerPtr)
+
+        contexts[name] = context
+
+        return context
     }
 
     fun destroyContext(name: String) {
-        val ctx = contexts[name] ?: return
-        ctx.destroy()
-        this.contexts.remove(name)
+        val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
+
+        val context = contexts[name] ?: return
+        context.destroy()
+        contexts.remove(name)
     }
 
-    fun destroy() {
-        val runnerPtr = this.ptr ?: return
+    fun start() {}
 
-        this.stopRunLoop(runnerPtr)
+    fun stop() {}
+
+    fun destroy() {
+        val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
+
+        this.stop()
 
         if (this.contexts.isNotEmpty()) {
-            this.contexts.forEach { (_, ctx) ->
-                ctx.destroy()
+            this.contexts.forEach { (name) ->
+                destroyContext(name)
             }
+
+            this.contexts.clear()
         }
 
-        this.destroyRunner(runnerPtr)
+        destroyRunner(runnerPtr)
     }
 }

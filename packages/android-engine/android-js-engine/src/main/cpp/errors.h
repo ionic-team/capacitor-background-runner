@@ -4,7 +4,7 @@
 #include <jni.h>
 #include "quickjs/quickjs.h"
 
-bool check_and_throw_js_exception(JNIEnv *env, JSContext *ctx, JSValue value);
-JSValue check_and_throw_jni_exception(JNIEnv *env, JSContext *ctx);
+bool throw_js_exception_in_jvm(JNIEnv *env, JSContext *ctx, JSValue value);
+bool throw_jvm_exception_in_js(JNIEnv *env, JSContext *ctx);
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_ERRORS_H

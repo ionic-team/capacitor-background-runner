@@ -1,10 +1,12 @@
-#ifndef CAPACITOR_BACKGROUND_RUNNER_JNI_CLASSES_H
-#define CAPACITOR_BACKGROUND_RUNNER_JNI_CLASSES_H
+#ifndef CAPACITOR_BACKGROUND_RUNNER_JAVA_H
+#define CAPACITOR_BACKGROUND_RUNNER_JAVA_H
 
 #include <jni.h>
 
-class JNIClasses {
+class Java {
 public:
+    JavaVM *vm;
+
     jclass context_api_class;
     jclass js_response_class;
     jclass js_fetch_options_class;
@@ -29,10 +31,11 @@ public:
     jfieldID capacitor_api_notification_field;
     jfieldID capacitor_api_geolocation_field;
 
-    JNIClasses(JNIEnv *env);
+    Java(JNIEnv *env);
+    JNIEnv *getEnv();
 
 private:
     void check_exception(JNIEnv *env);
 };
 
-#endif //CAPACITOR_BACKGROUND_RUNNER_JNI_CLASSES_H
+#endif //CAPACITOR_BACKGROUND_RUNNER_JAVA_H

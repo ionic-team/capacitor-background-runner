@@ -1,525 +1,208 @@
 #include "context.h"
+#include "quickjs/cutils.h"
 
-#include <cstring>
-#include <iostream>
-#include <thread>
-#include <utility>
+static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {
+    JSValue ret_value = JS_UNDEFINED;
 
-#include "errors.h"
+    auto *context = (Context *)JS_GetContextOpaque(ctx);
 
-JavaFunctionData::JavaFunctionData(const std::string &name, jobject func) {
-  this->name = name;
-  this->j_func = func;
+    JSValue func_name_obj = func_data[0];
+    auto func_name_str = std::string(JS_ToCString(ctx, func_name_obj));
+    JS_FreeValue(ctx, func_name_obj);
+
+    auto j_func = context->registered_functions.at(func_name_str);
+
+    auto *env = context->java->getEnv();
+    if (env == nullptr) {
+        // TODO: throw error
+    }
+
+    auto j_function_class = env->GetObjectClass(j_func);
+
+    return ret_value;
 }
 
-Context::Context(const std::string &name, JSRuntime *rt, JNIEnv *env, jobject api_instance) {
-  this->vm = nullptr;
-  this->capacitor_api = nullptr;
+Context::Context(const std::string& name, JSRuntime *parent_rt, JNIEnv *env) {
+    this->name = name;
+    this->qjs_context = JS_NewContext(parent_rt);
+    this->java = new Java(env);
 
-  this->ctx = JS_NewContext(rt);
-  this->name = name;
-  this->env = env;
+    JS_SetContextOpaque(this->qjs_context, this);
 
-  this->env->GetJavaVM(&this->vm);
+    this->init_api_console();
+    this->init_api_event_listeners();
 
-  this->api = api_instance;
-
-  this->run_loop_stopped = true;
-  this->end_run_loop = false;
-
-  this->jni_classes = new JNIClasses(env);
-
-  this->init_api_console();
-  this->init_api_event_listeners();
-  this->init_api_crypto();
-  this->init_api_timeout();
-  this->init_api_text();
-  this->init_api_fetch();
-
-  JS_SetContextOpaque(this->ctx, this);
-
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
-  this->global_json_obj = JS_GetPropertyStr(this->ctx, global_obj, "JSON");
-  JS_FreeValue(this->ctx, global_obj);
+    this->log_debug("created context");
 }
 
 Context::~Context() {
-  this->stop_run_loop();
-
-  for (const auto &kv : this->event_listeners) {
-    JS_FreeValue(this->ctx, kv.second);
-  }
-
-  this->event_listeners.clear();
-
-  for (const auto &kv : this->timers) {
-    JS_FreeValue(this->ctx, kv.second.js_func);
-  }
-
-  this->timers.clear();
-
-  this->registered_functions.clear();
-
-  JS_FreeValue(this->ctx, this->global_json_obj);
-  JS_FreeContext(this->ctx);
-}
-
-JNIEnv *Context::getJNIEnv() {
-  JNIEnv *env = nullptr;
-
-  int status = this->vm->GetEnv((void **)&env, JNI_VERSION_1_6);
-  if (status == JNI_EDETACHED) {
-    if (this->vm->AttachCurrentThread(&env, NULL) != JNI_OK) {
-      // TODO: throw exception here
-      return nullptr;
+    for(const auto &kv : this->event_listeners) {
+        JS_FreeValue(this->qjs_context, kv.second);
     }
-  }
+    this->event_listeners.clear();
+    this->registered_functions.clear();
 
-  if (status == JNI_EVERSION) {
-    // TODO: throw exception here
-    return nullptr;
-  }
-
-  return env;
-}
-
-void Context::start_run_loop() {
-  this->end_run_loop = false;
-
-  this->run_loop_thread = std::thread([this] { run_loop(); });
-
-  this->run_loop_thread.detach();
-
-  this->run_loop_stopped = false;
-}
-
-void Context::stop_run_loop() {
-  if (this->end_run_loop) {
-    return;
-  }
-
-  this->run_loop_mutex.lock();
-  this->end_run_loop = true;
-  this->run_loop_mutex.unlock();
-
-  while (!this->run_loop_stopped) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
-}
-
-void Context::run_loop() {
-  for (;;) {
-    this->run_loop_mutex.lock();
-    if (this->end_run_loop) {
-      break;
+    for (const auto  &kv : this->timers) {
+        JS_FreeValue(this->qjs_context, kv.second.js_func);
     }
-    this->run_loop_mutex.unlock();
+    this->timers.clear();
 
-    if (!this->timers.empty()) {
-      this->timers_mutex.lock();
-      JSValue global_obj = JS_GetGlobalObject(this->ctx);
+    JS_FreeContext(this->qjs_context);
 
-      for (const auto &kv : this->timers) {
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - kv.second.start);
-
-        if (duration.count() >= kv.second.timeout) {
-          this->timers[kv.first].start = std::chrono::system_clock::now();
-          JSValue value = JS_Call(this->ctx, this->timers[kv.first].js_func, global_obj, 0, nullptr);
-          JS_FreeValue(this->ctx, value);
-
-          if (!this->timers[kv.first].repeat) {
-            JS_FreeValue(this->ctx, this->timers[kv.first].js_func);
-            this->timers.erase(kv.first);
-          }
-        }
-      }
-
-      this->timers_mutex.unlock();
-
-      JS_FreeValue(this->ctx, global_obj);
-    }
-  }
-
-  this->run_loop_stopped = true;
+    this->log_debug("destroyed context");
 }
 
-JSValue Context::parseJSON(const std::string &json_string) const {
-  JSValue ret_value = JS_UNDEFINED;
+void Context::register_function(const std::string& func_name, jobject func) {
+    this->registered_functions.insert_or_assign(func_name, func);
 
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
-  JSValue parse_func_obj = JS_GetPropertyStr(this->ctx, this->global_json_obj, "parse");
+    auto global_obj = JS_GetGlobalObject(this->qjs_context);
 
-  JSValue json = JS_NewString(this->ctx, json_string.c_str());
+    JSValue ptr[1] = {JS_NewString(this->qjs_context, func_name.c_str())};
+    JS_SetPropertyStr(this->qjs_context, global_obj, func_name.c_str(), JS_NewCFunctionData(this->qjs_context, call_registered_function, 1, 0, 1, ptr));
 
-  JSValue parsed = JS_Call(this->ctx, parse_func_obj, global_obj, 1, &json);
-
-  ret_value = JS_DupValue(this->ctx, parsed);
-
-  JS_FreeValue(this->ctx, parsed);
-  JS_FreeValue(this->ctx, json);
-  JS_FreeValue(this->ctx, parse_func_obj);
-  JS_FreeValue(this->ctx, global_obj);
-
-  return ret_value;
+    JS_FreeValue(this->qjs_context, global_obj);
 }
 
-void Context::init_callbacks(JSValue callbacks) const {
-  // look for __cbr:: and replace with JSFunction
-  JSPropertyEnum *properties;
-  uint32_t count;
-  JS_GetOwnPropertyNames(this->ctx, &properties, &count, callbacks, JS_GPN_STRING_MASK | JS_GPN_SYMBOL_MASK | JS_GPN_ENUM_ONLY);
-  for (uint32_t i = 0; i < count; i++) {
-    JSAtom atom = properties[i].atom;
-    const char *key = JS_AtomToCString(this->ctx, atom);
+JSValue Context::evaluate(const std::string& code, bool ret_val) const {
+    JSValue ret_value = JS_UNDEFINED;
 
-    JSValue val = JS_GetProperty(this->ctx, callbacks, atom);
+    int flags = JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_BACKTRACE_BARRIER;
+    size_t len = strlen(code.c_str());
 
-    if (JS_IsString(val)) {
-      const char *c_str_val = JS_ToCString(this->ctx, val);
-      std::string str_value = std::string(c_str_val);
+    JSValue value = JS_Eval(this->qjs_context, code.c_str(), len, "<code>", flags);
 
-      std::string prefix = str_value.substr(0, 7);
-
-      if (prefix == "__cbr::") {
-        try {
-          auto global_func_name = str_value.substr(7);
-          auto func_data = this->registered_functions.at(global_func_name);
-
-          JSValue ptr[1] = {JS_NewString(this->ctx, global_func_name.c_str())};
-
-          JS_SetPropertyStr(this->ctx, callbacks, key, JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
-        } catch (std::exception &ex) {
-        }
-      }
-
-      JS_FreeCString(this->ctx, c_str_val);
+    if (JS_IsException(value)) {
+        ret_value = JS_DupValue(this->qjs_context, value);
+        JS_FreeValue(this->qjs_context, value);
+        return ret_value;
     }
 
-    JS_FreeValue(this->ctx, val);
-    JS_FreeAtom(this->ctx, atom);
-    JS_FreeCString(this->ctx, key);
-  }
-}
+    if (ret_val) {
+        JSValue json = JS_JSONStringify(this->qjs_context, value, JS_UNDEFINED, JS_UNDEFINED);
 
-std::string Context::stringifyJSON(JSValue object) const {
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
-  JSValue stringify_func_obj = JS_GetPropertyStr(this->ctx, this->global_json_obj, "stringify");
+        ret_value = JS_DupValue(this->qjs_context, json);
+        JS_FreeValue(this->qjs_context, json);
+    }
 
-  JSValue str_value = JS_Call(this->ctx, stringify_func_obj, global_obj, 1, &object);
-
-  const char *c_str = JS_ToCString(this->ctx, str_value);
-
-  std::string json(c_str);
-
-  JS_FreeCString(this->ctx, c_str);
-  JS_FreeValue(this->ctx, str_value);
-  JS_FreeValue(this->ctx, stringify_func_obj);
-  JS_FreeValue(this->ctx, global_obj);
-
-  return json;
-}
-
-JSValue Context::evaluate(const std::string &code, bool ret_val) const {
-  JSValue ret_value = JS_UNDEFINED;
-
-  int flags = JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_BACKTRACE_BARRIER;
-
-  size_t code_len = strlen(code.c_str());
-
-  JSValue value = JS_Eval(this->ctx, code.c_str(), code_len, "<code>", flags);
-
-  if (JS_IsException(value)) {
-    ret_value = JS_DupValue(this->ctx, value);
-    JS_FreeValue(this->ctx, value);
-
+    JS_FreeValue(this->qjs_context, value);
     return ret_value;
-  }
-
-  if (ret_val) {
-    std::string json = this->stringifyJSON(value);
-
-    JSValue json_value = JS_NewString(this->ctx, json.c_str());
-    ret_value = JS_DupValue(this->ctx, json_value);
-
-    JS_FreeValue(this->ctx, json_value);
-  }
-
-  JS_FreeValue(this->ctx, value);
-  return ret_value;
 }
 
 JSValue Context::dispatch_event(const std::string &event, JSValue details) {
-  JSValue ret_value = JS_UNDEFINED;
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
+    JSValue ret_value = JS_UNDEFINED;
 
-  JSValue event_handler;
+    JSValue global_obj = JS_GetGlobalObject(this->qjs_context);
+    JSValue event_handler;
 
-  try {
-    event_handler = this->event_listeners.at(event);
-  } catch (std::exception &ex) {
-    event_handler = JS_NULL;
-  }
-
-  if (!JS_IsNull(event_handler)) {
-    JSValueConst args[3];
-
-    JSValue dataArgs = JS_GetPropertyStr(this->ctx, details, "dataArgs");
-    JSValue callbacks = JS_GetPropertyStr(this->ctx, details, "callbacks");
-
-    int nextArgIndex = 0;
-
-    if (!JS_IsNull(callbacks) && !JS_IsUndefined(callbacks)) {
-      this->init_callbacks(callbacks);
-
-      JSValue resolveFunc = JS_GetPropertyStr(this->ctx, callbacks, "resolve");
-      JSValue rejectFunc = JS_GetPropertyStr(this->ctx, callbacks, "reject");
-
-      args[0] = resolveFunc;
-      args[1] = rejectFunc;
-      nextArgIndex = 2;
-
-      JS_FreeValue(this->ctx, resolveFunc);
-      JS_FreeValue(this->ctx, rejectFunc);
+    try {
+        event_handler = this->event_listeners.at(event);
+    } catch(std::exception& ex) {
+        event_handler = JS_NULL;
     }
 
-    if (JS_IsNull(dataArgs) || JS_IsUndefined(dataArgs)) {
-      dataArgs = JS_DupValue(this->ctx, details);
+    if (!JS_IsNull(event_handler)) {
+        JSValueConst args[3];
+        JSValue dataArgs = JS_GetPropertyStr(this->qjs_context, details, "dataArgs");
+        JSValue callbacks = JS_GetPropertyStr(this->qjs_context, details, "callbacks");
+
+        int nextArgIndex = 0;
+
+        if (!JS_IsNull(callbacks) && !JS_IsUndefined(callbacks)) {
+            this->init_callbacks(callbacks);
+
+            JSValue resolveFunc = JS_GetPropertyStr(this->qjs_context, callbacks, "resolve");
+            JSValue rejectFunc = JS_GetPropertyStr(this->qjs_context, callbacks, "reject");
+
+            args[0] = resolveFunc;
+            args[1] = rejectFunc;
+            nextArgIndex = 2;
+
+            JS_FreeValue(this->qjs_context, resolveFunc);
+            JS_FreeValue(this->qjs_context, rejectFunc);
+        }
+
+        if (JS_IsNull(dataArgs) || JS_IsUndefined(dataArgs)) {
+            dataArgs = JS_DupValue(this->qjs_context, details);
+        }
+
+        args[nextArgIndex] = dataArgs;
+
+        JSValue value = JS_Call(this->qjs_context, event_handler, global_obj, 3, args);
+
+        if (JS_IsException(value)) {
+            ret_value = JS_DupValue(this->qjs_context, value);
+            JS_FreeValue(this->qjs_context, value);
+        }
+
+        // TODO: add warning for non-null value;
+
+        JS_FreeValue(this->qjs_context, callbacks);
+        JS_FreeValue(this->qjs_context, dataArgs);
+        JS_FreeValue(this->qjs_context, value);
     }
 
-    args[nextArgIndex] = dataArgs;
+    JS_FreeValue(this->qjs_context, global_obj);
 
-    JSValue value = JS_Call(this->ctx, event_handler, global_obj, 3, args);
+    return ret_value;
+}
 
-    if (JS_IsException(value)) {
-      ret_value = JS_DupValue(this->ctx, value);
-      JS_FreeValue(this->ctx, value);
+void Context::init_callbacks(JSValue callbacks) const {
+    // look for __cbr:: and replace with JSFunction
+    JSPropertyEnum *properties;
+    uint32_t count;
+    JS_GetOwnPropertyNames(this->qjs_context, &properties, &count, callbacks, JS_GPN_STRING_MASK | JS_GPN_SYMBOL_MASK | JS_GPN_ENUM_ONLY);
+    for (uint32_t i = 0; i < count; i++) {
+        JSAtom atom = properties[i].atom;
+        const char *key = JS_AtomToCString(this->qjs_context, atom);
+        JSValue str_val = JS_GetProperty(this->qjs_context, callbacks, atom);
+
+        if (JS_IsString(str_val)) {
+            const char *c_str_val = JS_ToCString(this->qjs_context, str_val);
+            std::string str_value = std::string(c_str_val);
+            std::string prefix = str_value.substr(0, 7);
+
+            if (prefix == "__cbr::") {
+                try {
+                    auto global_func_name = str_value.substr(7);
+                    auto func_data = this->registered_functions.at(global_func_name);
+                } catch(std::exception& ex) {}
+            }
+
+            JS_FreeCString(this->qjs_context, c_str_val);
+        }
+
+        JS_FreeValue(this->qjs_context, str_val);
+        JS_FreeAtom(this->qjs_context, atom);
+        JS_FreeCString(this->qjs_context, key);
     }
+}
 
-    JS_FreeValue(this->ctx, callbacks);
-    JS_FreeValue(this->ctx, dataArgs);
-    JS_FreeValue(this->ctx, value);
-  }
-
-  JS_FreeValue(this->ctx, global_obj);
-  return ret_value;
+void Context::log_debug(std::string msg) {
+    auto tag = "[Runner Context " + this->name + "]";
+    write_to_logcat(ANDROID_LOG_DEBUG, tag.c_str(), msg.c_str());
 }
 
 void Context::init_api_console() const {
-  JSValue global_obj, console;
+    JSValue global_obj, console;
 
-  global_obj = JS_GetGlobalObject(this->ctx);
-  console = JS_NewObject(this->ctx);
+    global_obj = JS_GetGlobalObject(this->qjs_context);
+    console = JS_NewObject(this->qjs_context);
 
-  JS_SetPropertyStr(this->ctx, console, "log", JS_NewCFunction(ctx, api_console_log, "log", 1));
-  JS_SetPropertyStr(this->ctx, console, "info", JS_NewCFunction(ctx, api_console_log, "info", 1));
-  JS_SetPropertyStr(this->ctx, console, "warn", JS_NewCFunction(ctx, api_console_warn, "warn", 1));
-  JS_SetPropertyStr(this->ctx, console, "error", JS_NewCFunction(ctx, api_console_error, "error", 1));
-  JS_SetPropertyStr(this->ctx, console, "debug", JS_NewCFunction(ctx, api_console_debug, "debug", 1));
+    JS_SetPropertyStr(this->qjs_context, console, "log", JS_NewCFunction(qjs_context, api_console_log, "log", 1));
+    JS_SetPropertyStr(this->qjs_context, console, "info", JS_NewCFunction(qjs_context, api_console_log, "info", 1));
+    JS_SetPropertyStr(this->qjs_context, console, "warn", JS_NewCFunction(qjs_context, api_console_warn, "warn", 1));
+    JS_SetPropertyStr(this->qjs_context, console, "error", JS_NewCFunction(qjs_context, api_console_error, "error", 1));
+    JS_SetPropertyStr(this->qjs_context, console, "debug", JS_NewCFunction(qjs_context, api_console_debug, "debug", 1));
 
-  JS_SetPropertyStr(this->ctx, global_obj, "console", console);
+    JS_SetPropertyStr(this->qjs_context, global_obj, "console", console);
 
-  JS_FreeValue(this->ctx, global_obj);
+    JS_FreeValue(this->qjs_context, global_obj);
 }
 
 void Context::init_api_event_listeners() const {
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
+    JSValue global_obj = JS_GetGlobalObject(this->qjs_context);
 
-  JS_SetPropertyStr(this->ctx, global_obj, "addEventListener", JS_NewCFunction(this->ctx, api_add_event_listener, "addEventListener", 2));
+    JS_SetPropertyStr(this->qjs_context, global_obj, "addEventListener", JS_NewCFunction(this->qjs_context, api_add_event_listener, "addEventListener", 2));
 
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::init_api_crypto() const {
-  JSValue global_obj, crypto;
-
-  global_obj = JS_GetGlobalObject(this->ctx);
-
-  crypto = JS_NewObject(this->ctx);
-
-  JS_SetPropertyStr(this->ctx, crypto, "getRandomValues", JS_NewCFunction(ctx, api_crypto_get_random_values, "getRandomValues", 1));
-  JS_SetPropertyStr(this->ctx, crypto, "randomUUID", JS_NewCFunction(ctx, api_crypto_random_uuid, "randomUUID", 0));
-
-  JS_SetPropertyStr(this->ctx, global_obj, "crypto", crypto);
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::init_api_timeout() const {
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
-
-  JS_SetPropertyStr(this->ctx, global_obj, "setTimeout", JS_NewCFunction(this->ctx, api_set_timeout, "setTimeout", 2));
-  JS_SetPropertyStr(this->ctx, global_obj, "clearTimeout", JS_NewCFunction(this->ctx, api_clear_timeout, "clearTimeout", 1));
-  JS_SetPropertyStr(this->ctx, global_obj, "setInterval", JS_NewCFunction(this->ctx, api_set_interval, "setInterval", 1));
-  JS_SetPropertyStr(this->ctx, global_obj, "clearInterval", JS_NewCFunction(this->ctx, api_clear_timeout, "clearInterval", 1));
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::init_api_text() const {
-  init_text_encoder_class(this->ctx);
-  init_text_decoder_class(this->ctx);
-}
-
-void Context::init_api_fetch() const {
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
-
-  JS_SetPropertyStr(this->ctx, global_obj, "fetch", JS_NewCFunction(this->ctx, api_fetch_promise, "fetch", 2));
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::register_function(const std::string &func_name, jobject func) {
-  JavaFunctionData func_data = JavaFunctionData(func_name, func);
-  this->registered_functions.insert_or_assign(func_name, func_data);
-
-  JSValue global_obj = JS_GetGlobalObject(this->ctx);
-
-  JSValue ptr[1] = {JS_NewString(this->ctx, func_name.c_str())};
-  JS_SetPropertyStr(this->ctx, global_obj, func_name.c_str(), JS_NewCFunctionData(this->ctx, call_global_function, 1, 0, 1, ptr));
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::init_capacitor_api(jobject cap_api) {
-  this->capacitor_api = cap_api;
-
-  this->init_capacitor_kv_api();
-  this->init_capacitor_geolocation_api();
-  this->init_capacitor_notifications_api();
-  this->init_capacitor_device_api();
-}
-
-void Context::init_capacitor_kv_api() const {
-  JSValue global_obj, kv;
-
-  global_obj = JS_GetGlobalObject(this->ctx);
-
-  kv = JS_NewObject(this->ctx);
-  JS_SetPropertyStr(this->ctx, kv, "set", JS_NewCFunction(this->ctx, api_kv_set, "set", 2));
-  JS_SetPropertyStr(this->ctx, kv, "get", JS_NewCFunction(this->ctx, api_kv_get, "get", 1));
-  JS_SetPropertyStr(this->ctx, kv, "remove", JS_NewCFunction(this->ctx, api_kv_remove, "remove", 1));
-
-  JS_SetPropertyStr(this->ctx, global_obj, "CapacitorKV", kv);
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::init_capacitor_device_api() const {
-  JSValue global_obj, device;
-
-  global_obj = JS_GetGlobalObject(this->ctx);
-
-  device = JS_NewObject(this->ctx);
-  JS_SetPropertyStr(this->ctx, device, "getBatteryStatus", JS_NewCFunction(this->ctx, api_device_battery, "getBatteryStatus", 0));
-  JS_SetPropertyStr(this->ctx, device, "getNetworkStatus", JS_NewCFunction(this->ctx, api_device_network, "getNetworkStatus", 0));
-
-  JS_SetPropertyStr(this->ctx, global_obj, "CapacitorDevice", device);
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::init_capacitor_notifications_api() const {
-  JSValue global_obj, notifications;
-
-  global_obj = JS_GetGlobalObject(this->ctx);
-
-  notifications = JS_NewObject(this->ctx);
-  JS_SetPropertyStr(this->ctx, notifications, "schedule", JS_NewCFunction(this->ctx, api_notifications_schedule, "schedule", 1));
-
-  JS_SetPropertyStr(this->ctx, global_obj, "CapacitorNotifications", notifications);
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-void Context::init_capacitor_geolocation_api() const {
-  JSValue global_obj, geolocation;
-
-  global_obj = JS_GetGlobalObject(this->ctx);
-  geolocation = JS_NewObject(this->ctx);
-
-  JS_SetPropertyStr(this->ctx, geolocation, "getCurrentPosition", JS_NewCFunction(this->ctx, api_geolocation_current_location, "getCurrentPosition", 0));
-
-  JS_SetPropertyStr(this->ctx, global_obj, "CapacitorGeolocation", geolocation);
-
-  JS_FreeValue(this->ctx, global_obj);
-}
-
-JSValue call_global_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {
-  JSValue ret_value = JS_UNDEFINED;
-  JSValue jni_exception;
-
-  JNIEnv *thread_env = nullptr;
-  JSValue func_name_obj = func_data[0];
-
-  const auto *func_name = JS_ToCString(ctx, func_name_obj);
-  auto func_name_str = std::string(func_name);
-
-  JS_FreeValue(ctx, func_name_obj);
-
-  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
-
-  auto status = parent_ctx->vm->GetEnv((void **)&thread_env, JNI_VERSION_1_6);
-  if (status == JNI_EDETACHED) {
-    if (parent_ctx->vm->AttachCurrentThread(&thread_env, NULL) != JNI_OK) {
-      return JS_EXCEPTION;
-    }
-  }
-
-  auto j_func_data = parent_ctx->registered_functions.at(func_name);
-
-  jclass j_function_class = thread_env->GetObjectClass(j_func_data.j_func);
-  jni_exception = check_and_throw_jni_exception(thread_env, ctx);
-
-  if (JS_IsException(jni_exception)) {
-    return jni_exception;
-  }
-
-  jmethodID j_method = thread_env->GetMethodID(j_function_class, "run", "()V");
-  jni_exception = check_and_throw_jni_exception(thread_env, ctx);
-
-  if (JS_IsException(jni_exception)) {
-    return jni_exception;
-  }
-
-  JSValue args = argv[0];
-  if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
-    std::string json_string;
-
-    if (JS_IsError(ctx, args)) {
-      auto error_object = JS_NewObject(ctx);
-
-      auto error_name = JS_GetPropertyStr(ctx, args, "name");
-      auto error_message = JS_GetPropertyStr(ctx, args, "message");
-
-      JS_SetPropertyStr(ctx, error_object, "name", error_name);
-      JS_SetPropertyStr(ctx, error_object, "message", error_message);
-
-      json_string = parent_ctx->stringifyJSON(error_object);
-
-      JS_FreeValue(ctx, error_object);
-    } else {
-      json_string = parent_ctx->stringifyJSON(args);
-    }
-
-    jstring j_json_string = thread_env->NewStringUTF(json_string.c_str());
-
-    // create a JSONObject
-    jclass json_object_c = thread_env->FindClass("org/json/JSONObject");
-    jmethodID json_object_cnstrctr = thread_env->GetMethodID(json_object_c, "<init>", "(Ljava/lang/String;)V");
-
-    jobject json_object = thread_env->NewObject(json_object_c, json_object_cnstrctr, j_json_string);
-    jni_exception = check_and_throw_jni_exception(thread_env, ctx);
-
-    if (JS_IsException(jni_exception)) {
-      return jni_exception;
-    }
-
-    jfieldID args_field = thread_env->GetFieldID(j_function_class, "args", "Lorg/json/JSONObject;");
-
-    thread_env->SetObjectField(j_func_data.j_func, args_field, json_object);
-  }
-
-  thread_env->CallVoidMethod(j_func_data.j_func, j_method);
-
-  return ret_value;
+    JS_FreeValue(this->qjs_context, global_obj);
 }

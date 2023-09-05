@@ -1,84 +1,69 @@
 #include <jni.h>
-
-#include "context.h"
-#include "errors.h"
-#include "quickjs/quickjs.h"
 #include "runner.h"
+#include "context.h"
 
-extern "C" JNIEXPORT jlong JNICALL Java_io_ionic_android_1js_1engine_Context_initContext(JNIEnv *env, jobject thiz, jlong runner_ptr, jstring name) {
-  auto *runner = (Runner *)runner_ptr;
-
-  auto context_api_field_id = env->GetFieldID(env->FindClass("io/ionic/android_js_engine/Context"), "api", "Lio/ionic/android_js_engine/ContextAPI;");
-
-  auto api = env->GetObjectField(thiz, context_api_field_id);
-  auto api_instance = env->NewGlobalRef(api);
-
-  auto *context = new Context(env->GetStringUTFChars(name, nullptr), runner->rt, env, api_instance);
-
-  return (jlong)(long)context;
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_io_ionic_android_1js_1engine_Context_createRunnerContext(JNIEnv *env, jobject thiz, jlong runner_ptr, jstring name) {
+    auto *runner = (Runner *)runner_ptr;
+    return (jlong)runner->create_context(env->GetStringUTFChars(name, nullptr), env);
 }
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Context_destroyContext(JNIEnv *env, jobject thiz, jlong ptr) {
-  auto *ctx = (Context *)ptr;
-  delete ctx;
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_android_1js_1engine_Context_destroyRunnerContext(JNIEnv *env, jobject thiz, jlong runner_ptr, jlong ptr) {
+    auto *runner = (Runner *)runner_ptr;
+    auto *ctx = (Context *)ptr;
+
+    runner->destroy_context(ctx->name);
 }
-extern "C" JNIEXPORT jstring JNICALL Java_io_ionic_android_1js_1engine_Context_evaluate(JNIEnv *env, jobject thiz, jlong ptr, jstring code, jboolean ret_value) {
-  auto *ctx = (Context *)ptr;
+extern "C"
+JNIEXPORT jstring JNICALL
+Java_io_ionic_android_1js_1engine_Context_evaluate(JNIEnv *env, jobject thiz, jlong ptr, jstring code, jboolean ret_value) {
+    auto *ctx = (Context *)ptr;
 
-  const char *c_code = env->GetStringUTFChars(code, nullptr);
+    const char *c_code = env->GetStringUTFChars(code, nullptr);
+    auto value = ctx->evaluate(c_code, (bool)ret_value);
 
-  auto value = ctx->evaluate(c_code, (bool)ret_value);
+    if (throw_js_exception(env, ctx->qjs_context, value)) {
+        JS_FreeValue(ctx->qjs_context, value);
+        return nullptr;
+    }
 
-  if (check_and_throw_js_exception(env, ctx->ctx, value)) {
-    return nullptr;
-  }
+    const char *json_string = JS_ToCString(ctx->qjs_context, value);
+    auto *j_json_string = env->NewStringUTF(json_string);
 
-  const char *json_string = JS_ToCString(ctx->ctx, value);
-  auto *j_json_string = env->NewStringUTF(json_string);
+    JS_FreeCString(ctx->qjs_context, json_string);
+    JS_FreeValue(ctx->qjs_context, value);
 
-  JS_FreeCString(ctx->ctx, json_string);
-  JS_FreeValue(ctx->ctx, value);
-
-  return j_json_string;
+    return j_json_string;
 }
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Context_start(JNIEnv *env, jobject thiz, jlong ptr) {
-  auto *ctx = (Context *)ptr;
-  ctx->start_run_loop();
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_android_1js_1engine_Context_registerGlobalFunction(JNIEnv *env, jobject thiz, jlong ptr, jstring function_name, jobject function) {
+    auto *context = (Context *)ptr;
+
+    const auto *c_function_name = env->GetStringUTFChars(function_name, nullptr);
+    context->register_function(c_function_name, env->NewGlobalRef(function));
+
+    env->ReleaseStringUTFChars(function_name, c_function_name);
 }
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Context_stop(JNIEnv *env, jobject thiz, jlong ptr) {
-  auto *ctx = (Context *)ptr;
-  ctx->stop_run_loop();
-}
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Context_dispatchEvent(JNIEnv *env, jobject thiz, jlong ptr, jstring event, jstring details) {
-  auto *ctx = (Context *)ptr;
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_android_1js_1engine_Context_dispatchEvent(JNIEnv *env, jobject thiz, jlong ptr, jstring event, jstring details) {
+    auto *context = (Context *)ptr;
 
-  const char *c_event = env->GetStringUTFChars(event, nullptr);
-  const char *c_details_json = env->GetStringUTFChars(details, nullptr);
+    const char *c_event = env->GetStringUTFChars(event, nullptr);
+    const char *c_details_json = env->GetStringUTFChars(details, nullptr);
 
-  JSValue details_obj = ctx->parseJSON(c_details_json);
+    auto details_obj = JS_ParseJSON(context->qjs_context, c_details_json, strlen(c_details_json), "<details>");
 
-  JSValue value = ctx->dispatch_event(c_event, details_obj);
-  JS_FreeValue(ctx->ctx, details_obj);
+    auto value = context->dispatch_event(c_event, details_obj);
+    JS_FreeValue(context->qjs_context, details_obj);
 
-  env->ReleaseStringUTFChars(event, c_event);
-  env->ReleaseStringUTFChars(details, c_details_json);
+    env->ReleaseStringUTFChars(event, c_event);
+    env->ReleaseStringUTFChars(details, c_details_json);
 
-  if (check_and_throw_js_exception(env, ctx->ctx, value)) {
-    return;
-  }
+    throw_js_exception(env, context->qjs_context, value);
 
-  JS_FreeValue(ctx->ctx, value);
-}
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Context_registerGlobalFunction(JNIEnv *env, jobject thiz, jlong ptr, jstring function_name, jobject function) {
-  auto c_function_name = env->GetStringUTFChars(function_name, nullptr);
-
-  auto *ctx = (Context *)ptr;
-  ctx->register_function(c_function_name, env->NewGlobalRef(function));
-
-  env->ReleaseStringUTFChars(function_name, c_function_name);
-}
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Context_initCapacitorAPI(JNIEnv *env, jobject thiz, jlong ptr, jobject api) {
-  auto *ctx = (Context *)ptr;
-
-  auto api_instance = env->NewGlobalRef(api);
-  ctx->init_capacitor_api(api_instance);
+    JS_FreeValue(context->qjs_context, value);
 }
