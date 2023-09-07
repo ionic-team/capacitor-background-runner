@@ -11,6 +11,8 @@
 #include "api/api_console.h"
 #include "api/api_timeout.h"
 #include "api/api_events.h"
+#include "api/api_crypto.h"
+#include "api/api_text.h"
 
 class Context {
 public:
@@ -34,10 +36,13 @@ public:
 
 private:
     void init_callbacks(JSValue callbacks) const;
-    void log_debug(std::string msg);
+    void log_debug(const std::string& msg) const;
 
     void init_api_console() const;
     void init_api_event_listeners() const;
+    void init_api_timeout() const;
+    void init_api_crypto() const;
+    void init_api_text() const;
 };
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H

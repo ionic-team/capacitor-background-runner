@@ -187,141 +187,190 @@ class ContextTests {
 
         runner.destroy()
     }
-//
-//    @Test
-//    fun testAPI_Crypto() {
-//        val runner = Runner()
-//        val context = runner.createContext("io.ionic.android_js_engine")
-//
-//        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); array;", true)
-//        assertEquals(10, value.getJSONObject()?.length())
-//
-//        value = context.execute("crypto.randomUUID();", true)
-//        assertEquals(36, value.getStringValue()?.length)
-//        runner.destroy()
-//    }
-//
-//    // TODO: Flakey test - intermittent unfreed structs
-//    @Test
-//    fun testAPI_SetTimeout() {
-//        val runner = Runner()
-//        val context = runner.createContext("io.ionic.android_js_engine")
-//        context.start()
-//
-//        val timeoutFuture1 = CompletableFuture<Int>()
-//        val timeoutFuture2 = CompletableFuture<Int>()
-//
-//        class TimeoutCallback1 : JSFunction(jsName = "timeoutCallback") {
-//            public var calls: Int = 0
-//            override fun run() {
-//                super.run()
-//                calls++
-//
-//                timeoutFuture1.complete(calls)
-//            }
-//        }
-//
-//        class TimeoutCallback2 : JSFunction(jsName = "cancelTimeoutCallback") {
-//            public var calls: Int = 0
-//            override fun run() {
-//                super.run()
-//                calls++
-//
-//                timeoutFuture2.complete(calls)
-//            }
-//        }
-//
-//        val callback1 = TimeoutCallback1()
-//        val callback2 = TimeoutCallback2()
-//
-//        context.registerFunction("timeoutCallback", callback1)
-//        context.registerFunction("cancelTimeoutCallback", callback2)
-//
-//        var value = context.execute("setTimeout(() => { timeoutCallback(); }, 2000)", true)
-//        var timerId = value.getIntValue() ?: 0
-//
-//        assertTrue(timerId > 0)
-//        assertEquals(1, timeoutFuture1.get(3, TimeUnit.SECONDS))
-//
-//        value = context.execute("setTimeout(() => { cancelTimeoutCallback() }, 4000)", true)
-//        timerId = value.getIntValue() ?: 0
-//        assertTrue(timerId > 0)
-//
-//        context.execute("clearTimeout(${value.getIntValue()});")
-//        try {
-//            assertEquals(0, timeoutFuture2.get(3, TimeUnit.SECONDS))
-//        } catch (ex: TimeoutException) {
-//            assertTrue(true)
-//        }
-//
-//        context.stop()
-//        runner.destroy()
-//    }
-//
-//    @Test
-//    fun testAPI_SetInterval() {
-//        val runner = Runner()
-//        val context = runner.createContext("io.ionic.android_js_engine")
-//        context.start()
-//
-//        var calls = 0;
-//
-//        class IntervalCallback : JSFunction(jsName = "intervalCallback") {
-//            override fun run() {
-//                super.run()
-//                calls++
-//            }
-//        }
-//
-//        val callback = IntervalCallback()
-//
-//        context.registerFunction("intervalCallback", callback)
-//
-//        val value = context.execute("setInterval(() => { intervalCallback() }, 2000)", true)
-//        assertTrue((value.getIntValue() ?: 0) > 0)
-//
-//        Thread.sleep(8000)
-//        assertEquals(4, calls)
-//
-//        context.execute("clearInterval(${value.getIntValue()});")
-//
-//        Thread.sleep(3000)
-//        assertEquals(4, calls)
-//
-//        context.stop()
-//        runner.destroy()
-//    }
-//
-//    @Test
-//    fun testAPI_TextEncoder() {
-//        val runner = Runner()
-//        val context = runner.createContext("io.ionic.android_js_engine")
-//        val value = context.execute("const encoder = new TextEncoder(); encoder.encode('€');", true)
-//
-//        val arrayObject = value.getJSONObject()
-//
-//        assertNotNull(arrayObject)
-//
-//        assertEquals(226, arrayObject?.getInt("0"))
-//        assertEquals(130, arrayObject?.getInt("1"))
-//        assertEquals(172, arrayObject?.getInt("2"))
-//
-//        runner.destroy()
-//    }
-//
-//    @Test
-//    fun testAPI_TextDecoder() {
-//        val runner = Runner()
-//        val context = runner.createContext("io.ionic.android_js_engine")
-//
-//        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));", true)
-//        assertEquals("Привет, мир!", value.getStringValue())
-//
-//        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));", true)
-//        assertEquals("\uD842\uDFB7", value.getStringValue())
-//
-//        runner.destroy()
-//    }
+
+    @Test
+    fun testErrorHandling() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val throwingCodeEx = assertThrows(Exception::class.java) {
+            context.execute("() => { throw new Error('this method has an error'); }();")
+        }
+
+        assertTrue(throwingCodeEx.localizedMessage.contains("JS exception"))
+
+        val badCodeEx = assertThrows(Exception::class.java) {
+            // badly formed code
+            context.execute("addEventListener(")
+        }
+
+        assertTrue(badCodeEx.localizedMessage.contains("JS exception"))
+
+
+        val throwingEventEx = assertThrows(java.lang.Exception::class.java) {
+            context.execute("addEventListener('myThrowingEvent', () => { throw new Error('this event throws an error') })")
+            context.dispatchEvent("myThrowingEvent", JSONObject())
+        }
+
+        assertTrue(throwingEventEx.localizedMessage.contains("JS exception"))
+
+        // testing handling JVM exceptions
+        class ExceptionCallback : JSFunction(jsName = "exceptionCallback") {
+            override fun run() {
+                super.run()
+                throw Exception("this is a problem from the JVM")
+            }
+        }
+
+        val callback = ExceptionCallback()
+
+        context.registerFunction("exceptionCallback", callback)
+
+        val throwingJVMEventEx = assertThrows(java.lang.Exception::class.java) {
+            context.execute("addEventListener('myThrowingJVMEvent', () => { exceptionCallback(); })")
+            context.dispatchEvent("myThrowingJVMEvent", JSONObject())
+        }
+
+        assertTrue(throwingJVMEventEx.localizedMessage.contains("JS exception"))
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_SetTimeout() {
+        val runner = Runner()
+        runner.start()
+
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val timeoutFuture1 = CompletableFuture<Int>()
+        val timeoutFuture2 = CompletableFuture<Int>()
+
+        class TimeoutCallback1 : JSFunction(jsName = "timeoutCallback") {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+
+                timeoutFuture1.complete(calls)
+            }
+        }
+
+        class TimeoutCallback2 : JSFunction(jsName = "cancelTimeoutCallback") {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+
+                timeoutFuture2.complete(calls)
+            }
+        }
+
+        val callback1 = TimeoutCallback1()
+        val callback2 = TimeoutCallback2()
+
+        context.registerFunction("timeoutCallback", callback1)
+        context.registerFunction("cancelTimeoutCallback", callback2)
+
+        var value = context.execute("setTimeout(() => { timeoutCallback(); }, 2000)", true)
+        var timerId = value.getIntValue() ?: 0
+
+        assertTrue(timerId > 0)
+        assertEquals(1, timeoutFuture1.get(3, TimeUnit.SECONDS))
+
+        value = context.execute("setTimeout(() => { cancelTimeoutCallback() }, 4000)", true)
+        timerId = value.getIntValue() ?: 0
+        assertTrue(timerId > 0)
+
+        context.execute("clearTimeout(${value.getIntValue()});")
+        try {
+            assertEquals(0, timeoutFuture2.get(3, TimeUnit.SECONDS))
+        } catch (ex: TimeoutException) {
+            assertTrue(true)
+        }
+
+        runner.stop()
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_SetInterval() {
+        val runner = Runner()
+        runner.start()
+
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        var calls = 0;
+
+        class IntervalCallback : JSFunction(jsName = "intervalCallback") {
+            override fun run() {
+                super.run()
+                calls++
+            }
+        }
+
+        val callback = IntervalCallback()
+
+        context.registerFunction("intervalCallback", callback)
+
+        val value = context.execute("setInterval(() => { intervalCallback() }, 2000)", true)
+        assertTrue((value.getIntValue() ?: 0) > 0)
+
+        Thread.sleep(8000)
+        assertEquals(4, calls)
+
+        context.execute("clearInterval(${value.getIntValue()});")
+
+        Thread.sleep(3000)
+        assertEquals(4, calls)
+
+        runner.stop()
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_Crypto() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); array;", true)
+        assertEquals(10, value.getJSONObject()?.length())
+
+        value = context.execute("crypto.randomUUID();", true)
+        assertEquals(36, value.getStringValue()?.length)
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_TextEncoder() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+        val value = context.execute("const encoder = new TextEncoder(); encoder.encode('€');", true)
+
+        val arrayObject = value.getJSONObject()
+
+        assertNotNull(arrayObject)
+
+        assertEquals(226, arrayObject?.getInt("0"))
+        assertEquals(130, arrayObject?.getInt("1"))
+        assertEquals(172, arrayObject?.getInt("2"))
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_TextDecoder() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        var value = context.execute("const win1251decoder = new TextDecoder(\"windows-1251\"); win1251decoder.decode(new Uint8Array([ 207, 240, 232, 226, 229, 242, 44, 32, 236, 232, 240, 33]));", true)
+        assertEquals("Привет, мир!", value.getStringValue())
+
+        value = context.execute("const decoder = new TextDecoder(); decoder.decode(new Uint8Array([240, 160, 174, 183]));", true)
+        assertEquals("\uD842\uDFB7", value.getStringValue())
+
+        runner.destroy()
+    }
 //
 //    @Test
 //    fun testAPI_Fetch() {
@@ -414,33 +463,5 @@ class ContextTests {
 //        runner.destroy()
 //
 //    }
-//
-//    @Test
-//    fun testErrorHandling() {
-//        val runner = Runner()
-//        val context = runner.createContext("io.ionic.android_js_engine")
-//
-//        val throwingCodeEx = assertThrows(Exception::class.java) {
-//            context.execute("() => { throw new Error('this method has an error'); }();")
-//        }
-//
-//        assertTrue(throwingCodeEx.localizedMessage.contains("JS exception"))
-//
-//        val badCodeEx = assertThrows(Exception::class.java) {
-//            // badly formed code
-//            context.execute("addEventListener(")
-//        }
-//
-//        assertTrue(badCodeEx.localizedMessage.contains("JS exception"))
-//
-//
-//        val throwingEventEx = assertThrows(java.lang.Exception::class.java) {
-//            context.execute("addEventListener('myThrowingEvent', () => { throw new Error('this event throws an error') })")
-//            context.dispatchEvent("myThrowingEvent", JSONObject())
-//        }
-//
-//        assertTrue(throwingEventEx.localizedMessage.contains("JS exception"))
-//
-//        runner.destroy()
-//    }
+
 }

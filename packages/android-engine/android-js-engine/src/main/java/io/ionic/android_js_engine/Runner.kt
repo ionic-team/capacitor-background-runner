@@ -38,7 +38,10 @@ class Runner {
         contexts.remove(name)
     }
 
-    fun start() {}
+    fun start() {
+        val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
+        startRunner(runnerPtr)
+    }
 
     fun stop() {}
 

@@ -12,6 +12,8 @@ add_library(
         api/api_console.cpp
         api/api_events.cpp
         api/api_timeout.cpp
+        api/api_crypto.cpp
+        api/api_text.cpp
 )
 
 find_library(

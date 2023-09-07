@@ -7,7 +7,7 @@ class Java {
 public:
     JavaVM *vm;
 
-    jclass context_api_class;
+    jclass web_api_class;
     jclass js_response_class;
     jclass js_fetch_options_class;
     jclass capacitor_api_class;
@@ -16,9 +16,12 @@ public:
     jclass device_api_class;
     jclass geolocation_api_class;
 
-    jmethodID context_api_fetch_method;
-    jmethodID context_api_byteArrayToString_method;
-    jmethodID context_api_randomHashCode_method;
+    jmethodID web_api_fetch_method;
+    jmethodID web_api_byteArrayToString_method;
+    jmethodID web_api_stringToByteArray_method;
+    jmethodID web_api_randomHashCode_method;
+    jmethodID web_api_cryptoRandomUUID_method;
+    jmethodID web_api_cryptoGetRandom_method;
     jmethodID js_fetch_options_constructor;
 
     jfieldID js_response_ok_field;

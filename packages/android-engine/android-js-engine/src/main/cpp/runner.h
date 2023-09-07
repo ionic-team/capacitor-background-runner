@@ -26,9 +26,14 @@ public:
     void destroy_context(std::string name);
 
 private:
+    bool run_loop_started;
+    bool stop_run_loop;
+
+    std::mutex mutex;
+
     void run_loop();
 
-    void log_debug(std::string msg);
+    void log_debug(const std::string& msg);
 };
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_RUNNER_H

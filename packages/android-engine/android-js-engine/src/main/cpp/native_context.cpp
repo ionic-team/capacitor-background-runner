@@ -1,6 +1,7 @@
 #include <jni.h>
 #include "runner.h"
 #include "context.h"
+#include "errors.h"
 
 extern "C"
 JNIEXPORT jlong JNICALL
@@ -24,7 +25,7 @@ Java_io_ionic_android_1js_1engine_Context_evaluate(JNIEnv *env, jobject thiz, jl
     const char *c_code = env->GetStringUTFChars(code, nullptr);
     auto value = ctx->evaluate(c_code, (bool)ret_value);
 
-    if (throw_js_exception(env, ctx->qjs_context, value)) {
+    if (throw_js_exception_in_jvm(env, ctx->qjs_context, value)) {
         JS_FreeValue(ctx->qjs_context, value);
         return nullptr;
     }
@@ -63,7 +64,7 @@ Java_io_ionic_android_1js_1engine_Context_dispatchEvent(JNIEnv *env, jobject thi
     env->ReleaseStringUTFChars(event, c_event);
     env->ReleaseStringUTFChars(details, c_details_json);
 
-    throw_js_exception(env, context->qjs_context, value);
+    throw_js_exception_in_jvm(env, context->qjs_context, value);
 
     JS_FreeValue(context->qjs_context, value);
 }
