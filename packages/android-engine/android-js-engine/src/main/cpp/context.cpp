@@ -14,6 +14,7 @@ Context::Context(const std::string& name, JSRuntime *parent_rt, JNIEnv *env) {
     this->init_api_timeout();
     this->init_api_crypto();
     this->init_api_text();
+    this->init_api_fetch();
 
     this->log_debug("created context");
 }
@@ -312,4 +313,14 @@ void Context::init_api_crypto() const {
 void Context::init_api_text() const {
     init_text_encoder_class(this->qjs_context);
     init_text_decoder_class(this->qjs_context);
+}
+
+void Context::init_api_fetch() const {
+    init_response_class(this->qjs_context);
+
+    JSValue global_obj = JS_GetGlobalObject(this->qjs_context);
+
+    JS_SetPropertyStr(this->qjs_context, global_obj, "fetch", JS_NewCFunction(this->qjs_context, api_fetch, "fetch", 2));
+
+    JS_FreeValue(this->qjs_context, global_obj);
 }

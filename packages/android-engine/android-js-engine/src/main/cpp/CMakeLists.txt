@@ -14,6 +14,8 @@ add_library(
         api/api_timeout.cpp
         api/api_crypto.cpp
         api/api_text.cpp
+        api/api_fetch.cpp
+        api/api_js_response.cpp
 )
 
 find_library(

@@ -68,10 +68,25 @@ void Runner::run_loop() {
 
     for (;;) {
         this->mutex.lock();
-        if (this->stop_run_loop) {
+        if (this->stop_run_loop && !JS_IsJobPending(this->rt)) {
             break;
         }
         this->mutex.unlock();
+
+        if (JS_IsJobPending(this->rt)) {
+            int const status = JS_ExecutePendingJob(this->rt, &job_ctx);
+            if (status < 0) {
+                auto exception_val = JS_GetException(job_ctx);
+                auto err_message = JS_GetPropertyStr(job_ctx, exception_val, "message");
+                const char *err_str = JS_ToCString(job_ctx, err_message);
+
+                this->log_debug(std::string(err_str));
+
+                JS_FreeValue(job_ctx, exception_val);
+                JS_FreeCString(job_ctx, err_str);
+                JS_FreeValue(job_ctx, err_message);
+            }
+        }
 
         for (const auto &kv : this->contexts) {
             auto *context = kv.second;

@@ -13,6 +13,8 @@
 #include "api/api_events.h"
 #include "api/api_crypto.h"
 #include "api/api_text.h"
+#include "api/api_fetch.h"
+#include "api/api_js_response.h"
 
 class Context {
 public:
@@ -43,6 +45,7 @@ private:
     void init_api_timeout() const;
     void init_api_crypto() const;
     void init_api_text() const;
+    void init_api_fetch() const;
 };
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H
