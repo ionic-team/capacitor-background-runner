@@ -51187,6 +51187,14 @@ JSValue JS_NewArrayBuffer(JSContext *ctx, uint8_t *buf, size_t len,
                                         buf, free_func, opaque, FALSE);
 }
 
+JSValue JS_NewUInt8Array(JSContext *ctx, JSValueConst arrayBuffer, int offset, int length)
+{
+    JSValue offsetValue = JS_NewInt32(ctx, offset);
+    JSValue lengthValue = JS_NewInt32(ctx, length);
+    JSValue args[] = {arrayBuffer, offsetValue, lengthValue};
+    return js_typed_array_constructor(ctx, arrayBuffer, 3, args, JS_CLASS_UINT8_ARRAY);
+}
+
 /* create a new ArrayBuffer of length 'len' and copy 'buf' to it */
 JSValue JS_NewArrayBufferCopy(JSContext *ctx, const uint8_t *buf, size_t len)
 {
