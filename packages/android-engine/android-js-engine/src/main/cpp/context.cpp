@@ -15,6 +15,7 @@ Context::Context(const std::string& name, JSRuntime *parent_rt, JNIEnv *env) {
     this->init_api_crypto();
     this->init_api_text();
     this->init_api_fetch();
+    this->init_api_blob();
 
     this->log_debug("created context");
 }
@@ -323,4 +324,8 @@ void Context::init_api_fetch() const {
     JS_SetPropertyStr(this->qjs_context, global_obj, "fetch", JS_NewCFunction(this->qjs_context, api_fetch, "fetch", 2));
 
     JS_FreeValue(this->qjs_context, global_obj);
+}
+
+void Context::init_api_blob() const {
+    init_blob_class(this->qjs_context);
 }
