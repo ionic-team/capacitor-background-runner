@@ -17,6 +17,8 @@ add_library(
         api/api_fetch.cpp
         api/api_js_response.cpp
         api/api_blob.cpp
+
+        cap_api/api_cap_kv.cpp
 )
 
 find_library(

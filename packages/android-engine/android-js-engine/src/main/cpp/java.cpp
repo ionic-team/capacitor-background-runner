@@ -29,6 +29,20 @@ Java::Java(JNIEnv *env) {
     env->DeleteLocalRef(tmp_class);
     tmp_class = nullptr;
 
+    tmp_class = env->FindClass("io/ionic/android_js_engine/api/CapacitorAPI");
+    this->check_exception(env);
+
+    this->capacitor_api_class = (jclass)env->NewGlobalRef(tmp_class);
+    env->DeleteLocalRef(tmp_class);
+    tmp_class = nullptr;
+
+    tmp_class = env->FindClass("io/ionic/android_js_engine/api/KVAPI");
+    this->check_exception(env);
+
+    this->capacitor_kv_api_class = (jclass)env->NewGlobalRef(tmp_class);
+    env->DeleteLocalRef(tmp_class);
+    tmp_class = nullptr;
+
     this->web_api_byteArrayToString_method = env->GetStaticMethodID(this->web_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
     this->check_exception(env);
 
@@ -64,6 +78,10 @@ Java::Java(JNIEnv *env) {
 
     this->js_response_error_field = env->GetFieldID(this->js_response_class, "error", "Ljava/lang/String;");
     this->check_exception(env);
+
+    this->capacitor_api_kv_field = env->GetFieldID(this->capacitor_api_class, "kv", "Lio/ionic/android_js_engine/api/KVAPI;");
+    this->check_exception(env);
+
 }
 
 JNIEnv* Java::getEnv() {

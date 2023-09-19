@@ -1,5 +1,6 @@
 package io.ionic.android_js_engine
 
+import io.ionic.android_js_engine.api.CapacitorAPI
 import org.json.JSONObject
 
 class Context(name: String, runnerPtr: Long) {
@@ -20,6 +21,7 @@ class Context(name: String, runnerPtr: Long) {
     private external fun evaluate(ptr: Long, code: String, retValue: Boolean): String
     private external fun registerGlobalFunction(ptr: Long, functionName: String, function: JSFunction)
     private external fun dispatchEvent(ptr: Long, event: String, details: String)
+    private external fun setCapacitorAPI(ptr: Long, api: CapacitorAPI)
 
     fun execute(code: String, returnValue: Boolean = false): JSValue {
         val ptr = this.ptr ?: throw EngineErrors.ContextException("pointer is nil")
@@ -34,9 +36,13 @@ class Context(name: String, runnerPtr: Long) {
     }
 
     fun dispatchEvent(event: String, details: JSONObject) {
-        val ptr = this.ptr ?: throw Exception("context pointer is null")
-
+        val ptr = this.ptr ?: throw EngineErrors.ContextException("pointer is nil")
         this.dispatchEvent(ptr, event, details.toString(0))
+    }
+
+    fun setCapacitorAPI(capAPI: CapacitorAPI) {
+        val ptr = this.ptr ?: throw EngineErrors.ContextException("pointer is nil")
+        this.setCapacitorAPI(ptr, capAPI)
     }
 
     internal fun destroy() {

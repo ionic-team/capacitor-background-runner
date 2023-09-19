@@ -11,10 +11,10 @@ public:
     jclass js_response_class;
     jclass js_fetch_options_class;
     jclass capacitor_api_class;
-    jclass kv_api_class;
-    jclass notification_api_class;
-    jclass device_api_class;
-    jclass geolocation_api_class;
+    jclass capacitor_kv_api_class;
+    jclass capacitor_notification_api_class;
+    jclass capacitor_device_api_class;
+    jclass capacitor_geolocation_api_class;
 
     jmethodID web_api_fetch_method;
     jmethodID web_api_byteArrayToString_method;

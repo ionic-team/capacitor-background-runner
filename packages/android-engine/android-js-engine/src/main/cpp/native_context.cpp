@@ -68,3 +68,11 @@ Java_io_ionic_android_1js_1engine_Context_dispatchEvent(JNIEnv *env, jobject thi
 
     JS_FreeValue(context->qjs_context, value);
 }
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_android_1js_1engine_Context_setCapacitorAPI(JNIEnv *env, jobject thiz, jlong ptr, jobject api) {
+    auto *ctx = (Context *)ptr;
+    auto *api_instance = env->NewGlobalRef(api);
+
+    ctx->init_capacitor_api(api_instance);
+}
