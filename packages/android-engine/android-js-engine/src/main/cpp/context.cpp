@@ -6,6 +6,7 @@ Context::Context(const std::string& name, JSRuntime *parent_rt, JNIEnv *env) {
     this->name = name;
     this->qjs_context = JS_NewContext(parent_rt);
     this->java = new Java(env);
+    this->cap_api = nullptr;
 
     JS_SetContextOpaque(this->qjs_context, this);
 
@@ -35,6 +36,22 @@ Context::~Context() {
     JS_FreeContext(this->qjs_context);
 
     this->log_debug("destroyed context");
+}
+
+void Context::run_loop() {
+    if (!this->timers.empty()) {
+        for (const auto &timer_kv : this->timers) {
+            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - timer_kv.second.start);
+            if (duration.count() >= timer_kv.second.timeout) {
+                this->timers[timer_kv.first].start = std::chrono::system_clock::now();
+                this->execute_timer(timer_kv.second.js_func);
+                if (!this->timers[timer_kv.first].repeat) {
+                    JS_FreeValue(this->qjs_context, this->timers[timer_kv.first].js_func);
+                    this->timers.erase(timer_kv.first);
+                }
+            }
+        }
+    }
 }
 
 static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {
@@ -130,10 +147,14 @@ void Context::register_function(const std::string& func_name, jobject func) {
     this->registered_functions.insert_or_assign(func_name, func);
 
     auto global_obj = JS_GetGlobalObject(this->qjs_context);
+    auto func_name_value = JS_NewString(this->qjs_context, func_name.c_str());
 
-    JSValue ptr[1] = {JS_NewString(this->qjs_context, func_name.c_str())};
+    JSValueConst ptr[1];
+    ptr[0] = func_name_value;
+
     JS_SetPropertyStr(this->qjs_context, global_obj, func_name.c_str(), JS_NewCFunctionData(this->qjs_context, call_registered_function, 1, 0, 1, ptr));
 
+    JS_FreeValue(this->qjs_context, func_name_value);
     JS_FreeValue(this->qjs_context, global_obj);
 }
 
@@ -143,6 +164,7 @@ JSValue Context::evaluate(const std::string& code, bool ret_val) const {
     int flags = JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_BACKTRACE_BARRIER;
     size_t len = strlen(code.c_str());
 
+    write_to_logcat(ANDROID_LOG_DEBUG, "[RUNNER DEV TRACER]", "evaluate context code");
     JSValue value = JS_Eval(this->qjs_context, code.c_str(), len, "<code>", flags);
 
     if (JS_IsException(value)) {
@@ -220,6 +242,12 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
     return ret_value;
 }
 
+void Context::init_capacitor_api(jobject cap_api_obj) {
+    this->cap_api = cap_api_obj;
+
+    this->init_capacitor_kv_api();
+}
+
 void Context::init_callbacks(JSValue callbacks) const {
     // look for __cbr:: and replace with JSFunction
     JSPropertyEnum *properties;
@@ -232,16 +260,23 @@ void Context::init_callbacks(JSValue callbacks) const {
 
         if (JS_IsString(str_val)) {
             const char *c_str_val = JS_ToCString(this->qjs_context, str_val);
-            std::string str_value = std::string(c_str_val);
-            std::string prefix = str_value.substr(0, 7);
+
+            std::string const str_value = std::string(c_str_val);
+            std::string const prefix = str_value.substr(0, 7);
 
             if (prefix == "__cbr::") {
                 try {
                     auto global_func_name = str_value.substr(7);
 
                     if (this->registered_functions.find(global_func_name) != this->registered_functions.end()) {
-                        JSValue ptr[1] = {JS_NewString(this->qjs_context, global_func_name.c_str())};
+                        auto func_name_value = JS_NewString(this->qjs_context, global_func_name.c_str());
+
+                        JSValueConst ptr[1];
+                        ptr[0] = func_name_value;
+
                         JS_SetPropertyStr(this->qjs_context, callbacks, key, JS_NewCFunctionData(this->qjs_context, call_registered_function, 1, 0, 1, ptr));
+
+                        JS_FreeValue(this->qjs_context, func_name_value);
                     }
                 } catch(std::exception& ex) {}
             }
@@ -258,6 +293,14 @@ void Context::init_callbacks(JSValue callbacks) const {
 void Context::log_debug(const std::string& msg) const {
     auto tag = "[Runner Context " + this->name + "]";
     write_to_logcat(ANDROID_LOG_DEBUG, tag.c_str(), msg.c_str());
+}
+
+void Context::execute_timer(JSValue timerFunc) const {
+    write_to_logcat(ANDROID_LOG_DEBUG, "[RUNNER DEV TRACER]", "fire timer");
+    JSValue dupFunc = JS_DupValue(this->qjs_context, timerFunc);
+    auto ret = JS_Call(this->qjs_context,dupFunc, JS_UNDEFINED, 0, nullptr);
+    JS_FreeValue(this->qjs_context, dupFunc);
+    JS_FreeValue(this->qjs_context, ret);
 }
 
 void Context::init_api_console() const {
@@ -328,4 +371,19 @@ void Context::init_api_fetch() const {
 
 void Context::init_api_blob() const {
     init_blob_class(this->qjs_context);
+}
+
+void Context::init_capacitor_kv_api() const {
+    JSValue global_obj, kv;
+
+    global_obj = JS_GetGlobalObject(this->qjs_context);
+
+    kv = JS_NewObject(this->qjs_context);
+    JS_SetPropertyStr(this->qjs_context, kv, "set", JS_NewCFunction(this->qjs_context, api_kv_set, "set", 2));
+    JS_SetPropertyStr(this->qjs_context, kv, "get", JS_NewCFunction(this->qjs_context, api_kv_get, "get", 1));
+    JS_SetPropertyStr(this->qjs_context, kv, "remove", JS_NewCFunction(this->qjs_context, api_kv_remove, "remove", 1));
+
+    JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorKV", kv);
+
+    JS_FreeValue(this->qjs_context, global_obj);
 }

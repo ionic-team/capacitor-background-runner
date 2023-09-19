@@ -469,9 +469,9 @@ class ContextTests {
         val jsonResponse1 = future1.get(5, TimeUnit.SECONDS);
         assertEquals("delectus aut autem", jsonResponse1?.getString("title"))
 
-//        context.execute(basicFetchWithTextResponseExample)
+        context.execute(basicFetchWithTextResponseExample)
 
-//        context.execute(basicFetchWithArrayBufferResponseExample)
+        context.execute(basicFetchWithArrayBufferResponseExample)
 
 //        context.execute(basicFetchWithBlobResponseExample)
 

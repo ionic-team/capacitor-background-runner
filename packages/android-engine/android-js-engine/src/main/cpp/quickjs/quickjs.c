@@ -80,7 +80,7 @@
 
 
 /* dump object free */
-//#define DUMP_FREE
+// #define DUMP_FREE 1
 //#define DUMP_CLOSURE
 /* dump the bytecode of the compiled functions: combination of bits
    1: dump pass 3 final byte code
@@ -5489,7 +5489,7 @@ void __JS_FreeValueRT(JSRuntime *rt, JSValue v)
 
     switch(tag) {
     case JS_TAG_STRING:
-        {
+        {    
             JSString *p = JS_VALUE_GET_STRING(v);
             if (p->atom_type) {
                 JS_FreeAtomStruct(rt, p);

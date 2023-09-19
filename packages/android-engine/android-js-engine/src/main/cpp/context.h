@@ -17,12 +17,15 @@
 #include "api/api_js_response.h"
 #include "api/api_blob.h"
 
+#include "cap_api/api_cap_kv.h"
+
 class Context {
 public:
     std::string name;
 
     JSContext *qjs_context;
     Java *java;
+    jobject cap_api;
 
     std::unordered_map<std::string, JSValue> event_listeners;
     std::unordered_map<std::string, jobject> registered_functions;
@@ -30,6 +33,8 @@ public:
 
     Context(const std::string& name, JSRuntime *parent_rt, JNIEnv *env);
     ~Context();
+
+    void run_loop();
 
     void register_function(const std::string& func_name, jobject func);
     JSValue evaluate(const std::string& code, bool ret_val) const;
@@ -41,6 +46,8 @@ private:
     void init_callbacks(JSValue callbacks) const;
     void log_debug(const std::string& msg) const;
 
+    void execute_timer(JSValue timerFunc) const;
+
     void init_api_console() const;
     void init_api_event_listeners() const;
     void init_api_timeout() const;
@@ -48,6 +55,13 @@ private:
     void init_api_text() const;
     void init_api_fetch() const;
     void init_api_blob() const;
+
+    void init_capacitor_kv_api() const;
+    void init_capacitor_device_api() const;
+    void init_capacitor_notifications_api() const;
+    void init_capacitor_geolocation_api() const;
 };
+
+
 
 #endif //CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H

@@ -1,9 +1,16 @@
 package io.ionic.android_js_engine
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.launch
+
 class Runner {
     private val contexts: HashMap<String, Context> = HashMap()
 
     private var ptr: Long? = null
+    private var job: Job? = null
 
     init {
         System.loadLibrary("android_js_engine")
@@ -35,15 +42,27 @@ class Runner {
 
         val context = contexts[name] ?: return
         context.destroy()
-        contexts.remove(name)
+
+        this.contexts.remove(name)
     }
 
     fun start() {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
-        startRunner(runnerPtr)
+        this.job = GlobalScope.launch {
+            startRunner(runnerPtr)
+            print("Runner Stopped")
+        }
+        Thread.sleep(20)
     }
 
-    fun stop() {}
+    fun stop() {
+        val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
+        this.stopRunner(runnerPtr)
+        if (this.job != null) {
+            this.job?.cancel()
+            this.job = null
+        }
+    }
 
     fun destroy() {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
@@ -51,8 +70,13 @@ class Runner {
         this.stop()
 
         if (this.contexts.isNotEmpty()) {
-            this.contexts.forEach { (name) ->
-                destroyContext(name)
+            val allKeys = mutableListOf<String>()
+            this.contexts.keys.forEach {
+                allKeys.add(it)
+            }
+
+            allKeys.forEach {
+                destroyContext(it)
             }
 
             this.contexts.clear()

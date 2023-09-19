@@ -112,8 +112,8 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
         return throw_js_exception(ctx, "JVM Environment is null");
     }
 
-    auto labelPropStr = JS_GetPropertyStr(ctx, this_val, "label");
-    const auto *encoding = JS_ToCString(ctx, labelPropStr);
+    auto label_prop_str = JS_GetPropertyStr(ctx, this_val, "label");
+    const auto *encoding = JS_ToCString(ctx, label_prop_str);
 
     auto *j_encoding = env->NewStringUTF(encoding);
 
@@ -143,6 +143,7 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
     auto ret_value = JS_NewString(ctx, c_str);
 
     env->ReleaseStringUTFChars(str, c_str);
+
     JS_FreeCString(ctx, encoding);
 
     return ret_value;

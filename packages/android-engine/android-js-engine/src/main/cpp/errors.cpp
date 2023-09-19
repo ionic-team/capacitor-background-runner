@@ -57,6 +57,9 @@ JSValue throw_js_exception(JSContext *ctx, const char * message) {
 
 void reject_promise(JSContext *ctx, JSValue reject_func, JSValue reject_obj) {
     auto global_obj = JS_GetGlobalObject(ctx);
-    JS_Call(ctx, reject_func, global_obj, 1,  (JSValueConst *)&reject_obj);
+    JSValueConst reject_args[1];
+    reject_args[0] = reject_obj;
+
+    JS_Call(ctx, reject_func, global_obj, 1,  reject_args);
     JS_FreeValue(ctx, global_obj);
 }

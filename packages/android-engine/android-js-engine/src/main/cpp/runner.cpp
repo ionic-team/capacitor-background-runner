@@ -11,7 +11,19 @@ Runner::Runner() {
 }
 
 Runner::~Runner() {
+    this->log_debug("destroying runner");
+
     this->stop();
+
+    if (!this->contexts.empty()) {
+        for (const auto &kv : this->contexts) {
+            this->destroy_context(kv.first);
+        }
+    }
+
+    this->contexts.clear();
+
+    this->log_debug("freeing runtime");
 
     JS_FreeRuntime(this->rt);
     this->rt = nullptr;
@@ -20,15 +32,12 @@ Runner::~Runner() {
 }
 
 void Runner::start() {
+    this->log_debug("starting runner run loop...");
+
     this->run_loop_started = true;
     this->stop_run_loop = false;
 
-    this->thread = std::thread([this] {
-        this->log_debug("started runner run loop");
-        run_loop();
-    });
-
-    this->thread.detach();
+    this->run_loop();
 }
 
 void Runner::stop() {
@@ -36,9 +45,7 @@ void Runner::stop() {
         return;
     }
 
-    this->mutex.lock();
     this->stop_run_loop = true;
-    this->mutex.unlock();
 
     while(this->run_loop_started) {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -56,6 +63,7 @@ long Runner::create_context(std::string name, JNIEnv *env) {
 
 void Runner::destroy_context(std::string name) {
     try {
+        this->log_debug("try to destroy context " + name);
         auto *context = this->contexts.at(name);
         delete context;
 
@@ -67,11 +75,9 @@ void Runner::run_loop() {
     JSContext *job_ctx;
 
     for (;;) {
-        this->mutex.lock();
         if (this->stop_run_loop && !JS_IsJobPending(this->rt)) {
             break;
         }
-        this->mutex.unlock();
 
         if (JS_IsJobPending(this->rt)) {
             int const status = JS_ExecutePendingJob(this->rt, &job_ctx);
@@ -89,28 +95,7 @@ void Runner::run_loop() {
         }
 
         for (const auto &kv : this->contexts) {
-            auto *context = kv.second;
-            if (!context->timers.empty()) {
-                auto global_obj = JS_GetGlobalObject(context->qjs_context);
-
-                // timers
-                for (const auto &timer_kv : context->timers) {
-                    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - timer_kv.second.start);
-
-                    if (duration.count() >= timer_kv.second.timeout) {
-                        context->timers[timer_kv.first].start = std::chrono::system_clock::now();
-                        auto value = JS_Call(context->qjs_context, context->timers[timer_kv.first].js_func, global_obj, 0, nullptr);
-                        JS_FreeValue(context->qjs_context, value);
-
-                        if (!context->timers[timer_kv.first].repeat) {
-                            JS_FreeValue(context->qjs_context, context->timers[timer_kv.first].js_func);
-                            context->timers.erase(timer_kv.first);
-                        }
-                    }
-                }
-
-                JS_FreeValue(context->qjs_context, global_obj);
-            }
+            kv.second->run_loop();
         }
     }
 

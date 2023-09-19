@@ -3,7 +3,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <thread>
+#include <queue>
 
 #include <android/log.h>
 
@@ -14,7 +14,6 @@ class Runner {
 public:
     JSRuntime *rt;
     std::unordered_map<std::string, Context*> contexts;
-    std::thread thread;
 
     Runner();
     ~Runner();
@@ -28,8 +27,6 @@ public:
 private:
     bool run_loop_started;
     bool stop_run_loop;
-
-    std::mutex mutex;
 
     void run_loop();
 
