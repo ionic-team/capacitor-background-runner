@@ -19,6 +19,9 @@ add_library(
         api/api_blob.cpp
 
         cap_api/api_cap_kv.cpp
+        cap_api/api_cap_device.cpp
+        cap_api/api_cap_geolocation.cpp
+        cap_api/api_cap_notifications.cpp
 )
 
 find_library(

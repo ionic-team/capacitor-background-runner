@@ -23,6 +23,13 @@ public:
     jmethodID web_api_cryptoRandomUUID_method;
     jmethodID web_api_cryptoGetRandom_method;
     jmethodID js_fetch_options_constructor;
+    jmethodID capacitor_api_kv_set_method;
+    jmethodID capacitor_api_kv_get_method;
+    jmethodID capacitor_api_kv_remove_method;
+    jmethodID capacitor_api_device_getBatteryStatus_method;
+    jmethodID capacitor_api_device_getNetworkStatus_method;
+    jmethodID capacitor_api_geolocation_getCurrentPosition_method;
+    jmethodID capacitor_api_notifications_schedule_method;
 
     jfieldID js_response_ok_field;
     jfieldID js_response_status_field;

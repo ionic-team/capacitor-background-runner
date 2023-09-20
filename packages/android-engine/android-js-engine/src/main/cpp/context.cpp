@@ -246,6 +246,9 @@ void Context::init_capacitor_api(jobject cap_api_obj) {
     this->cap_api = cap_api_obj;
 
     this->init_capacitor_kv_api();
+    this->init_capacitor_device_api();
+    this->init_capacitor_notifications_api();
+    this->init_capacitor_geolocation_api();
 }
 
 void Context::init_callbacks(JSValue callbacks) const {
@@ -384,6 +387,46 @@ void Context::init_capacitor_kv_api() const {
     JS_SetPropertyStr(this->qjs_context, kv, "remove", JS_NewCFunction(this->qjs_context, api_kv_remove, "remove", 1));
 
     JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorKV", kv);
+
+    JS_FreeValue(this->qjs_context, global_obj);
+}
+
+void Context::init_capacitor_device_api() const {
+    JSValue global_obj, device;
+
+    global_obj = JS_GetGlobalObject(this->qjs_context);
+
+    device = JS_NewObject(this->qjs_context);
+    JS_SetPropertyStr(this->qjs_context, device, "getBatteryStatus", JS_NewCFunction(this->qjs_context, api_device_battery, "getBatteryStatus", 0));
+    JS_SetPropertyStr(this->qjs_context, device, "getNetworkStatus", JS_NewCFunction(this->qjs_context, api_device_network, "getNetworkStatus", 0));
+
+    JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorDevice", device);
+
+    JS_FreeValue(this->qjs_context, global_obj);
+}
+
+void Context::init_capacitor_notifications_api() const {
+    JSValue global_obj, notifications;
+
+    global_obj = JS_GetGlobalObject(this->qjs_context);
+
+    notifications = JS_NewObject(this->qjs_context);
+    JS_SetPropertyStr(this->qjs_context, notifications, "schedule", JS_NewCFunction(this->qjs_context, api_notifications_schedule, "schedule", 1));
+
+    JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorNotifications", notifications);
+
+    JS_FreeValue(this->qjs_context, global_obj);
+}
+
+void Context::init_capacitor_geolocation_api() const {
+    JSValue global_obj, geolocation;
+
+    global_obj = JS_GetGlobalObject(this->qjs_context);
+    geolocation = JS_NewObject(this->qjs_context);
+
+    JS_SetPropertyStr(this->qjs_context, geolocation, "getCurrentPosition", JS_NewCFunction(this->qjs_context, api_geolocation_current_location, "getCurrentPosition", 0));
+
+    JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorGeolocation", geolocation);
 
     JS_FreeValue(this->qjs_context, global_obj);
 }

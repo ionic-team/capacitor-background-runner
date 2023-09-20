@@ -18,6 +18,9 @@
 #include "api/api_blob.h"
 
 #include "cap_api/api_cap_kv.h"
+#include "cap_api/api_cap_device.h"
+#include "cap_api/api_cap_geolocation.h"
+#include "cap_api/api_cap_notifications.h"
 
 class Context {
 public:
