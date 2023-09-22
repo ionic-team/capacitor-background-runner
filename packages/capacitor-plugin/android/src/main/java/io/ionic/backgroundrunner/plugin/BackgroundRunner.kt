@@ -24,9 +24,9 @@ import java.util.concurrent.TimeUnit
 
 
 class BackgroundRunner(context: android.content.Context) {
-    public val config: RunnerConfig?
-    private var runner: Runner? = null
-    private var context: Context? = null
+    val config: RunnerConfig?
+
+    private var runner: Runner = Runner()
 
     companion object {
         @Volatile private var instance: BackgroundRunner? = null
@@ -36,21 +36,9 @@ class BackgroundRunner(context: android.content.Context) {
         }
     }
 
-    private val started: Boolean
-        get() {
-            return runner != null && context != null
-        }
-
     init {
         config = loadRunnerConfig(context.assets)
-    }
-
-    fun start(androidContext: android.content.Context) {
-        config ?: throw Exception("...no runner config to start")
-
-        runner = Runner()
-        context = initContext(config, androidContext)
-        context?.start()
+        runner.start()
     }
 
     fun scheduleBackgroundTask(androidContext: android.content.Context) {
@@ -86,11 +74,9 @@ class BackgroundRunner(context: android.content.Context) {
     }
 
     suspend fun execute(androidContext: android.content.Context, config: RunnerConfig, dataArgs: JSONObject = JSONObject()): JSONObject? {
-        if (!started) {
-            start(androidContext)
-        }
+        config ?: throw Exception("...no runner config to start")
 
-        context ?: throw Exception("no loaded context for config")
+        val context = initContext(config, androidContext)
 
         val future = MutableStateFlow<Result<JSONObject?>?>(null)
 
@@ -114,8 +100,8 @@ class BackgroundRunner(context: android.content.Context) {
 
         val resolve = ResolveCallback()
         val reject = RejectCallback()
-        context!!.registerFunction("_resolveCallback", resolve)
-        context!!.registerFunction("_rejectCallback", reject)
+        context.registerFunction("_resolveCallback", resolve)
+        context.registerFunction("_rejectCallback", reject)
 
         val args = JSONObject()
 
@@ -126,15 +112,13 @@ class BackgroundRunner(context: android.content.Context) {
         args.put("callbacks", callbacks)
         args.put("dataArgs", dataArgs)
 
-        context!!.dispatchEvent(config.event, args)
+        context.dispatchEvent(config.event, args)
 
         val finished = future.conditionalAwait {
             it != null
         }
 
-        runner?.destroy()
-
-        runner = null
+        destroyContext(config)
 
         if (finished!!.isSuccess) {
             return finished.getOrNull()
@@ -163,13 +147,11 @@ class BackgroundRunner(context: android.content.Context) {
     }
 
     private fun initContext(config: RunnerConfig, context: android.content.Context): Context {
-        runner ?: throw Exception("runner is not initialized")
-
         val srcFile = context.assets.open("public/${config.src}").bufferedReader().use {
             it.readText()
         }
 
-        val newContext  = runner!!.createContext(config.label)
+        val newContext  = runner.createContext(config.label)
 
         val api = CapacitorAPI(config.label)
         api.initNotificationsAPI(Notifications(context))
@@ -182,5 +164,9 @@ class BackgroundRunner(context: android.content.Context) {
         newContext.execute(srcFile, false)
 
         return newContext
+    }
+
+    private fun destroyContext(config: RunnerConfig) {
+        runner.destroyContext(config.label)
     }
 }
