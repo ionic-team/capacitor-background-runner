@@ -73,10 +73,10 @@ class BackgroundRunner(context: android.content.Context) {
         }
     }
 
-    suspend fun execute(androidContext: android.content.Context, config: RunnerConfig, dataArgs: JSONObject = JSONObject()): JSONObject? {
+    suspend fun execute(androidContext: android.content.Context, config: RunnerConfig, dataArgs: JSONObject = JSONObject(), callbackId: String? = null): JSONObject? {
         config ?: throw Exception("...no runner config to start")
 
-        val context = initContext(config, androidContext)
+        val context = initContext(config, androidContext, callbackId)
 
         val future = MutableStateFlow<Result<JSONObject?>?>(null)
 
@@ -146,12 +146,17 @@ class BackgroundRunner(context: android.content.Context) {
         }
     }
 
-    private fun initContext(config: RunnerConfig, context: android.content.Context): Context {
+    private fun initContext(config: RunnerConfig, context: android.content.Context, callbackId: String?): Context {
         val srcFile = context.assets.open("public/${config.src}").bufferedReader().use {
             it.readText()
         }
 
-        val newContext  = runner.createContext(config.label)
+        var contextName = config.label
+        if (callbackId != null) {
+            contextName += "-$callbackId"
+        }
+
+        val newContext  = runner.createContext(contextName)
 
         val api = CapacitorAPI(config.label)
         api.initNotificationsAPI(Notifications(context))
