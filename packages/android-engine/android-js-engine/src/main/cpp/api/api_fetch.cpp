@@ -11,6 +11,11 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
     options = argv[3];
 
     auto *context = (Context *)JS_GetContextOpaque(ctx);
+    if (context == nullptr) {
+        auto exception = throw_js_exception(ctx, "parent context is null");
+        reject_promise(ctx, reject, exception);
+        return JS_UNDEFINED;
+    }
 
     auto *env = context->java->getEnv();
     if (env == nullptr) {
@@ -71,7 +76,10 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
     }
 
     auto global_obj = JS_GetGlobalObject(ctx);
-    JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *) &js_response);
+    JSValueConst resolve_args[1];
+    resolve_args[0] = js_response;
+
+    JS_Call(ctx, resolve, global_obj, 1, resolve_args);
 
     JS_FreeValue(ctx, ok);
     JS_FreeValue(ctx, global_obj);
@@ -91,13 +99,15 @@ JSValue api_fetch(JSContext *ctx, JSValueConst this_val, int argc, JSValue *argv
 
     args[0] = resolving_funcs[0];
     args[1] = resolving_funcs[1];
-    args[2] = argv[0];
-    args[3] = argv[1];
+    args[2] = JS_DupValue(ctx, argv[0]);
+    args[3] = JS_DupValue(ctx, argv[1]);
 
     JS_EnqueueJob(ctx, js_fetch_job, 4, args);
 
     JS_FreeValue(ctx, resolving_funcs[0]);
     JS_FreeValue(ctx, resolving_funcs[1]);
+    JS_FreeValue(ctx, argv[0]);
+    JS_FreeValue(ctx, argv[1]);
 
     return promise;
 }

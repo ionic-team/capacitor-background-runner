@@ -49,12 +49,19 @@ JSValue js_response_json_job(JSContext *ctx, int argc, JSValueConst *argv) {
     }
 
     const char *json_c_string = env->GetStringUTFChars(json_string, nullptr);
-    auto json = JS_ParseJSON(ctx, json_c_string, strlen(json_c_string), "<json>");
 
     auto global_obj = JS_GetGlobalObject(ctx);
-    JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&json);
 
-    JS_FreeValue(ctx, json);
+    if (json_c_string != nullptr && strlen(json_c_string) > 0) {
+        auto json = JS_ParseJSON(ctx, json_c_string, strlen(json_c_string), "<json>");
+        auto res = JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&json);
+        JS_FreeValue(ctx, res);
+        JS_FreeValue(ctx, json);
+    } else {
+        auto res = JS_Call(ctx, resolve, global_obj, 0, nullptr);
+        JS_FreeValue(ctx, res);
+    }
+
     JS_FreeValue(ctx, global_obj);
 
     return JS_UNDEFINED;
@@ -101,8 +108,11 @@ JSValue js_response_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
     const char *text_c_string = env->GetStringUTFChars(text_string, nullptr);
     auto text = JS_NewString(ctx, text_c_string);
 
+    JSValueConst resolve_args[1];
+    resolve_args[0] = text;
+
     auto global_obj = JS_GetGlobalObject(ctx);
-    JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&text);
+    JS_Call(ctx, resolve, global_obj, 1, resolve_args);
 
     JS_FreeValue(ctx, text);
     JS_FreeValue(ctx, global_obj);
@@ -129,8 +139,9 @@ JSValue js_response_array_buffer_job(JSContext *ctx, int argc, JSValueConst *arg
     auto buf = JS_NewUInt8Array(ctx, array_buffer, 0, data->size);
 
     auto global_obj = JS_GetGlobalObject(ctx);
-    JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&buf);
+    auto res = JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&buf);
 
+    JS_FreeValue(ctx, res);
     JS_FreeValue(ctx, buf);
     JS_FreeValue(ctx, array_buffer);
     JS_FreeValue(ctx, global_obj);
@@ -156,8 +167,9 @@ JSValue js_response_blob_job(JSContext *ctx, int argc, JSValueConst *argv) {
     auto blob = new_blob(ctx, data->data, data->size);
 
     auto global_obj = JS_GetGlobalObject(ctx);
-    JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&blob);
+    auto res = JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&blob);
 
+    JS_FreeValue(ctx, res);
     JS_FreeValue(ctx, global_obj);
     JS_FreeValue(ctx, blob);
 
