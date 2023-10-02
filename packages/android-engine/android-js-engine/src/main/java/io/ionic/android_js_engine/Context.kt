@@ -47,6 +47,6 @@ class Context(name: String, runnerPtr: Long) {
 
     internal fun destroy() {
         val contextPtr = this.ptr ?: throw EngineErrors.ContextException("pointer is nil")
-        destroyRunnerContext(runnerPtr, contextPtr);
+        destroyRunnerContext(runnerPtr, contextPtr)
     }
 }

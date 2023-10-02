@@ -5,9 +5,9 @@ import java.io.BufferedOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
-import kotlin.math.abs
 import java.security.SecureRandom
 import java.util.UUID
+import kotlin.math.abs
 
 class WebAPI {
     companion object {
@@ -59,7 +59,6 @@ class WebAPI {
 
             return Charset.forName(encoding)
         }
-
 
         @JvmStatic
         fun fetch(urlStr: String, options: JSFetchOptions?): JSResponse {

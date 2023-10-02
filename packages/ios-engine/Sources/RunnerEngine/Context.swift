@@ -8,13 +8,13 @@ public class Context {
     private var eventListeners = [String: JSValue]()
     private var timers = [Int: Timer]()
     private weak var runLoop: RunLoop?
-    
+
     // swiftlint:disable:next identifier_name
     public init(vm: JSVirtualMachine, contextName: String, runLoop: RunLoop) throws {
         guard let jsContext = JSContext(virtualMachine: vm) else {
             throw EngineError.jsCoreError
         }
-        
+
         self.name = contextName
         self.jsContext = jsContext
         self.runLoop = runLoop
@@ -85,7 +85,7 @@ public class Context {
             }
         }
     }
-    
+
     private func setupWebAPI() throws {
         let consoleObj = JSConsole(name: name)
         let addEventListenerFunc: @convention(block)(String, JSValue) -> Void = { type, listener in
@@ -127,7 +127,7 @@ public class Context {
     private func initTimer(callback: JSValue, timeout: Int, isInterval: Bool) -> Int {
         let timer = Timer(timeInterval: TimeInterval(timeout / 1000), repeats: isInterval) { [weak self] t in
             guard let self = self else { return }
-            
+
             callback.call(withArguments: [])
             if !isInterval {
                 let timerId = Int(Int32.init(truncatingIfNeeded: t.hashValue))
@@ -142,7 +142,7 @@ public class Context {
             runLoop.add(timer, forMode: .default)
             runLoop.add(timer, forMode: .common)
         }
-        
+
         return timerId
     }
 

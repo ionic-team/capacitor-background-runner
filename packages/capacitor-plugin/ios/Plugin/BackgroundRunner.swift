@@ -5,10 +5,10 @@ import JavaScriptCore
 
 public class BackgroundRunner {
     public static let shared = BackgroundRunner()
-    
+
     private var config: RunnerConfig?
     private var runner = Runner()
-    
+
     public init() {
         do {
             config = try self.loadRunnerConfig()
@@ -205,7 +205,7 @@ public class BackgroundRunner {
         guard let srcFileURL = Bundle.main.url(forResource: config.src, withExtension: nil, subdirectory: "public") else {
             throw BackgroundRunnerPluginError.runnerError(reason: "source file not found")
         }
-        
+
         var contextName = config.label
         if let callbackId = callbackId {
             contextName = "\(contextName)-\(callbackId)"
