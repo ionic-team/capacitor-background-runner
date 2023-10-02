@@ -46,7 +46,7 @@ class Runner {
         this.contexts.remove(name)
     }
 
-    fun start() {
+    fun start() {   
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
         this.job = GlobalScope.launch {
             startRunner(runnerPtr)

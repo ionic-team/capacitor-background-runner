@@ -70,7 +70,8 @@ public class BackgroundRunnerPlugin: CAPPlugin {
                     let result = try self.impl.execute(
                         config: config,
                         event: runnerEvent,
-                        inputArgs: details as [String: Any]
+                        inputArgs: details as [String: Any],
+                        callbackId: call.callbackId
                     )
 
                     if let result = result {
