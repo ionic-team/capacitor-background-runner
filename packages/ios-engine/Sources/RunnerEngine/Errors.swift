@@ -5,4 +5,5 @@ public enum EngineError: Error {
     case jsValueError
     case sourceNotFound
     case jsException(details: String)
+    case runnerError(details: String)
 }
