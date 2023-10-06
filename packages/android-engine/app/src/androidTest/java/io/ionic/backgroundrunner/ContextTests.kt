@@ -197,14 +197,16 @@ class ContextTests {
             context.execute("() => { throw new Error('this method has an error'); }();")
         }
 
-        assertTrue(throwingCodeEx.localizedMessage.contains("JS exception"))
+        var localizedMessage = throwingCodeEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
 
         val badCodeEx = assertThrows(Exception::class.java) {
             // badly formed code
             context.execute("addEventListener(")
         }
 
-        assertTrue(badCodeEx.localizedMessage.contains("JS exception"))
+        localizedMessage = badCodeEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
 
 
         val throwingEventEx = assertThrows(java.lang.Exception::class.java) {
@@ -212,7 +214,8 @@ class ContextTests {
             context.dispatchEvent("myThrowingEvent", JSONObject())
         }
 
-        assertTrue(throwingEventEx.localizedMessage.contains("JS exception"))
+        localizedMessage = throwingEventEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
 
         // testing handling JVM exceptions
         class ExceptionCallback : JSFunction(jsName = "exceptionCallback") {
@@ -231,7 +234,8 @@ class ContextTests {
             context.dispatchEvent("myThrowingJVMEvent", JSONObject())
         }
 
-        assertTrue(throwingJVMEventEx.localizedMessage.contains("JS exception"))
+        localizedMessage = throwingJVMEventEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
 
         runner.destroy()
     }
