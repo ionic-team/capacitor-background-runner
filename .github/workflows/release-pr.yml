@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/actions/setup-tools
         with:
           skip-install-on-cache-hit: 'true'
-
+      - run: pnpm install
       - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
