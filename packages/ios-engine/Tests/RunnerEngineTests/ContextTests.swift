@@ -123,9 +123,9 @@ final class ContextTests: XCTestCase {
             expectation3.fulfill()
         }
 
-        context.ctx.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
-        context.ctx.setObject(successCallback2, forKeyedSubscript: "altSuccessCallback" as NSString)
-        context.ctx.setObject(successCallbackDetails, forKeyedSubscript: "successCallbackDetails" as NSString)
+        context.jsContext.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
+        context.jsContext.setObject(successCallback2, forKeyedSubscript: "altSuccessCallback" as NSString)
+        context.jsContext.setObject(successCallbackDetails, forKeyedSubscript: "successCallbackDetails" as NSString)
 
         _ = try context.execute(code: "addEventListener('myEvent', () => { successCallback(); });")
         try  context.dispatchEvent(event: "myEvent")
@@ -194,8 +194,8 @@ final class ContextTests: XCTestCase {
             XCTFail("callback was called and not canceled")
         }
 
-        context.ctx.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
-        context.ctx.setObject(failureCallback, forKeyedSubscript: "failureCallback" as NSString)
+        context.jsContext.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
+        context.jsContext.setObject(failureCallback, forKeyedSubscript: "failureCallback" as NSString)
 
         guard let value = try context.execute(code: "setTimeout(() => { successCallback(); }, 2000)") else {
             XCTFail("value is null")
@@ -235,7 +235,7 @@ final class ContextTests: XCTestCase {
             calls += 1
         }
 
-        context.ctx.setObject(timerCallback, forKeyedSubscript: "timerCallback" as NSString)
+        context.jsContext.setObject(timerCallback, forKeyedSubscript: "timerCallback" as NSString)
 
         guard let value = try context.execute(code: "setInterval(() => { timerCallback(); }, 2000)") else {
             XCTFail("value is null")
@@ -342,9 +342,9 @@ final class ContextTests: XCTestCase {
             optionsExpectation.fulfill()
         }
 
-        context.ctx.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
-        context.ctx.setObject(optionsSuccessCallback, forKeyedSubscript: "successCallback2" as NSString)
-        context.ctx.setObject(failureCallback, forKeyedSubscript: "failureCallback" as NSString)
+        context.jsContext.setObject(successCallback, forKeyedSubscript: "successCallback" as NSString)
+        context.jsContext.setObject(optionsSuccessCallback, forKeyedSubscript: "successCallback2" as NSString)
+        context.jsContext.setObject(failureCallback, forKeyedSubscript: "failureCallback" as NSString)
 
         let basicFetchExample = """
             fetch('https://jsonplaceholder.typicode.com/todos/1')

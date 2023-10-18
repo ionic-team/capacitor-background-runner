@@ -189,24 +189,63 @@ class ContextTests {
     }
 
     @Test
-    fun testAPI_Crypto() {
+    fun testErrorHandling() {
         val runner = Runner()
         val context = runner.createContext("io.ionic.android_js_engine")
 
-        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); array;", true)
-        assertEquals(10, value.getJSONObject()?.length())
+        val throwingCodeEx = assertThrows(Exception::class.java) {
+            context.execute("() => { throw new Error('this method has an error'); }();")
+        }
 
-        value = context.execute("crypto.randomUUID();", true)
-        assertEquals(36, value.getStringValue()?.length)
+        var localizedMessage = throwingCodeEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
+
+        val badCodeEx = assertThrows(Exception::class.java) {
+            // badly formed code
+            context.execute("addEventListener(")
+        }
+
+        localizedMessage = badCodeEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
+
+
+        val throwingEventEx = assertThrows(java.lang.Exception::class.java) {
+            context.execute("addEventListener('myThrowingEvent', () => { throw new Error('this event throws an error') })")
+            context.dispatchEvent("myThrowingEvent", JSONObject())
+        }
+
+        localizedMessage = throwingEventEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
+
+        // testing handling JVM exceptions
+        class ExceptionCallback : JSFunction(jsName = "exceptionCallback") {
+            override fun run() {
+                super.run()
+                throw Exception("this is a problem from the JVM")
+            }
+        }
+
+        val callback = ExceptionCallback()
+
+        context.registerFunction("exceptionCallback", callback)
+
+        val throwingJVMEventEx = assertThrows(java.lang.Exception::class.java) {
+            context.execute("addEventListener('myThrowingJVMEvent', () => { exceptionCallback(); })")
+            context.dispatchEvent("myThrowingJVMEvent", JSONObject())
+        }
+
+        localizedMessage = throwingJVMEventEx.localizedMessage ?: ""
+        assertTrue(localizedMessage.contains("JS exception"))
+
         runner.destroy()
     }
 
-    // TODO: Flakey test - intermittent unfreed structs
     @Test
     fun testAPI_SetTimeout() {
         val runner = Runner()
+        runner.start()
+
         val context = runner.createContext("io.ionic.android_js_engine")
-        context.start()
 
         val timeoutFuture1 = CompletableFuture<Int>()
         val timeoutFuture2 = CompletableFuture<Int>()
@@ -254,15 +293,16 @@ class ContextTests {
             assertTrue(true)
         }
 
-        context.stop()
+        runner.stop()
         runner.destroy()
     }
 
     @Test
     fun testAPI_SetInterval() {
         val runner = Runner()
+        runner.start()
+
         val context = runner.createContext("io.ionic.android_js_engine")
-        context.start()
 
         var calls = 0;
 
@@ -288,7 +328,20 @@ class ContextTests {
         Thread.sleep(3000)
         assertEquals(4, calls)
 
-        context.stop()
+        runner.stop()
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_Crypto() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        var value = context.execute("const array = new Uint32Array(10);  crypto.getRandomValues(array); array;", true)
+        assertEquals(10, value.getJSONObject()?.length())
+
+        value = context.execute("crypto.randomUUID();", true)
+        assertEquals(36, value.getStringValue()?.length)
         runner.destroy()
     }
 
@@ -326,20 +379,18 @@ class ContextTests {
     @Test
     fun testAPI_Fetch() {
         val runner = Runner()
-        val context = runner.createContext("io.ionic.android_js_engine")
-        context.start()
+        runner.start()
 
-        val future1 = CompletableFuture<Int>()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val future1 = CompletableFuture<JSONObject?>()
         val future2 = CompletableFuture<Int>()
-        val future3 = CompletableFuture<Int>()
+        val future3 = CompletableFuture<JSONObject?>()
 
         class SuccessCallback : JSFunction(jsName = "successCallback") {
-            public var calls: Int = 0
             override fun run() {
                 super.run()
-                calls++
-                print("called success callback")
-                future1.complete(calls)
+                future1.complete(this.args)
             }
         }
 
@@ -353,11 +404,9 @@ class ContextTests {
         }
 
         class OptionsSuccessCallback : JSFunction(jsName = "successCallback2") {
-            public var calls: Int = 0
             override fun run() {
                 super.run()
-                calls++
-                future3.complete(calls)
+                future3.complete(this.args)
             }
         }
 
@@ -372,8 +421,29 @@ class ContextTests {
         val basicFetchExample = """
             fetch('https://jsonplaceholder.typicode.com/todos/1')
                 .then(response => response.json())
-                .then(json => { console.log(JSON.stringify(json)); successCallback(); })
-                .catch(err => { console.error(err);  successCallback(); });
+                .then(json => { successCallback(json); })
+                .catch(err => { console.error(err); });
+        """.trimIndent()
+
+        val basicFetchWithTextResponseExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.text())
+                .then(text => { console.log(text); })
+                .catch(err => { console.error(err); });
+        """.trimIndent()
+
+        val basicFetchWithArrayBufferResponseExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.arrayBuffer())
+                .then(buf => { console.log(buf.byteLength); })
+                .catch(err => { console.error(err); });
+        """.trimIndent()
+
+        val basicFetchWithBlobResponseExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.blob())
+                .then(blob => { console.log(blob.size); })
+                .catch(err => { console.error(err); });
         """.trimIndent()
 
         val fetchFailureExample = """
@@ -395,12 +465,19 @@ class ContextTests {
             })
             .catch(err => { console.error(err); })
             .then(response => response.json())
-            .then(json => { console.log(JSON.stringify(json)); successCallback2(); })
+            .then(json => { successCallback2(json); })
         """.trimIndent()
 
         context.execute(basicFetchExample)
 
-        assertEquals(1, future1.get(5, TimeUnit.SECONDS))
+        val jsonResponse1 = future1.get(5, TimeUnit.SECONDS);
+        assertEquals("delectus aut autem", jsonResponse1?.getString("title"))
+
+        context.execute(basicFetchWithTextResponseExample)
+
+        context.execute(basicFetchWithArrayBufferResponseExample)
+
+//        context.execute(basicFetchWithBlobResponseExample)
 
         context.execute(fetchFailureExample)
 
@@ -408,39 +485,30 @@ class ContextTests {
 
         context.execute(fetchWithOptionsExample)
 
-        assertEquals(1, future3.get(5, TimeUnit.SECONDS))
+        val jsonResponse2 = future3.get(5, TimeUnit.SECONDS)
+        assertEquals("bar", jsonResponse2?.getString("body"))
 
-        context.stop()
+        runner.stop()
         runner.destroy()
 
     }
 
-    @Test
-    fun testErrorHandling() {
-        val runner = Runner()
-        val context = runner.createContext("io.ionic.android_js_engine")
-
-        val throwingCodeEx = assertThrows(Exception::class.java) {
-            context.execute("() => { throw new Error('this method has an error'); }();")
-        }
-
-        assertTrue(throwingCodeEx.localizedMessage.contains("JS exception"))
-
-        val badCodeEx = assertThrows(Exception::class.java) {
-            // badly formed code
-            context.execute("addEventListener(")
-        }
-
-        assertTrue(badCodeEx.localizedMessage.contains("JS exception"))
-
-
-        val throwingEventEx = assertThrows(java.lang.Exception::class.java) {
-            context.execute("addEventListener('myThrowingEvent', () => { throw new Error('this event throws an error') })")
-            context.dispatchEvent("myThrowingEvent", JSONObject())
-        }
-
-        assertTrue(throwingEventEx.localizedMessage.contains("JS exception"))
-
-        runner.destroy()
-    }
+//    @Test
+//    fun testAPI_Blob() {
+//        val runner = Runner()
+//        val context = runner.createContext("io.ionic.android_js_engine")
+//
+//        val basicBlobExample = """
+//            const obj = { hello: "world" };
+//            const blob = new Blob([JSON.stringify(obj, null, 2)], {
+//              type: "application/json",
+//            });
+//            blob.text().then((text) => console.log(text));
+//
+//        """.trimIndent()
+//
+//        context.execute(basicBlobExample)
+//
+//        runner.destroy()
+//    }
 }

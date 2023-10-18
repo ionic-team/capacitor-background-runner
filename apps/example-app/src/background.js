@@ -61,14 +61,32 @@ addEventListener("fetchTest", async (resolve, reject, args) => {
 });
 
 // capacitor APIs
-addEventListener("testCapKV", async (resolve, reject, args) => {
+addEventListener("testCapKVSet", async (resolve, reject, args) => {
   try {
-    CapacitorKV.set("testValue", "hello world");
+    CapacitorKV.set("testValue", args.value);
+    resolve();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
 
+addEventListener("testCapKVGet", async (resolve, reject, args) => {
+  try {
     const result = CapacitorKV.get("testValue");
-    console.log("test value is: " + result);
-
+    console.log(result);
+    console.log(JSON.stringify(result));
     resolve(result);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapKVRemove", async (resolve, reject, args) => {
+  try {
+    CapacitorKV.remove("testValue");
+    resolve();
   } catch (err) {
     console.error(err);
     reject(err);
@@ -78,7 +96,7 @@ addEventListener("testCapKV", async (resolve, reject, args) => {
 addEventListener("testCapNotification", async (resolve, reject, args) => {
   try {
     let scheduleDate = new Date();
-    scheduleDate.setSeconds(scheduleDate.getSeconds() + 30);
+    scheduleDate.setSeconds(scheduleDate.getSeconds() + 60);
 
     CapacitorNotifications.schedule([
       {
@@ -109,7 +127,7 @@ addEventListener("testCapacitorGeolocation", async (resolve, reject, args) => {
 
 addEventListener(
   "testCapacitorDeviceBatteryStatus",
-  async (resolve, reject, args) => {
+  (resolve, reject, args) => {
     try {
       const info = CapacitorDevice.getBatteryStatus();
       console.log(JSON.stringify(info));
@@ -123,7 +141,7 @@ addEventListener(
 
 addEventListener(
   "testCapacitorDeviceNetworkStatus",
-  async (resolve, reject, args) => {
+  (resolve, reject, args) => {
     try {
       const info = CapacitorDevice.getNetworkStatus();
       console.log(JSON.stringify(info));
@@ -153,7 +171,7 @@ addEventListener("remoteNotification", (resolve, reject, args) => {
 
 addEventListener("checkWatchReachability", (resolve, reject, args) => {
   const reachable = CapacitorWatch.isReachable();
-
+  try {
     resolve({
       reachable: reachable,
     });
@@ -170,6 +188,7 @@ addEventListener("sendMessageToWatch", (resolve, reject, args) => {
     msg: "Hello World",
   });
 
+  try {
     resolve();
   } catch (err) {
     console.error(err);

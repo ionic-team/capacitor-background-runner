@@ -6,18 +6,13 @@ import JavaScriptCore
 public class BackgroundRunner {
     public static let shared = BackgroundRunner()
 
-    private var runner: Runner?
     private var config: RunnerConfig?
-
-    private var context: Context?
-
-    private var started: Bool {
-        return runner != nil && context != nil
-    }
+    private var runner = Runner()
 
     public init() {
         do {
             config = try self.loadRunnerConfig()
+            runner.start()
         } catch {
             print("could not initialize BackgroundRunner: \(error)")
         }
@@ -76,40 +71,11 @@ public class BackgroundRunner {
         }
     }
 
-    public func start() throws {
-        print("starting runner and loading contexts...")
-
-        guard let config = config else {
-            print("...no runner config to start")
-            return
-        }
-
-        self.runner = Runner()
-        context = try initContext(config: config)
-
-    }
-
-    public func stop() {
-        print("...stopping runner and removing all contexts")
-        guard let runner = runner, let config = config else {
-            return
-        }
-
-        runner.destroyContext(name: config.label)
-
-        context = nil
-        self.runner = nil
-    }
-
     public func getConfig() -> RunnerConfig? {
         return config
     }
 
-    public func dispatchEvent(event: String, inputArgs: [String: Any]?) throws {
-        if !started {
-            try start()
-        }
-
+    public func dispatchEvent(event: String, inputArgs: [String: Any]?, callbackId: String? = nil) throws {
         if let config = config {
             let waitGroup = DispatchGroup()
             waitGroup.enter()
@@ -119,7 +85,7 @@ public class BackgroundRunner {
             // swiftlint:disable:next unowned_variable_capture
             DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
                 do {
-                    _ = try self.execute(config: config, event: event, inputArgs: inputArgs)
+                    _ = try self.execute(config: config, event: event, inputArgs: inputArgs, callbackId: callbackId)
                 } catch {
                     err = error
                     print("[\(config.label)]: \(error)")
@@ -137,15 +103,9 @@ public class BackgroundRunner {
     }
 
     // swiftlint:disable:next cyclomatic_complexity function_body_length
-    public func execute(config: RunnerConfig, event: String, inputArgs: [String: Any]? = nil) throws -> [String: Any]? {
+    public func execute(config: RunnerConfig, event: String, inputArgs: [String: Any]? = nil, callbackId: String? = nil) throws -> [String: Any]? {
         do {
-            if !started {
-                try self.start()
-            }
-
-            guard let context = context else {
-                throw BackgroundRunnerPluginError.runnerError(reason: "no loaded context for config")
-            }
+            let context = try initContext(config: config, callbackId: callbackId)
 
             let waitGroup = DispatchGroup()
 
@@ -241,18 +201,19 @@ public class BackgroundRunner {
         return nil
     }
 
-    private func initContext(config: RunnerConfig) throws -> Context {
-        guard let runner = runner else {
-            throw BackgroundRunnerPluginError.runnerError(reason: "runner is not initialized")
-        }
-
+    private func initContext(config: RunnerConfig, callbackId: String?) throws -> Context {
         guard let srcFileURL = Bundle.main.url(forResource: config.src, withExtension: nil, subdirectory: "public") else {
             throw BackgroundRunnerPluginError.runnerError(reason: "source file not found")
         }
 
+        var contextName = config.label
+        if let callbackId = callbackId {
+            contextName = "\(contextName)-\(callbackId)"
+        }
+
         let srcFile = try String(contentsOf: srcFileURL)
 
-        let context = try runner.createContext(name: config.label)
+        let context = try runner.createContext(name: contextName)
 
         context.setupCapacitorAPI()
 

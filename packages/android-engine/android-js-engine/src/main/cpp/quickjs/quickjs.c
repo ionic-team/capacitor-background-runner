@@ -80,7 +80,7 @@
 
 
 /* dump object free */
-//#define DUMP_FREE
+// #define DUMP_FREE 1
 //#define DUMP_CLOSURE
 /* dump the bytecode of the compiled functions: combination of bits
    1: dump pass 3 final byte code
@@ -96,7 +96,7 @@
 /* dump objects freed by the garbage collector */
 //#define DUMP_GC_FREE
 /* dump objects leaking when freeing the runtime */
-#define DUMP_LEAKS  0
+#define DUMP_LEAKS  1
 /* dump memory usage before running the garbage collector */
 //#define DUMP_MEM
 //#define DUMP_OBJECTS    /* dump objects in JS_FreeContext */
@@ -5489,7 +5489,7 @@ void __JS_FreeValueRT(JSRuntime *rt, JSValue v)
 
     switch(tag) {
     case JS_TAG_STRING:
-        {
+        {    
             JSString *p = JS_VALUE_GET_STRING(v);
             if (p->atom_type) {
                 JS_FreeAtomStruct(rt, p);
@@ -51185,6 +51185,14 @@ JSValue JS_NewArrayBuffer(JSContext *ctx, uint8_t *buf, size_t len,
     return js_array_buffer_constructor3(ctx, JS_UNDEFINED, len,
                                         is_shared ? JS_CLASS_SHARED_ARRAY_BUFFER : JS_CLASS_ARRAY_BUFFER,
                                         buf, free_func, opaque, FALSE);
+}
+
+JSValue JS_NewUInt8Array(JSContext *ctx, JSValueConst arrayBuffer, int offset, int length)
+{
+    JSValue offsetValue = JS_NewInt32(ctx, offset);
+    JSValue lengthValue = JS_NewInt32(ctx, length);
+    JSValue args[] = {arrayBuffer, offsetValue, lengthValue};
+    return js_typed_array_constructor(ctx, arrayBuffer, 3, args, JS_CLASS_UINT8_ARRAY);
 }
 
 /* create a new ArrayBuffer of length 'len' and copy 'buf' to it */

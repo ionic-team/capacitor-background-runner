@@ -1,6 +1,7 @@
 package io.ionic.backgroundrunner.plugin;
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Data
 import androidx.work.Worker
 import androidx.work.WorkerParameters
@@ -36,6 +37,8 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
 
             return Result.success()
         } catch (ex: Exception) {
+            val label = this.inputData.getString("label") ?: ""
+            Log.e("[RUNNER WORKER for $label]", ex.toString())
             val data = Data.Builder()
                 .putString("error", ex.toString())
                 .build()
