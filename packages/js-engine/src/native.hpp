@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "quickjs/quickjs.h"
+
 enum LoggerLevel { INFO, WARN, ERROR, DEBUG };
 
 class NativeInterface {
@@ -13,6 +15,8 @@ class NativeInterface {
   NativeInterface& operator=(const NativeInterface&) = delete;
 
   virtual void logger(LoggerLevel level, const std::string& tag, const std::string& messages) = 0;
+  virtual void register_native_function(const std::string& func_name, void* func_obj) = 0;
+  virtual JSValue invoke_native_function(const std::string& func_name, JSValue args) = 0;
 
  protected:
   NativeInterface() = default;

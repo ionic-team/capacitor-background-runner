@@ -31,11 +31,12 @@ add_executable(
 
 target_link_libraries(EngineTests PRIVATE JSEngine)
 target_link_libraries(EngineTests PRIVATE Catch2::Catch2WithMain)
-
 target_link_libraries(EngineTests PRIVATE fmt::fmt)
+
+target_compile_features(ContextTests PRIVATE cxx_std_17)
 target_link_libraries(ContextTests PRIVATE JSEngine)
 target_link_libraries(ContextTests PRIVATE Catch2::Catch2WithMain)
-
 target_link_libraries(ContextTests PRIVATE fmt::fmt)
+
 add_test(NAME EngineTests COMMAND EngineTests)
 add_test(NAME ContextTests COMMAND ContextTests)

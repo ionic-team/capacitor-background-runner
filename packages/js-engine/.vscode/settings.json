@@ -64,7 +64,16 @@
     "list": "cpp",
     "locale": "cpp",
     "streambuf": "cpp",
-    "algorithm": "cpp"
+    "algorithm": "cpp",
+    "__errc": "cpp",
+    "__mutex_base": "cpp",
+    "__std_stream": "cpp",
+    "any": "cpp",
+    "forward_list": "cpp",
+    "queue": "cpp",
+    "span": "cpp",
+    "typeindex": "cpp",
+    "valarray": "cpp"
   },
   "cmake.configureSettings": {
     "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"

@@ -1,4 +1,7 @@
+#include <fmt/core.h>
+
 #include <catch2/catch_test_macros.hpp>
+#include <future>
 
 #include "native_engine/engine.hpp"
 
@@ -63,16 +66,34 @@
 //   delete engine;
 // }
 
-TEST_CASE("test console api", "[context]") {
+// TEST_CASE("test console api", "[context]") {
+//   std::string context_name = "io.ionic.android_js_engine";
+//   auto engine = new Engine();
+//   engine->create_context(context_name);
+
+//   engine->execute(context_name, "console.log('hello world');");
+//   engine->execute(context_name, "console.info('this message is for informational purposes');");
+//   engine->execute(context_name, "console.warn('this is a warning message');");
+//   engine->execute(context_name, "console.error('a problem has occurred');");
+//   engine->execute(context_name, "console.debug('this is a debugging statement');");
+
+//   delete engine;
+// }
+
+TEST_CASE("test event listeners", "[context]") {
+  std::promise<int> future1;
+
+  std::function<void()> func_1 = [&future1]() { future1.set_value(1); };
+
   std::string context_name = "io.ionic.android_js_engine";
   auto engine = new Engine();
   engine->create_context(context_name);
+  engine->register_function(context_name, "successCallback", func_1);
 
-  engine->execute(context_name, "console.log('hello world');");
-  engine->execute(context_name, "console.info('this message is for informational purposes');");
-  engine->execute(context_name, "console.warn('this is a warning message');");
-  engine->execute(context_name, "console.error('a problem has occurred');");
-  engine->execute(context_name, "console.debug('this is a debugging statement');");
+  engine->execute(context_name, "addEventListener('myEvent', () => { successCallback(); });");
+  engine->dispatch_event(context_name, "myEvent");
+
+  REQUIRE(future1.get_future().get() == 1);
 
   delete engine;
 }

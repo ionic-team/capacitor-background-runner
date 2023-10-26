@@ -22,6 +22,19 @@ Value* Engine::execute(const std::string& name, const std::string& code) {
   }
   auto ret = context->evaluate(code, true);
 
+  if (JS_IsNull(ret) || JS_IsUndefined(ret)) {
+    return nullptr;
+  }
+
+  if (JS_IsException(ret)) {
+    JSValue const exception = JS_GetException(context->qjs_context);
+
+    JSValue const err_message = JS_GetPropertyStr(context->qjs_context, exception, "message");
+    const char* err_message_c_str = JS_ToCString(context->qjs_context, err_message);
+
+    throw std::invalid_argument(err_message_c_str);
+  }
+
   auto json_c_string = JS_ToCString(context->qjs_context, ret);
   auto json_string = std::string(json_c_string);
 
@@ -38,3 +51,23 @@ void Engine::start() {
 }
 
 void Engine::stop() { this->runner->stop(); }
+
+void Engine::register_function(const std::string& context_name, const std::string& func_name, std::function<void()> func) {
+  auto context = this->runner->contexts[context_name];
+  if (context == nullptr) {
+    throw std::invalid_argument("context not found");
+  }
+
+  context->register_function(func_name, &func);
+}
+
+Value* Engine::dispatch_event(const std::string& name, const std::string& event) {
+  auto context = this->runner->contexts[name];
+  if (context == nullptr) {
+    throw std::invalid_argument("context not found");
+  }
+
+  context->dispatch_event(event, JS_UNDEFINED);
+
+  return nullptr;
+}

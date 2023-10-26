@@ -8,6 +8,7 @@ add_library(
     src/context.cpp
     src/runner.cpp
     src/api/api_console.cpp
+    src/api/api_events.cpp
 )
 
 add_subdirectory("src/quickjs")
