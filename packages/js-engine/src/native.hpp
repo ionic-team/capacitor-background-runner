@@ -16,7 +16,8 @@ class NativeInterface {
 
   virtual void logger(LoggerLevel level, const std::string& tag, const std::string& messages) = 0;
   virtual void register_native_function(const std::string& func_name, void* func_obj) = 0;
-  virtual JSValue invoke_native_function(const std::string& func_name, JSValue args) = 0;
+  virtual bool has_native_function(const std::string& func_name) = 0;
+  virtual JSValue invoke_native_function(const std::string& func_name, JSContext* ctx, JSValue args) = 0;
 
  protected:
   NativeInterface() = default;

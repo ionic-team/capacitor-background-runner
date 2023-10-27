@@ -17,7 +17,7 @@ add_executable(
   EngineTests
   src/native_engine/engine.cpp
   src/native_engine/value.cpp
-  src/test_native.cpp
+  src/native_engine/native_interface.cpp
   src/engine_tests.cpp
 )
 
@@ -25,7 +25,7 @@ add_executable(
   ContextTests
   src/native_engine/engine.cpp
   src/native_engine/value.cpp
-  src/test_native.cpp
+  src/native_engine/native_interface.cpp
   src/context_tests.cpp
 )
 

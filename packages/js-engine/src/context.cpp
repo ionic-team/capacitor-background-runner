@@ -61,7 +61,7 @@ static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int ar
   auto func_name_str = std::string(JS_ToCString(ctx, func_name_obj));
   JS_FreeValue(ctx, func_name_obj);
 
-  return context->native_interface->invoke_native_function(func_name_str, argv[0]);
+  return context->native_interface->invoke_native_function(func_name_str, ctx, argv[0]);
 
   //   auto j_func = context->registered_functions.at(func_name_str);
 
@@ -253,45 +253,45 @@ JSValue Context::dispatch_event(const std::string &event, JSValue details) {
 
 void Context::init_callbacks(JSValue callbacks) const {
   // look for __cbr:: and replace with JSFunction
-  //   JSPropertyEnum *properties;
-  //   uint32_t count;
-  //   JS_GetOwnPropertyNames(this->qjs_context, &properties, &count, callbacks, JS_GPN_STRING_MASK | JS_GPN_SYMBOL_MASK | JS_GPN_ENUM_ONLY);
-  //   for (uint32_t i = 0; i < count; i++) {
-  //     JSAtom atom = properties[i].atom;
-  //     const char *key = JS_AtomToCString(this->qjs_context, atom);
-  //     JSValue str_val = JS_GetProperty(this->qjs_context, callbacks, atom);
+  JSPropertyEnum *properties;
+  uint32_t count;
+  JS_GetOwnPropertyNames(this->qjs_context, &properties, &count, callbacks, JS_GPN_STRING_MASK | JS_GPN_SYMBOL_MASK | JS_GPN_ENUM_ONLY);
+  for (uint32_t i = 0; i < count; i++) {
+    JSAtom atom = properties[i].atom;
+    const char *key = JS_AtomToCString(this->qjs_context, atom);
+    JSValue str_val = JS_GetProperty(this->qjs_context, callbacks, atom);
 
-  //     if (JS_IsString(str_val)) {
-  //       const char *c_str_val = JS_ToCString(this->qjs_context, str_val);
+    if (JS_IsString(str_val)) {
+      const char *c_str_val = JS_ToCString(this->qjs_context, str_val);
 
-  //       std::string const str_value = std::string(c_str_val);
-  //       std::string const prefix = str_value.substr(0, 7);
+      std::string const str_value = std::string(c_str_val);
+      std::string const prefix = str_value.substr(0, 7);
 
-  //       if (prefix == "__cbr::") {
-  //         try {
-  //           auto global_func_name = str_value.substr(7);
+      if (prefix == "__cbr::") {
+        try {
+          auto global_func_name = str_value.substr(7);
 
-  //           if (this->registered_functions.find(global_func_name) != this->registered_functions.end()) {
-  //             auto func_name_value = JS_NewString(this->qjs_context, global_func_name.c_str());
+          if (this->native_interface->has_native_function(global_func_name)) {
+            auto func_name_value = JS_NewString(this->qjs_context, global_func_name.c_str());
 
-  //             JSValueConst ptr[1];
-  //             ptr[0] = func_name_value;
+            JSValueConst ptr[1];
+            ptr[0] = func_name_value;
 
-  //             JS_SetPropertyStr(this->qjs_context, callbacks, key, JS_NewCFunctionData(this->qjs_context, call_registered_function, 1, 0, 1, ptr));
+            JS_SetPropertyStr(this->qjs_context, callbacks, key, JS_NewCFunctionData(this->qjs_context, call_registered_function, 1, 0, 1, ptr));
 
-  //             JS_FreeValue(this->qjs_context, func_name_value);
-  //           }
-  //         } catch (std::exception &ex) {
-  //         }
-  //       }
+            JS_FreeValue(this->qjs_context, func_name_value);
+          }
+        } catch (std::exception &ex) {
+        }
+      }
 
-  //       JS_FreeCString(this->qjs_context, c_str_val);
-  //     }
+      JS_FreeCString(this->qjs_context, c_str_val);
+    }
 
-  //     JS_FreeValue(this->qjs_context, str_val);
-  //     JS_FreeAtom(this->qjs_context, atom);
-  //     JS_FreeCString(this->qjs_context, key);
-  //   }
+    JS_FreeValue(this->qjs_context, str_val);
+    JS_FreeAtom(this->qjs_context, atom);
+    JS_FreeCString(this->qjs_context, key);
+  }
 }
 
 void Context::execute_timer(JSValue timerFunc) const {

@@ -1,8 +1,9 @@
+#include <fmt/core.h>
+
 #include <catch2/catch_test_macros.hpp>
 #include <random>
 
 #include "native_engine/engine.hpp"
-#include "test_native.hpp"
 
 int get_random_number() {
   std::random_device rnd_device;

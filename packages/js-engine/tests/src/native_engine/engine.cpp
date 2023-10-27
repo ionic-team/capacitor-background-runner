@@ -2,10 +2,10 @@
 
 #include <stdexcept>
 
-#include "../test_native.hpp"
+#include "native_interface.hpp"
 
 Engine::Engine() {
-  auto native = new TestNative();
+  auto native = new Native();
   this->runner = new Runner(native);
 }
 
@@ -52,7 +52,7 @@ void Engine::start() {
 
 void Engine::stop() { this->runner->stop(); }
 
-void Engine::register_function(const std::string& context_name, const std::string& func_name, std::function<void()> func) {
+void Engine::register_function(const std::string& context_name, const std::string& func_name, std::function<nlohmann::json(nlohmann::json)> func) {
   auto context = this->runner->contexts[context_name];
   if (context == nullptr) {
     throw std::invalid_argument("context not found");
@@ -61,13 +61,25 @@ void Engine::register_function(const std::string& context_name, const std::strin
   context->register_function(func_name, &func);
 }
 
-Value* Engine::dispatch_event(const std::string& name, const std::string& event) {
+Value* Engine::dispatch_event(const std::string& name, const std::string& event, nlohmann::json args) {
   auto context = this->runner->contexts[name];
   if (context == nullptr) {
     throw std::invalid_argument("context not found");
   }
 
-  context->dispatch_event(event, JS_UNDEFINED);
+  // JSON to JSValue
+  JSValue js_object;
+
+  if (args != nullptr) {
+    auto json_string = args.dump();
+    js_object = JS_ParseJSON(context->qjs_context, json_string.c_str(), json_string.length(), "<parse>");
+  } else {
+    js_object = JS_NewObject(context->qjs_context);
+  }
+
+  context->dispatch_event(event, js_object);
+
+  JS_FreeValue(context->qjs_context, js_object);
 
   return nullptr;
 }
