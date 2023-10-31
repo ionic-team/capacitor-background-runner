@@ -1,6 +1,15 @@
 #include "native_interface.hpp"
 
+#include <sodium.h>
+#include <stduuid/uuid.h>
+
+#include <cmath>
+#include <random>
+
 Native::Native() {
+  if (sodium_init() < 0) {
+    this->logger(LoggerLevel::WARN, "[NATIVE SYSTEM]", "libsodium could not be initialized");
+  }
   this->logger_str[LoggerLevel::INFO] = "INFO";
   this->logger_str[LoggerLevel::DEBUG] = "DEBUG";
   this->logger_str[LoggerLevel::WARN] = "WARN";
@@ -34,12 +43,41 @@ JSValue Native::invoke_native_function(const std::string& func_name, JSContext* 
     JS_FreeValue(ctx, arg_json_js);
   }
 
-  auto json_ret = func(arg_json);
+  try {
+    auto json_ret = func(arg_json);
 
-  if (json_ret != nullptr && !json_ret.empty()) {
-    auto json_str = json_ret.dump();
-    js_ret = JS_ParseJSON(ctx, json_str.c_str(), json_str.length(), "<parse>");
+    if (json_ret != nullptr && !json_ret.empty()) {
+      auto json_str = json_ret.dump();
+      js_ret = JS_ParseJSON(ctx, json_str.c_str(), json_str.length(), "<parse>");
+    }
+
+    return js_ret;
+  } catch (std::exception& ex) {
+    auto exception = JS_NewError(ctx);
+    JS_SetPropertyStr(ctx, exception, "message", JS_NewString(ctx, ex.what()));
+
+    return JS_Throw(ctx, exception);
   }
+}
 
-  return js_ret;
+std::string Native::crypto_get_random_uuid() {
+  // WARNING: Just for testing purposes only
+  std::random_device rnd_device;
+  uuids::basic_uuid_random_generator<std::random_device> generator{rnd_device};
+
+  uuids::uuid id = generator();
+
+  return uuids::to_string(id);
+}
+
+std::vector<uint8_t> Native::crypto_get_random(size_t size) {
+  char* random_bytes[size];
+  randombytes_buf(random_bytes, size);
+
+  return std::vector<uint8_t>();
+}
+
+int Native::get_random_hash() {
+  int hash = std::hash<std::string>{}(crypto_get_random_uuid());
+  return abs(hash);
 }

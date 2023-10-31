@@ -1,6 +1,8 @@
 {
   "dependencies": [
     "fmt",
-    "nlohmann-json"
+    "nlohmann-json",
+    "stduuid",
+    "libsodium"
   ]
 }

@@ -3,6 +3,7 @@
 
 #include "../../../src/context.hpp"
 #include "../../../src/runner.hpp"
+#include "errors.hpp"
 #include "value.hpp"
 
 class Engine {

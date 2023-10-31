@@ -18,6 +18,9 @@ class NativeInterface {
   virtual void register_native_function(const std::string& func_name, void* func_obj) = 0;
   virtual bool has_native_function(const std::string& func_name) = 0;
   virtual JSValue invoke_native_function(const std::string& func_name, JSContext* ctx, JSValue args) = 0;
+  virtual std::string crypto_get_random_uuid() = 0;
+  virtual std::vector<uint8_t> crypto_get_random(size_t size) = 0;
+  virtual int get_random_hash() = 0;
 
  protected:
   NativeInterface() = default;

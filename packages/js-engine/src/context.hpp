@@ -9,14 +9,14 @@
 
 // #include "java.h"
 #include "api/api_console.h"
-#include "native.hpp"
-// #include "api/api_timeout.h"
 #include "api/api_events.h"
+#include "api/api_timeout.h"
+#include "native.hpp"
 // #include "api/api_crypto.h"
 // #include "api/api_text.h"
-// #include "api/api_fetch.h"
-// #include "api/api_js_response.h"
-// #include "api/api_blob.h"
+#include "api/api_blob.h"
+#include "api/api_fetch.h"
+#include "api/api_js_response.h"
 
 // #include "cap_api/api_cap_kv.h"
 // #include "cap_api/api_cap_device.h"
@@ -34,7 +34,7 @@ class Context {
   NativeInterface *native_interface;
 
   std::unordered_map<std::string, JSValue> event_listeners;
-  // std::unordered_map<int, Timer> timers;
+  std::unordered_map<int, Timer> timers;
 
   Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native);
   ~Context();
@@ -54,10 +54,10 @@ class Context {
 
   void init_api_console() const;
   void init_api_event_listeners() const;
-  // void init_api_timeout() const;
+  void init_api_timeout() const;
   // void init_api_crypto() const;
   // void init_api_text() const;
-  // void init_api_fetch() const;
+  void init_api_fetch() const;
   // void init_api_blob() const;
 
   // void init_capacitor_kv_api() const;

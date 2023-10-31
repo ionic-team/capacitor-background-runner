@@ -12,10 +12,10 @@ Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface 
 
   this->init_api_console();
   this->init_api_event_listeners();
-  //   this->init_api_timeout();
+  this->init_api_timeout();
   //   this->init_api_crypto();
   //   this->init_api_text();
-  //   this->init_api_fetch();
+  this->init_api_fetch();
   //   this->init_api_blob();
 
   //   this->log_debug("created context");
@@ -26,32 +26,29 @@ Context::~Context() {
     JS_FreeValue(this->qjs_context, kv.second);
   }
   this->event_listeners.clear();
-  //   this->registered_functions.clear();
 
-  //   for (const auto &kv : this->timers) {
-  //     JS_FreeValue(this->qjs_context, kv.second.js_func);
-  //   }
-  //   this->timers.clear();
+  for (const auto &kv : this->timers) {
+    JS_FreeValue(this->qjs_context, kv.second.js_func);
+  }
+  this->timers.clear();
 
   JS_FreeContext(this->qjs_context);
-
-  //   this->log_debug("destroyed context");
 }
 
 void Context::run_loop() {
-  //   if (!this->timers.empty()) {
-  //     for (const auto &timer_kv : this->timers) {
-  //       auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - timer_kv.second.start);
-  //       if (duration.count() >= timer_kv.second.timeout) {
-  //         this->timers[timer_kv.first].start = std::chrono::system_clock::now();
-  //         this->execute_timer(timer_kv.second.js_func);
-  //         if (!this->timers[timer_kv.first].repeat) {
-  //           JS_FreeValue(this->qjs_context, this->timers[timer_kv.first].js_func);
-  //           this->timers.erase(timer_kv.first);
-  //         }
-  //       }
-  //     }
-  //   }
+  if (!this->timers.empty()) {
+    for (const auto &timer_kv : this->timers) {
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - timer_kv.second.start);
+      if (duration.count() >= timer_kv.second.timeout) {
+        this->timers[timer_kv.first].start = std::chrono::system_clock::now();
+        this->execute_timer(timer_kv.second.js_func);
+        if (!this->timers[timer_kv.first].repeat) {
+          JS_FreeValue(this->qjs_context, this->timers[timer_kv.first].js_func);
+          this->timers.erase(timer_kv.first);
+        }
+      }
+    }
+  }
 }
 
 static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int argc, JSValue *argv, int magic, JSValue *func_data) {
@@ -327,16 +324,16 @@ void Context::init_api_event_listeners() const {
   JS_FreeValue(this->qjs_context, global_obj);
 }
 
-// void Context::init_api_timeout() const {
-//   JSValue global_obj = JS_GetGlobalObject(this->qjs_context);
+void Context::init_api_timeout() const {
+  JSValue global_obj = JS_GetGlobalObject(this->qjs_context);
 
-//   JS_SetPropertyStr(this->qjs_context, global_obj, "setTimeout", JS_NewCFunction(this->qjs_context, api_set_timeout, "setTimeout", 2));
-//   JS_SetPropertyStr(this->qjs_context, global_obj, "clearTimeout", JS_NewCFunction(this->qjs_context, api_clear_timeout, "clearTimeout", 1));
-//   JS_SetPropertyStr(this->qjs_context, global_obj, "setInterval", JS_NewCFunction(this->qjs_context, api_set_interval, "setInterval", 1));
-//   JS_SetPropertyStr(this->qjs_context, global_obj, "clearInterval", JS_NewCFunction(this->qjs_context, api_clear_timeout, "clearInterval", 1));
+  JS_SetPropertyStr(this->qjs_context, global_obj, "setTimeout", JS_NewCFunction(this->qjs_context, api_set_timeout, "setTimeout", 2));
+  JS_SetPropertyStr(this->qjs_context, global_obj, "clearTimeout", JS_NewCFunction(this->qjs_context, api_clear_timeout, "clearTimeout", 1));
+  JS_SetPropertyStr(this->qjs_context, global_obj, "setInterval", JS_NewCFunction(this->qjs_context, api_set_interval, "setInterval", 1));
+  JS_SetPropertyStr(this->qjs_context, global_obj, "clearInterval", JS_NewCFunction(this->qjs_context, api_clear_timeout, "clearInterval", 1));
 
-//   JS_FreeValue(this->qjs_context, global_obj);
-// }
+  JS_FreeValue(this->qjs_context, global_obj);
+}
 
 // void Context::init_api_crypto() const {
 //   JSValue global_obj, crypto;
@@ -358,15 +355,15 @@ void Context::init_api_event_listeners() const {
 //   init_text_decoder_class(this->qjs_context);
 // }
 
-// void Context::init_api_fetch() const {
-//   init_response_class(this->qjs_context);
+void Context::init_api_fetch() const {
+  init_response_class(this->qjs_context);
 
-//   JSValue global_obj = JS_GetGlobalObject(this->qjs_context);
+  JSValue global_obj = JS_GetGlobalObject(this->qjs_context);
 
-//   JS_SetPropertyStr(this->qjs_context, global_obj, "fetch", JS_NewCFunction(this->qjs_context, api_fetch, "fetch", 2));
+  JS_SetPropertyStr(this->qjs_context, global_obj, "fetch", JS_NewCFunction(this->qjs_context, api_fetch, "fetch", 2));
 
-//   JS_FreeValue(this->qjs_context, global_obj);
-// }
+  JS_FreeValue(this->qjs_context, global_obj);
+}
 
 // void Context::init_api_blob() const { init_blob_class(this->qjs_context); }
 

@@ -9,6 +9,7 @@ add_library(
     src/runner.cpp
     src/api/api_console.cpp
     src/api/api_events.cpp
+    src/api/api_timeout.cpp
 )
 
 add_subdirectory("src/quickjs")
