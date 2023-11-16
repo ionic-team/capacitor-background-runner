@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22.1)
 
 project("JSEngine")
 
+find_package(libuv CONFIG REQUIRED)
+
 add_library(
     ${PROJECT_NAME}
     SHARED
@@ -15,6 +17,7 @@ add_library(
 add_subdirectory("src/quickjs")
 
 target_link_libraries(${PROJECT_NAME} quickjs)
+target_link_libraries(${PROJECT_NAME} $<IF:$<TARGET_EXISTS:libuv::uv_a>,libuv::uv_a,libuv::uv>)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 

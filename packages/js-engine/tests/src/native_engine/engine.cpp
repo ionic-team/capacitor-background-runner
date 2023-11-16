@@ -40,11 +40,7 @@ Value* Engine::execute(const std::string& name, const std::string& code) {
   return new Value(json_string);
 }
 
-void Engine::start() {
-  this->thread = std::thread([this] { this->runner->start(); });
-  this->thread.detach();
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
-}
+void Engine::start() { this->runner->start(); }
 
 void Engine::stop() { this->runner->stop(); }
 

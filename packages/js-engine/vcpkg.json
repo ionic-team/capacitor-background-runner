@@ -4,5 +4,6 @@
     "nlohmann-json",
     "stduuid",
     "libsodium"
+    "libuv"
   ]
 }
