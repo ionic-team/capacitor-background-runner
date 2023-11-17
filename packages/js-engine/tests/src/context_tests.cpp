@@ -306,39 +306,79 @@ using json = nlohmann::json;
 // }
 
 TEST_CASE("test fetch", "[context]") {
-  std::string context_name = "io.ionic.android_js_engine";
   auto engine = new Engine();
+
+  auto test_thread = std::thread([engine] {
+    std::string context_name = "io.ionic.android_js_engine";
+    engine->create_context(context_name);
+
+    std::promise<json> success_promise;
+    std::promise<json> options_success_promise;
+
+    std::function<json(json)> callback_1 = [&success_promise](json args) {
+      success_promise.set_value(args);
+      return nullptr;
+    };
+
+    std::function<json(json)> callback_2 = [&options_success_promise](json args) {
+      options_success_promise.set_value(args);
+      return nullptr;
+    };
+
+    engine->register_function(context_name, "successCallback", callback_1);
+    engine->register_function(context_name, "successCallback2", callback_2);
+
+    std::string basic_fetch_example =
+        "fetch('https://jsonplaceholder.typicode.com/todos/1')"
+        ".then(response => response.json())"
+        ".then(json => { successCallback(json); })"
+        ".catch(err => { console.error(err); });";
+
+    engine->execute(context_name, basic_fetch_example);
+
+    auto future1 = success_promise.get_future();
+    auto status = future1.wait_for(std::chrono::seconds(5));
+    if (status == std::future_status::timeout) {
+      FAIL("could not get request");
+    }
+
+    auto response_data = future1.get();
+    auto title = response_data["title"].template get<std::string>();
+    REQUIRE(title == "delectus aut autem");
+
+    std::string basic_fetch_options_example =
+        "fetch('https://jsonplaceholder.typicode.com/posts', {"
+        "method: 'POST',"
+        "body: JSON.stringify({"
+        "title: 'foo',"
+        "body: 'bar',"
+        "userId: 1,"
+        "}),"
+        "headers: {"
+        "'Content-type': 'application/json; charset=UTF-8',"
+        "}"
+        "})"
+        ".catch(err => { console.error(err); })"
+        ".then(response => response.json())"
+        ".then(json => { successCallback2(json); })";
+
+    engine->execute(context_name, basic_fetch_options_example);
+
+    auto future2 = options_success_promise.get_future();
+    status = future2.wait_for(std::chrono::seconds(5));
+    if (status == std::future_status::timeout) {
+      FAIL("could not get request");
+    }
+
+    response_data = future2.get();
+    auto body = response_data["body"].template get<std::string>();
+    REQUIRE(body == "bar");
+
+    engine->stop();
+  });
+
   engine->start();
+  test_thread.join();
 
-  engine->create_context(context_name);
-
-  std::promise<json> success_promise;
-
-  std::function<json(json)> callback_1 = [&success_promise](json args) {
-    success_promise.set_value(args);
-    return nullptr;
-  };
-
-  engine->register_function(context_name, "successCallback", callback_1);
-
-  std::string basic_fetch_example =
-      "fetch('https://jsonplaceholder.typicode.com/todos/1')"
-      ".then(response => response.json())"
-      ".then(json => { successCallback(json); })"
-      ".catch(err => { console.error(err); });";
-
-  engine->execute(context_name, basic_fetch_example);
-
-  auto future1 = success_promise.get_future();
-  auto status = future1.wait_for(std::chrono::seconds(5));
-  if (status == std::future_status::timeout) {
-    FAIL("could not get request");
-  }
-
-  auto response_data = future1.get();
-  auto title = response_data["title"].template get<std::string>();
-  REQUIRE(title == "delectus aut autem");
-
-  engine->stop();
   delete engine;
 }

@@ -21,6 +21,8 @@ class Native : public NativeInterface {
   virtual std::string crypto_get_random_uuid();
   std::vector<uint8_t> crypto_get_random(size_t size);
   virtual int get_random_hash();
+  virtual NativeResponse fetch(NativeRequest request);
+  virtual std::string byte_array_to_str(uint8_t* arr);
 
  private:
   std::unordered_map<LoggerLevel, std::string> logger_str;

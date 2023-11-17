@@ -14,4 +14,14 @@ class JavaScriptException : public std::exception {
   std::string message;
 };
 
+class FetchException : public std::exception {
+ public:
+  FetchException(const char* fetch_exception);
+  const char* what() const throw();
+
+ private:
+  const char* fetch_exception;
+  std::string message;
+};
+
 #endif  // ERRORS_H

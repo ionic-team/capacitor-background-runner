@@ -12,6 +12,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
+find_package(OpenSSL REQUIRED)
+find_package(cpr CONFIG REQUIRED)
 find_package(unofficial-sodium CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
@@ -41,6 +43,9 @@ target_link_libraries(EngineTests PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(EngineTests PRIVATE unofficial-sodium::sodium unofficial-sodium::sodium_config_public)
 target_link_libraries(EngineTests PRIVATE fmt::fmt)
 target_link_libraries(EngineTests PRIVATE stduuid)
+target_link_libraries(EngineTests PRIVATE cpr::cpr)
+target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libcrypto.a)
+target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libssl.a)
 
 target_compile_features(ContextTests PRIVATE cxx_std_20)
 target_link_libraries(ContextTests PRIVATE JSEngine)
@@ -48,6 +53,9 @@ target_link_libraries(ContextTests PRIVATE unofficial-sodium::sodium unofficial-
 target_link_libraries(ContextTests PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(ContextTests PRIVATE fmt::fmt)
 target_link_libraries(ContextTests PRIVATE stduuid)
+target_link_libraries(ContextTests PRIVATE cpr::cpr)
+target_link_libraries(ContextTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libcrypto.a)
+target_link_libraries(ContextTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libssl.a)
 
 add_test(NAME EngineTests COMMAND EngineTests)
 add_test(NAME ContextTests COMMAND ContextTests)

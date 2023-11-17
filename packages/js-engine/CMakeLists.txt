@@ -9,9 +9,13 @@ add_library(
     SHARED
     src/context.cpp
     src/runner.cpp
+    src/errors.cpp
     src/api/api_console.cpp
     src/api/api_events.cpp
     src/api/api_timeout.cpp
+    src/api/api_js_response.cpp
+    src/api/api_blob.cpp
+    src/api/api_fetch.cpp
 )
 
 add_subdirectory("src/quickjs")

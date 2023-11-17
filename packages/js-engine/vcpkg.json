@@ -1,9 +1,11 @@
 {
   "dependencies": [
+    "cpr",
     "fmt",
+    "libsodium",
     "nlohmann-json",
+    "openssl",
     "stduuid",
-    "libsodium"
     "libuv"
   ]
 }
