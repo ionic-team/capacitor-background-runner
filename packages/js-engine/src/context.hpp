@@ -50,6 +50,7 @@ class Context {
  private:
   void init_callbacks(JSValue callbacks) const;
 
+  void run_timers();
   void execute_timer(JSValue timerFunc) const;
 
   void init_api_console() const;

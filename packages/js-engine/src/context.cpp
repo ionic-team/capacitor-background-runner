@@ -35,19 +35,32 @@ Context::~Context() {
   JS_FreeContext(this->qjs_context);
 }
 
-void Context::run_loop() {
-  if (!this->timers.empty()) {
-    for (const auto &timer_kv : this->timers) {
-      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - timer_kv.second.start);
-      if (duration.count() >= timer_kv.second.timeout) {
+void Context::run_loop() { this->run_timers(); }
+
+void Context::run_timers() {
+  if (this->timers.empty()) {
+    // this->native_interface->logger(LoggerLevel::INFO, "test", "no timers");
+    return;
+  }
+
+  std::vector<int> dead_timers;
+
+  for (const auto &timer_kv : this->timers) {
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - timer_kv.second.start);
+    // this->native_interface->logger(LoggerLevel::INFO, "test", "has timer: " + std::to_string(timer_kv.second.timeout) + " elapsed: " + std::to_string(elapsed.count()));
+    if (elapsed.count() >= timer_kv.second.timeout) {
+      this->execute_timer(timer_kv.second.js_func);
+      if (timer_kv.second.repeat) {
         this->timers[timer_kv.first].start = std::chrono::system_clock::now();
-        this->execute_timer(timer_kv.second.js_func);
-        if (!this->timers[timer_kv.first].repeat) {
-          JS_FreeValue(this->qjs_context, this->timers[timer_kv.first].js_func);
-          this->timers.erase(timer_kv.first);
-        }
+      } else {
+        dead_timers.push_back(timer_kv.first);
       }
     }
+  }
+
+  for (const auto hash : dead_timers) {
+    JS_FreeValue(this->qjs_context, this->timers[hash].js_func);
+    this->timers.erase(hash);
   }
 }
 
@@ -292,6 +305,7 @@ void Context::init_callbacks(JSValue callbacks) const {
 }
 
 void Context::execute_timer(JSValue timerFunc) const {
+  // this->native_interface->logger(LoggerLevel::INFO, "test", "executing timer");
   //   write_to_logcat(ANDROID_LOG_DEBUG, "[RUNNER DEV TRACER]", "fire timer");
   JSValue dupFunc = JS_DupValue(this->qjs_context, timerFunc);
   auto ret = JS_Call(this->qjs_context, dupFunc, JS_UNDEFINED, 0, nullptr);
