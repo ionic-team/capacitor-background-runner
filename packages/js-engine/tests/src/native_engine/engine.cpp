@@ -27,8 +27,13 @@ Value* Engine::execute(const std::string& name, const std::string& code) {
 
     JSValue const err_message = JS_GetPropertyStr(context->qjs_context, exception, "message");
     const char* err_message_c_str = JS_ToCString(context->qjs_context, err_message);
+    std::string err_message_str = std::string(err_message_c_str);
 
-    throw JavaScriptException(err_message_c_str);
+    JS_FreeValue(context->qjs_context, exception);
+    JS_FreeValue(context->qjs_context, err_message);
+    JS_FreeCString(context->qjs_context, err_message_c_str);
+
+    throw JavaScriptException(err_message_str.c_str());
   }
 
   auto json_c_string = JS_ToCString(context->qjs_context, ret);
