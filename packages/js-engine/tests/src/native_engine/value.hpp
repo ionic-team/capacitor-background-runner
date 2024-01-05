@@ -3,6 +3,8 @@
 
 #include <nlohmann/json.hpp>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 class Value {
  public:
@@ -13,6 +15,9 @@ class Value {
   bool get_bool_value();
   float get_float_value();
   std::string get_string_value();
+
+  nlohmann::json get_json_array();
+  nlohmann::json get_json_object();
 
   bool is_null_or_undefined();
 

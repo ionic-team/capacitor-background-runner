@@ -22,7 +22,8 @@ class Native : public NativeInterface {
   std::vector<uint8_t> crypto_get_random(size_t size);
   virtual int get_random_hash();
   virtual NativeResponse fetch(NativeRequest request);
-  virtual std::string byte_array_to_str(uint8_t* arr);
+  virtual std::string byte_array_to_str(uint8_t* arr, const std::string& encoding);
+  virtual std::vector<uint8_t> string_to_byte_array(std::string str);
 
  private:
   std::unordered_map<LoggerLevel, std::string> logger_str;

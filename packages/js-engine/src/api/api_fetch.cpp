@@ -114,8 +114,11 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
   }
 
   if (!response.ok) {
-    auto exception = throw_js_exception(ctx, response.error.c_str());
+    context->native_interface->logger(LoggerLevel::DEBUG, "FETCH", "...fetch error has occurred");
+    auto exception = JS_NewError(ctx);
+    JS_SetPropertyStr(ctx, exception, "message", JS_NewString(ctx, response.error.c_str()));
     reject_promise(ctx, reject, exception);
+    JS_FreeValue(ctx, exception);
     return JS_UNDEFINED;
   }
 

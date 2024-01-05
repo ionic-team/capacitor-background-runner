@@ -8,15 +8,15 @@
 #include "./quickjs/quickjs.h"
 
 // #include "java.h"
-#include "api/api_console.h"
-#include "api/api_events.h"
-#include "api/api_timeout.h"
-#include "native.hpp"
-// #include "api/api_crypto.h"
-// #include "api/api_text.h"
 #include "api/api_blob.h"
+#include "api/api_console.h"
+#include "api/api_crypto.h"
+#include "api/api_events.h"
 #include "api/api_fetch.h"
 #include "api/api_js_response.h"
+#include "api/api_text.h"
+#include "api/api_timeout.h"
+#include "native.hpp"
 
 // #include "cap_api/api_cap_kv.h"
 // #include "cap_api/api_cap_device.h"
@@ -56,8 +56,8 @@ class Context {
   void init_api_console() const;
   void init_api_event_listeners() const;
   void init_api_timeout() const;
-  // void init_api_crypto() const;
-  // void init_api_text() const;
+  void init_api_crypto() const;
+  void init_api_text() const;
   void init_api_fetch() const;
   // void init_api_blob() const;
 

@@ -16,6 +16,8 @@ add_library(
     src/api/api_js_response.cpp
     src/api/api_blob.cpp
     src/api/api_fetch.cpp
+    src/api/api_crypto.cpp
+    src/api/api_text.cpp
 )
 
 add_subdirectory("src/quickjs")

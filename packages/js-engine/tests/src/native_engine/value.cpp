@@ -2,7 +2,10 @@
 
 using json = nlohmann::json;
 
-Value::Value(const std::string& input_json) { this->json_str = input_json; }
+Value::Value(const std::string& input_json) {
+  this->json_str = input_json;
+  this->json_obj = json::parse(input_json);
+}
 
 int Value::get_int_value() {
   auto val = this->get_js_number();
@@ -43,6 +46,18 @@ double Value::get_js_number() {
   }
 
   return std::stod(this->json_str);
+}
+
+json Value::get_json_object() {
+  if (this->check_if_null_or_undefined()) {
+    return nullptr;
+  }
+
+  if (!this->json_obj.is_object()) {
+    return nullptr;
+  }
+
+  return this->json_obj;
 }
 
 bool Value::check_if_null_or_undefined() {

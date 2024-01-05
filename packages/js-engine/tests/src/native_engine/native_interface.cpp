@@ -2,7 +2,6 @@
 
 #include "native_interface.hpp"
 
-#include <ada.h>
 #include <cpr/cpr.h>
 #include <sodium.h>
 #include <stduuid/uuid.h>
@@ -77,10 +76,10 @@ std::string Native::crypto_get_random_uuid() {
 }
 
 std::vector<uint8_t> Native::crypto_get_random(size_t size) {
-  char* random_bytes[size];
-  randombytes_buf(random_bytes, size);
+  uint8_t* random_buf = new uint8_t[size];
+  randombytes_buf(random_buf, size);
 
-  return std::vector<uint8_t>();
+  return std::vector<uint8_t>(random_buf, random_buf + int(size));
 }
 
 int Native::get_random_hash() {
@@ -90,8 +89,6 @@ int Native::get_random_hash() {
 
 NativeResponse Native::fetch(NativeRequest native_request) {
   NativeResponse native_response;
-
-  auto url = ada::parse<ada::url>(native_request.url);
 
   try {
     cpr::Response res;
@@ -111,11 +108,18 @@ NativeResponse Native::fetch(NativeRequest native_request) {
 
     auto body_data = res.text.data();
 
-    native_response.ok = true;
-    native_response.status = res.status_code;
-    native_response.url = native_request.url;
-    native_response.data = std::vector<uint8_t>(&body_data[0], &body_data[res.text.length()]);
+    if (res.status_code == 0) {
+      native_response.ok = false;
+      native_response.status = res.status_code;
+      native_response.url = native_request.url;
+      native_response.error = "invalid network request";
 
+    } else {
+      native_response.ok = true;
+      native_response.status = res.status_code;
+      native_response.url = native_request.url;
+      native_response.data = std::vector<uint8_t>(&body_data[0], &body_data[res.text.length()]);
+    }
   } catch (std::exception& ex) {
     native_response.ok = false;
     native_response.status = 500;
@@ -143,4 +147,6 @@ NativeResponse Native::fetch(NativeRequest native_request) {
   return native_response;
 }
 
-std::string Native::byte_array_to_str(uint8_t* arr) { return std::string((char*)arr); }
+std::string Native::byte_array_to_str(uint8_t* arr, const std::string& encoding) { return std::string((char*)arr); }
+
+std::vector<uint8_t> Native::string_to_byte_array(std::string str) { return std::vector<uint8_t>(str.begin(), str.end()); }

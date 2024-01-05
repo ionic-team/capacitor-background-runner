@@ -13,8 +13,8 @@ Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface 
   this->init_api_console();
   this->init_api_event_listeners();
   this->init_api_timeout();
-  //   this->init_api_crypto();
-  //   this->init_api_text();
+  this->init_api_crypto();
+  this->init_api_text();
   this->init_api_fetch();
   //   this->init_api_blob();
 
@@ -72,85 +72,6 @@ static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int ar
   JS_FreeValue(ctx, func_name_obj);
 
   return context->native_interface->invoke_native_function(func_name_str, ctx, argv[0]);
-
-  //   auto j_func = context->registered_functions.at(func_name_str);
-
-  //   auto *env = context->java->getEnv();
-  //   if (env == nullptr) {
-  //     throw_js_exception(ctx, "JVM Environment is null");
-  //     return JS_UNDEFINED;
-  //   }
-
-  //   auto j_function_class = env->GetObjectClass(j_func);
-  //   auto exception = throw_jvm_exception_in_js(env, ctx);
-  //   if (JS_IsException(exception)) {
-  //     return exception;
-  //   }
-
-  //   auto j_method = env->GetMethodID(j_function_class, "run", "()V");
-  //   exception = throw_jvm_exception_in_js(env, ctx);
-  //   if (JS_IsException(exception)) {
-  //     return exception;
-  //   }
-
-  //   JSValue args = argv[0];
-  //   if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
-  //     std::string json_string;
-
-  //     if (JS_IsError(context->qjs_context, args)) {
-  //       auto error_object = JS_NewObject(ctx);
-
-  //       auto error_name = JS_GetPropertyStr(ctx, args, "name");
-  //       auto error_message = JS_GetPropertyStr(ctx, args, "message");
-
-  //       JS_SetPropertyStr(ctx, error_object, "name", error_name);
-  //       JS_SetPropertyStr(ctx, error_object, "message", error_message);
-
-  //       auto json_string_obj = JS_JSONStringify(ctx, error_object, JS_UNDEFINED, JS_UNDEFINED);
-  //       auto json_c_string = JS_ToCString(ctx, json_string_obj);
-
-  //       json_string = std::string(json_c_string);
-
-  //       JS_FreeCString(ctx, json_c_string);
-  //       JS_FreeValue(ctx, json_string_obj);
-  //       JS_FreeValue(ctx, error_object);
-  //     } else {
-  //       auto json_string_obj = JS_JSONStringify(ctx, args, JS_UNDEFINED, JS_UNDEFINED);
-  //       auto json_c_string = JS_ToCString(ctx, json_string_obj);
-
-  //       json_string = std::string(json_c_string);
-
-  //       JS_FreeCString(ctx, json_c_string);
-  //       JS_FreeValue(ctx, json_string_obj);
-  //     }
-
-  //     jstring j_json_string = env->NewStringUTF(json_string.c_str());
-
-  //     // create a JSONObject
-  //     jclass json_object_class = env->FindClass("org/json/JSONObject");
-  //     jmethodID json_object_constructor = env->GetMethodID(json_object_class, "<init>", "(Ljava/lang/String;)V");
-  //     exception = throw_jvm_exception_in_js(env, ctx);
-  //     if (JS_IsException(exception)) {
-  //       return exception;
-  //     }
-
-  //     jobject json_object = env->NewObject(json_object_class, json_object_constructor, j_json_string);
-  //     exception = throw_jvm_exception_in_js(env, ctx);
-  //     if (JS_IsException(exception)) {
-  //       return exception;
-  //     }
-
-  //     jfieldID args_field = env->GetFieldID(j_function_class, "args", "Lorg/json/JSONObject;");
-  //     env->SetObjectField(j_func, args_field, json_object);
-  //   }
-
-  //   env->CallVoidMethod(j_func, j_method);
-  //   exception = throw_jvm_exception_in_js(env, ctx);
-  //   if (JS_IsException(exception)) {
-  //     return exception;
-  //   }
-
-  //   return ret_value;
 }
 
 void Context::register_function(const std::string &func_name, void *func) {
@@ -349,25 +270,25 @@ void Context::init_api_timeout() const {
   JS_FreeValue(this->qjs_context, global_obj);
 }
 
-// void Context::init_api_crypto() const {
-//   JSValue global_obj, crypto;
+void Context::init_api_crypto() const {
+  JSValue global_obj, crypto;
 
-//   global_obj = JS_GetGlobalObject(this->qjs_context);
+  global_obj = JS_GetGlobalObject(this->qjs_context);
 
-//   crypto = JS_NewObject(this->qjs_context);
+  crypto = JS_NewObject(this->qjs_context);
 
-//   JS_SetPropertyStr(this->qjs_context, crypto, "getRandomValues", JS_NewCFunction(this->qjs_context, api_crypto_get_random_values, "getRandomValues", 1));
-//   JS_SetPropertyStr(this->qjs_context, crypto, "randomUUID", JS_NewCFunction(this->qjs_context, api_crypto_random_uuid, "randomUUID", 0));
+  JS_SetPropertyStr(this->qjs_context, crypto, "getRandomValues", JS_NewCFunction(this->qjs_context, api_crypto_get_random_values, "getRandomValues", 1));
+  JS_SetPropertyStr(this->qjs_context, crypto, "randomUUID", JS_NewCFunction(this->qjs_context, api_crypto_random_uuid, "randomUUID", 0));
 
-//   JS_SetPropertyStr(this->qjs_context, global_obj, "crypto", crypto);
+  JS_SetPropertyStr(this->qjs_context, global_obj, "crypto", crypto);
 
-//   JS_FreeValue(this->qjs_context, global_obj);
-// }
+  JS_FreeValue(this->qjs_context, global_obj);
+}
 
-// void Context::init_api_text() const {
-//   init_text_encoder_class(this->qjs_context);
-//   init_text_decoder_class(this->qjs_context);
-// }
+void Context::init_api_text() const {
+  init_text_encoder_class(this->qjs_context);
+  init_text_decoder_class(this->qjs_context);
+}
 
 void Context::init_api_fetch() const {
   init_response_class(this->qjs_context);
