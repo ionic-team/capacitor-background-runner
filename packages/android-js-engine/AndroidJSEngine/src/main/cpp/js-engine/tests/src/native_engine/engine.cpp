@@ -55,7 +55,9 @@ void Engine::register_function(const std::string& context_name, const std::strin
     throw std::invalid_argument("context not found");
   }
 
-  context->register_function(func_name, &func);
+  std::any wrapped_function = func;
+
+  context->register_function(func_name, wrapped_function);
 }
 
 Value* Engine::dispatch_event(const std::string& name, const std::string& event, nlohmann::json args) {

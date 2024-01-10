@@ -15,7 +15,7 @@ class Native : public NativeInterface {
   ~Native();
 
   virtual void logger(LoggerLevel level, const std::string& tag, const std::string& messages);
-  virtual void register_native_function(const std::string& func_name, void* func_obj);
+  virtual void register_native_function(const std::string& func_name, std::any func_obj);
   virtual bool has_native_function(const std::string& func_name);
   virtual JSValue invoke_native_function(const std::string& func_name, JSContext* ctx, JSValue args);
   virtual std::string crypto_get_random_uuid();

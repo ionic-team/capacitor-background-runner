@@ -25,9 +25,9 @@ Native::~Native() {}
 
 void Native::logger(LoggerLevel level, const std::string& tag, const std::string& messages) { fmt::println("{0} [{1}] {2}", this->logger_str[level], tag, messages); }
 
-void Native::register_native_function(const std::string& func_name, void* func_obj) {
-  auto func = (std::function<nlohmann::json(nlohmann::json)>*)func_obj;
-  this->functions[func_name] = *func;
+void Native::register_native_function(const std::string& func_name, std::any func_obj) {
+  auto unwrapped_func_obj = std::any_cast<std::function<nlohmann::json(nlohmann::json)>>(func_obj);
+  this->functions[func_name] = unwrapped_func_obj;
 }
 
 bool Native::has_native_function(const std::string& func_name) { return this->functions.find(func_name) != this->functions.end(); }

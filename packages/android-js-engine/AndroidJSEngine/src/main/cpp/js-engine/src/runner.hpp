@@ -30,6 +30,7 @@ class Runner {
   void log_debug(const std::string &msg);
 
  private:
+  bool run_loop_started;
   bool stop_run_loop;
 };
 

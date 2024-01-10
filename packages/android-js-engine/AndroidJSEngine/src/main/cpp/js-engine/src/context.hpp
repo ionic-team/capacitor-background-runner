@@ -41,7 +41,7 @@ class Context {
 
   void run_loop();
 
-  void register_function(const std::string &func_name, void *func);
+  void register_function(const std::string &func_name, std::any func);
   JSValue evaluate(const std::string &code, bool ret_val) const;
   JSValue dispatch_event(const std::string &event, JSValue details);
 

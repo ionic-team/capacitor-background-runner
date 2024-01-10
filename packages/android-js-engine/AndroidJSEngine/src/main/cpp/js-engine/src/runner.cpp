@@ -9,6 +9,7 @@ Runner::Runner(NativeInterface *native) {
   JS_SetMaxStackSize(rt, 0);
 
   this->stop_run_loop = false;
+  this->run_loop_started = false;
 
   this->log_debug("created runner");
 }
@@ -38,6 +39,8 @@ Runner::~Runner() {
 void Runner::start() {
   this->log_debug("starting runner run loop...");
 
+  this->run_loop_started = true;
+
   for (;;) {
     if (this->stop_run_loop) {
       break;
@@ -46,12 +49,24 @@ void Runner::start() {
     this->execute_jobs();
   }
 
+  this->run_loop_started = false;
   this->stop_run_loop = false;
+}
+
+void Runner::stop() {
+    if(!this->run_loop_started) {
+        return;
+    }
+
+  this->stop_run_loop = true;
+  for (;;) {
+    if (this->run_loop_started == false) {
+      break;
+    }
+  }
 
   this->log_debug("loop stopped");
 }
-
-void Runner::stop() { this->stop_run_loop = true; }
 
 Context *Runner::create_context(std::string name) {
   auto *context = new Context(name, this->rt, this->native);
@@ -68,6 +83,8 @@ void Runner::destroy_context(std::string name) {
 
     this->contexts.erase(name);
   } catch (std::exception &ex) {
+    // TODO:
+    this->log_debug("could not destroy context " + name);
   }
 }
 

@@ -74,7 +74,7 @@ static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int ar
   return context->native_interface->invoke_native_function(func_name_str, ctx, argv[0]);
 }
 
-void Context::register_function(const std::string &func_name, void *func) {
+void Context::register_function(const std::string &func_name, std::any func) {
   this->native_interface->register_native_function(func_name, func);
 
   auto global_obj = JS_GetGlobalObject(this->qjs_context);

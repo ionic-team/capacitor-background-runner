@@ -2,6 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/AndroidJSEngine/src/main/cpp/js-engine/cmake-build-debug/_deps/catch2-src" vcs="Git" />
   </component>
 </project>
