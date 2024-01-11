@@ -1,5 +1,6 @@
 #include <android/log.h>
 
+#include "errors.h"
 #include "native_android_interface.h"
 
 void write_to_logcat(android_LogPriority priority, const char *tag, const char *message) { __android_log_write(priority, tag, message); }
@@ -47,21 +48,20 @@ JSValue NativeAndroidInterface::invoke_native_function(const std::string& func_n
 
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-//        throw_js_exception(ctx, "JVM Environment is null");
-        return JS_UNDEFINED;
+        return JS_Throw(ctx, create_js_error("JVM environment is null", ctx));
     }
 
     auto java_function_class = env->GetObjectClass(java_function_obj);
-//    auto exception = throw_jvm_exception_in_js(env, ctx);
-//    if (JS_IsException(exception)) {
-//        return exception;
-//    }
+    auto jvm_exception = get_jvm_exception(env, ctx);
+    if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
+        return JS_Throw(ctx, jvm_exception);
+    }
 
     auto java_method = env->GetMethodID(java_function_class, "run", "()V");
-//    exception = throw_jvm_exception_in_js(env, ctx);
-//    if (JS_IsException(exception)) {
-//        return exception;
-//    }
+    jvm_exception = get_jvm_exception(env, ctx);
+    if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
+        return JS_Throw(ctx, jvm_exception);
+    }
 
     if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
         std::string json_string;
@@ -98,40 +98,81 @@ JSValue NativeAndroidInterface::invoke_native_function(const std::string& func_n
         // create a JSONObject
         jclass json_object_class = env->FindClass("org/json/JSONObject");
         jmethodID json_object_constructor = env->GetMethodID(json_object_class, "<init>", "(Ljava/lang/String;)V");
-//        exception = throw_jvm_exception_in_js(env, ctx);
-//        if (JS_IsException(exception)) {
-//            return exception;
-//        }
+        jvm_exception = get_jvm_exception(env, ctx);
+        if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
+            return JS_Throw(ctx, jvm_exception);
+        }
 
         jobject json_object = env->NewObject(json_object_class, json_object_constructor, json_j_string);
-//        exception = throw_jvm_exception_in_js(env, ctx);
-//        if (JS_IsException(exception)) {
-//            return exception;
-//        }
+        jvm_exception = get_jvm_exception(env, ctx);
+        if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
+            return JS_Throw(ctx, jvm_exception);
+        }
 
-        jfieldID args_field = env->GetFieldID(java_function_class, "args", "Lorg/json/JSONObject;");
+        jfieldID args_field = env->GetFieldID(java_function_class, "jsFunctionArgs", "Lorg/json/JSONObject;");
         env->SetObjectField(java_function_obj, args_field, json_object);
+        jvm_exception = get_jvm_exception(env, ctx);
+        if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
+            return JS_Throw(ctx, jvm_exception);
+        }
     }
 
     env->CallVoidMethod(java_function_obj, java_method);
-//    exception = throw_jvm_exception_in_js(env, ctx);
-//    if (JS_IsException(exception)) {
-//        return exception;
-//    }
+    jvm_exception = get_jvm_exception(env, ctx);
+    if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
+        return JS_Throw(ctx, jvm_exception);
+    }
 
     return JS_UNDEFINED;
 }
 
 std::string NativeAndroidInterface::crypto_get_random_uuid() {
-    return "";
+    auto *env = this->java->getEnv();
+    if (env == nullptr) {
+        return "";
+    }
+
+    auto *str = (jstring) env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_cryptoRandomUUID_method);
+    const auto *c_str = env->GetStringUTFChars(str, nullptr);
+
+    std::string return_string(c_str);
+    env->ReleaseStringUTFChars(str, c_str);
+
+    return return_string;
 }
 
 std::vector<uint8_t> NativeAndroidInterface::crypto_get_random(size_t size) {
-    return std::vector<uint8_t>();
+    auto *env = this->java->getEnv();
+    if (env == nullptr) {
+        // TODO:
+        return std::vector<uint8_t>();
+    }
+
+    auto random_vector = std::vector<uint8_t>(size);
+
+    auto random_bytes = static_cast<jbyteArray>(env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_cryptoGetRandom_method, size));
+    auto random = env->GetByteArrayElements(random_bytes, nullptr);
+
+    for (int i = 0; i < size; i++) {
+        random_vector[i] = random[i];
+    }
+
+    env->ReleaseByteArrayElements(random_bytes, random, 0);
+
+    return random_vector;
 }
 
 int NativeAndroidInterface::get_random_hash() {
-    return 0;
+    auto *env = this->java->getEnv();
+    if (env == nullptr) {
+        // TODO:
+        return 0;
+    }
+
+    const int unique = env->CallStaticIntMethod(this->java->web_api_class, this->java->web_api_randomHashCode_method);
+    // TODO: check for errors
+
+    return unique;
 }
 
 NativeResponse NativeAndroidInterface::fetch(NativeRequest request) {
@@ -140,10 +181,46 @@ NativeResponse NativeAndroidInterface::fetch(NativeRequest request) {
     return native_response;
 }
 
-std::string NativeAndroidInterface::byte_array_to_str(uint8_t* arr, const std::string& encoding) {
-    return "";
+std::string NativeAndroidInterface::byte_array_to_str(uint8_t* arr, size_t size, const std::string& encoding) {
+    auto *env = this->java->getEnv();
+    if (env == nullptr) {
+        // TODO: throw cpp exceptions
+        return 0;
+    }
+
+    auto *j_encoding = env->NewStringUTF(encoding.c_str());
+    jbyteArray byte_array = env->NewByteArray(size);
+
+    env->SetByteArrayRegion(byte_array, 0, size, reinterpret_cast<const jbyte *>(arr));
+
+    auto *str_j = (jstring)env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_byteArrayToString_method, byte_array, j_encoding);
+    const char *c_str = env->GetStringUTFChars(str_j, nullptr);
+
+    auto str = std::string(c_str);
+
+    env->ReleaseStringUTFChars(str_j, c_str);
+
+    return str;
 }
 
 std::vector<uint8_t> NativeAndroidInterface::string_to_byte_array(std::string str) {
-    return std::vector<uint8_t>();
+    auto *env = this->java->getEnv();
+    if (env == nullptr) {
+        // TODO:
+        return std::vector<uint8_t>();
+    }
+
+    jstring j_string = env->NewStringUTF(str.c_str());
+    auto *byte_array = static_cast<jbyteArray>(env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_stringToByteArray_method, j_string));
+    auto length = env->GetArrayLength(byte_array);
+    auto arr = env->GetByteArrayElements(byte_array, 0);
+
+    auto vector_bytes = std::vector<uint8_t>(length);
+    for (int i = 0; i < length; i++) {
+        vector_bytes[i] = arr[i];
+    }
+
+    env->ReleaseByteArrayElements(byte_array, arr, 0);
+
+    return vector_bytes;
 }

@@ -40,7 +40,7 @@ class NativeInterface {
   virtual std::vector<uint8_t> crypto_get_random(size_t size) = 0;
   virtual int get_random_hash() = 0;
   virtual NativeResponse fetch(NativeRequest request) = 0;
-  virtual std::string byte_array_to_str(uint8_t* arr, const std::string& encoding) = 0;
+  virtual std::string byte_array_to_str(uint8_t* arr, size_t size,const std::string& encoding) = 0;
   virtual std::vector<uint8_t> string_to_byte_array(std::string str) = 0;
 
  protected:

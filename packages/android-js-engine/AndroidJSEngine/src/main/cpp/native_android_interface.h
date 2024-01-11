@@ -18,7 +18,7 @@ public:
     virtual std::vector<uint8_t> crypto_get_random(size_t size);
     virtual int get_random_hash();
     virtual NativeResponse fetch(NativeRequest request);
-    virtual std::string byte_array_to_str(uint8_t* arr, const std::string& encoding);
+    virtual std::string byte_array_to_str(uint8_t* arr, size_t size, const std::string& encoding);
     virtual std::vector<uint8_t> string_to_byte_array(std::string str);
 
     std::unordered_map<std::string, jobject> registered_functions;

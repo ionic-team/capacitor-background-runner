@@ -42,7 +42,7 @@ static JSValue api_blob_get_text(JSContext *ctx, JSValueConst this_val, int argc
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
 
-  auto text_string = context->native_interface->byte_array_to_str(blob->data, "utf-8").c_str();
+  auto text_string = context->native_interface->byte_array_to_str(blob->data, 0, "utf-8").c_str();
   return JS_NewString(ctx, text_string);
 }
 

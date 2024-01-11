@@ -109,7 +109,7 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
   const auto *encoding = JS_ToCString(ctx, label_prop_str);
 
   try {
-    auto str = context->native_interface->byte_array_to_str(buf, std::string(encoding));
+    auto str = context->native_interface->byte_array_to_str(buf, buf_size, std::string(encoding));
     auto ret_value = JS_NewString(ctx, str.c_str());
 
     JS_FreeCString(ctx, encoding);

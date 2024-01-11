@@ -147,6 +147,6 @@ NativeResponse Native::fetch(NativeRequest native_request) {
   return native_response;
 }
 
-std::string Native::byte_array_to_str(uint8_t* arr, const std::string& encoding) { return std::string((char*)arr); }
+std::string Native::byte_array_to_str(uint8_t* arr, size_t size, const std::string& encoding) { return std::string((char*)arr); }
 
 std::vector<uint8_t> Native::string_to_byte_array(std::string str) { return std::vector<uint8_t>(str.begin(), str.end()); }

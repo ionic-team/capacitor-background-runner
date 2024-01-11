@@ -1,6 +1,4 @@
 #include "context.hpp"
-
-// #include "errors.h"
 #include "quickjs/cutils.h"
 
 Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native) {
@@ -95,7 +93,6 @@ JSValue Context::evaluate(const std::string &code, bool ret_val) const {
   int flags = JS_EVAL_TYPE_GLOBAL | JS_EVAL_FLAG_BACKTRACE_BARRIER;
   size_t len = strlen(code.c_str());
 
-  //   write_to_logcat(ANDROID_LOG_DEBUG, "[RUNNER DEV TRACER]", "evaluate context code");
   JSValue value = JS_Eval(this->qjs_context, code.c_str(), len, "<code>", flags);
 
   if (JS_IsException(value)) {

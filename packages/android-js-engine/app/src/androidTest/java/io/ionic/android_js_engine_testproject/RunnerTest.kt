@@ -1,6 +1,5 @@
 package io.ionic.android_js_engine_testproject
 
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import io.ionic.android_js_engine.NativeJSFunction
 import io.ionic.android_js_engine.Runner
@@ -10,7 +9,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
-import java.lang.annotation.Native
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 

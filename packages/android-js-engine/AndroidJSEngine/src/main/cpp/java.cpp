@@ -5,6 +5,31 @@
 Java::Java(JNIEnv *env) {
     this->vm = nullptr;
     env->GetJavaVM(&this->vm);
+
+    jclass tmp_class;
+
+    // Context API
+    tmp_class = env->FindClass("io/ionic/android_js_engine/NativeWebAPI");
+    this->check_exception(env);
+
+    this->web_api_class = (jclass)env->NewGlobalRef(tmp_class);
+    env->DeleteLocalRef(tmp_class);
+    tmp_class = nullptr;
+
+    this->web_api_byteArrayToString_method = env->GetStaticMethodID(this->web_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
+    this->check_exception(env);
+
+    this->web_api_stringToByteArray_method = env->GetStaticMethodID(this->web_api_class, "stringToByteArray", "(Ljava/lang/String;)[B");
+    this->check_exception(env);
+
+    this->web_api_randomHashCode_method = env->GetStaticMethodID(this->web_api_class, "randomHashCode", "()I");
+    this->check_exception(env);
+
+    this->web_api_cryptoGetRandom_method = env->GetStaticMethodID(this->web_api_class, "cryptoGetRandom", "(I)[B");
+    this->check_exception(env);
+
+    this->web_api_cryptoRandomUUID_method = env->GetStaticMethodID(this->web_api_class, "cryptoRandomUUID", "()Ljava/lang/String;");
+    this->check_exception(env);
 }
 
 JNIEnv *Java::getEnv() {

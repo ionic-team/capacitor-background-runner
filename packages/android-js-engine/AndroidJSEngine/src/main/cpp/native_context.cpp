@@ -1,5 +1,6 @@
 #include <jni.h>
 
+#include "errors.h"
 #include "./js-engine/src/runner.hpp"
 #include "./js-engine/src/context.hpp"
 
@@ -25,6 +26,12 @@ Java_io_ionic_android_1js_1engine_Context_evaluate(JNIEnv *env, jobject thiz, jl
     const char *code_c_str = env->GetStringUTFChars(code, nullptr);
     auto value = context->evaluate(code_c_str, (bool)ret_value);
 
+    // check for thrown exception in js context
+    auto exception = get_js_exception(context->qjs_context);
+    if (throw_js_error_in_jvm(env, context->qjs_context, exception)) {
+        return nullptr;
+    }
+
     const char *json_c_str = JS_ToCString(context->qjs_context, value);
     auto *json_j_str = env->NewStringUTF(json_c_str);
 
@@ -44,4 +51,28 @@ Java_io_ionic_android_1js_1engine_Context_registerGlobalFunction(JNIEnv *env, jo
     context->register_function(function_name_c_str, wrapped_function);
 
     env->ReleaseStringUTFChars(function_name, function_name_c_str);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_ionic_android_1js_1engine_Context_dispatchEvent(JNIEnv *env, jobject thiz, jlong ptr, jstring event, jstring details) {
+    auto *context = (Context *)ptr;
+
+    const char *event_c_str = env->GetStringUTFChars(event, nullptr);
+    const char *details_json_c_str = env->GetStringUTFChars(details, nullptr);
+
+    auto details_obj = JS_ParseJSON(context->qjs_context, details_json_c_str, strlen(details_json_c_str), "<details>");
+
+    auto value = context->dispatch_event(event_c_str, details_obj);
+    JS_FreeValue(context->qjs_context, details_obj);
+
+    env->ReleaseStringUTFChars(event, event_c_str);
+    env->ReleaseStringUTFChars(details, details_json_c_str);
+
+    // check for thrown exception in js context
+    auto exception = get_js_exception(context->qjs_context);
+    if (throw_js_error_in_jvm(env, context->qjs_context, exception)) {
+        return;
+    }
+
+    JS_FreeValue(context->qjs_context, value);
 }

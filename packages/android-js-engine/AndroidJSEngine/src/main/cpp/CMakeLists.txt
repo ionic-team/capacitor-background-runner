@@ -9,6 +9,7 @@ add_library(
         native_context.cpp
         native_android_interface.cpp
         java.cpp
+        errors.cpp
 )
 
 add_subdirectory("./js-engine")
