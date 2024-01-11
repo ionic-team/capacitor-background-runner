@@ -16,6 +16,20 @@ Java::Java(JNIEnv *env) {
     env->DeleteLocalRef(tmp_class);
     tmp_class = nullptr;
 
+    tmp_class = env->FindClass("io/ionic/android_js_engine/NativeJSFetchOptions");
+    this->check_exception(env);
+
+    this->native_js_fetch_options_class = (jclass)env->NewGlobalRef(tmp_class);
+    env->DeleteLocalRef(tmp_class);
+    tmp_class = nullptr;
+
+    tmp_class = env->FindClass("io/ionic/android_js_engine/NativeJSResponse");
+    this->check_exception(env);
+
+    this->native_js_response_class = (jclass)env->NewGlobalRef(tmp_class);
+    env->DeleteLocalRef(tmp_class);
+    tmp_class = nullptr;
+
     this->web_api_byteArrayToString_method = env->GetStaticMethodID(this->web_api_class, "byteArrayToString", "([BLjava/lang/String;)Ljava/lang/String;");
     this->check_exception(env);
 
@@ -29,6 +43,27 @@ Java::Java(JNIEnv *env) {
     this->check_exception(env);
 
     this->web_api_cryptoRandomUUID_method = env->GetStaticMethodID(this->web_api_class, "cryptoRandomUUID", "()Ljava/lang/String;");
+    this->check_exception(env);
+
+    this->web_api_fetch_method = env->GetStaticMethodID(this->web_api_class, "fetch", "(Ljava/lang/String;Lio/ionic/android_js_engine/NativeJSFetchOptions;)Lio/ionic/android_js_engine/NativeJSResponse;");
+    this->check_exception(env);
+
+    this->native_js_fetch_options_constructor = env->GetMethodID(this->native_js_fetch_options_class, "<init>", "(Ljava/lang/String;Ljava/util/HashMap;[B)V");
+    this->check_exception(env);
+
+    this->native_js_response_ok_field = env->GetFieldID(this->native_js_response_class, "ok", "Z");
+    this->check_exception(env);
+
+    this->native_js_response_status_field = env->GetFieldID(this->native_js_response_class, "status", "I");
+    this->check_exception(env);
+
+    this->native_js_response_url_field = env->GetFieldID(this->native_js_response_class, "url", "Ljava/lang/String;");
+    this->check_exception(env);
+
+    this->native_js_response_data_field = env->GetFieldID(this->native_js_response_class, "data", "[B");
+    this->check_exception(env);
+
+    this->native_js_response_error_field = env->GetFieldID(this->native_js_response_class, "error", "Ljava/lang/String;");
     this->check_exception(env);
 }
 

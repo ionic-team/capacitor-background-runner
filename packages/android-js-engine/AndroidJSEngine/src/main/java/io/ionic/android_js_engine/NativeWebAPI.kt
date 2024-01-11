@@ -1,5 +1,10 @@
 package io.ionic.android_js_engine
 
+import android.util.Log
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.nio.charset.Charset
 import java.util.UUID
 import java.security.SecureRandom
@@ -54,6 +59,41 @@ class NativeWebAPI {
             }
 
             return Charset.forName(encoding)
+        }
+
+        @JvmStatic
+        fun fetch(urlStr: String, options: NativeJSFetchOptions?): NativeJSResponse {
+            val url = URL(urlStr)
+            val connection = url.openConnection() as HttpURLConnection
+
+            try {
+                if (options != null) {
+                    connection.requestMethod = options.httpMethod
+
+                    options.headers.forEach {
+                        connection.setRequestProperty(it.key, it.value)
+                    }
+
+                    if (options.body != null) {
+                        connection.doOutput = true
+                        connection.setChunkedStreamingMode(0)
+
+                        val output = BufferedOutputStream(connection.outputStream)
+                        output.write(options.body)
+                        output.flush()
+                    }
+                }
+
+                val input = BufferedInputStream(connection.inputStream)
+                val bodyBytes = input.readBytes()
+
+                return NativeJSResponse(connection.responseCode, connection.url.toString(), bodyBytes, null)
+            } catch (ex: Exception) {
+                Log.e("KOTLIN FETCH ERROR", ex.toString())
+                return NativeJSResponse(-1, urlStr, null, ex.message)
+            } finally {
+                connection.disconnect()
+            }
         }
     }
 }

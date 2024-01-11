@@ -175,8 +175,88 @@ int NativeAndroidInterface::get_random_hash() {
     return unique;
 }
 
+jobject NativeAndroidInterface::native_request_to_native_js_fetch_options(JNIEnv *env, NativeRequest request) {
+    auto http_method_j = env->NewStringUTF(request.method.c_str());
+    auto byte_array = env->NewByteArray(request.body.size());
+    env->SetByteArrayRegion(byte_array, 0, request.body.size(), reinterpret_cast<const jbyte *>(request.body.data()));
+
+    // creating HashMap
+    jclass hash_map_class = env->FindClass("java/util/HashMap");
+    jmethodID hash_map_constructor = env->GetMethodID(hash_map_class, "<init>", "(I)V");
+    jobject headers_j = env->NewObject(hash_map_class, hash_map_constructor, (jsize)request.headers.size());
+
+    jmethodID hash_map_put = env->GetMethodID(hash_map_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+
+    for (const auto &kv : request.headers) {
+        auto key_j = env->NewStringUTF(kv.first.c_str());
+        auto value_j = env->NewStringUTF(kv.second.c_str());
+
+        env->CallObjectMethod(headers_j, hash_map_put, key_j, value_j);
+
+        env->ReleaseStringUTFChars(key_j, kv.first.c_str());
+        env->ReleaseStringUTFChars(value_j, kv.second.c_str());
+    }
+
+    env->DeleteLocalRef(hash_map_class);
+
+    // create native js fetch option
+    jobject fetch_options_j = env->NewObject(this->java->native_js_fetch_options_class, this->java->native_js_fetch_options_constructor, http_method_j, headers_j, byte_array);
+    auto return_fetch_options_j = env->NewGlobalRef(fetch_options_j);
+
+    env->DeleteLocalRef(fetch_options_j);
+
+    return return_fetch_options_j;
+}
+
+NativeResponse NativeAndroidInterface::native_js_response_to_native_response(JNIEnv *env, jobject native_js_response) {
+    NativeResponse response;
+
+    auto j_ok = env->GetBooleanField(native_js_response, this->java->native_js_response_ok_field);
+    auto j_status = env->GetIntField(native_js_response, this->java->native_js_response_status_field);
+    auto *j_url = (jstring)env->GetObjectField(native_js_response, this->java->native_js_response_url_field);
+    auto *j_data = static_cast<jbyteArray>(env->GetObjectField(native_js_response, this->java->native_js_response_data_field));
+    auto *j_err = (jstring)env->GetObjectField(native_js_response, this->java->native_js_response_error_field);
+
+    response.status = (int)j_status;
+    response.ok = (bool)j_ok;
+    response.url = env->GetStringUTFChars(j_url, 0);
+
+    if (j_data != nullptr) {
+        auto length = env->GetArrayLength(j_data);
+        auto data_arr = env->GetByteArrayElements(j_data, 0);
+
+        std::vector<uint8_t> buffer(length);
+
+        for (int i = 0; i < length; i++) {
+            buffer[i] = data_arr[i];
+        }
+
+        env->ReleaseByteArrayElements(j_data, data_arr, 0);
+
+        response.data = buffer;
+    }
+
+    if (j_err != nullptr) {
+        response.error = env->GetStringUTFChars(j_err, 0);
+    }
+
+    return response;
+}
+
+
 NativeResponse NativeAndroidInterface::fetch(NativeRequest request) {
     NativeResponse native_response;
+
+    auto *env = this->java->getEnv();
+    if (env == nullptr) {
+        // TODO: throw cpp exceptions
+        return native_response;
+    }
+    jstring url = env->NewStringUTF(request.url.c_str());
+    jobject fetch_options = this->native_request_to_native_js_fetch_options(env, request);
+
+    jobject response = env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_fetch_method, url, fetch_options);
+    native_response = this->native_js_response_to_native_response(env, response);
 
     return native_response;
 }

@@ -25,6 +25,8 @@ public:
 
 private:
     Java *java;
+    jobject native_request_to_native_js_fetch_options(JNIEnv *env, NativeRequest request);
+    NativeResponse native_js_response_to_native_response(JNIEnv *env, jobject native_js_response);
 };
 
 

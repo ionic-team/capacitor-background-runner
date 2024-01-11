@@ -8,6 +8,8 @@ public:
     JavaVM *vm;
 
     jclass web_api_class;
+    jclass native_js_response_class;
+    jclass native_js_fetch_options_class;
 
     jmethodID web_api_fetch_method;
     jmethodID web_api_byteArrayToString_method;
@@ -15,6 +17,13 @@ public:
     jmethodID web_api_randomHashCode_method;
     jmethodID web_api_cryptoRandomUUID_method;
     jmethodID web_api_cryptoGetRandom_method;
+    jmethodID native_js_fetch_options_constructor;
+
+    jfieldID native_js_response_ok_field;
+    jfieldID native_js_response_status_field;
+    jfieldID native_js_response_url_field;
+    jfieldID native_js_response_data_field;
+    jfieldID native_js_response_error_field;
 
     Java(JNIEnv *env);
     JNIEnv *getEnv();

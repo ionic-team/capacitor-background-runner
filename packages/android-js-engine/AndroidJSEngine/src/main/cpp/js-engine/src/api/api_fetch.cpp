@@ -115,6 +115,7 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
 
   if (!response.ok) {
     context->native_interface->logger(LoggerLevel::DEBUG, "FETCH", "...fetch error has occurred");
+    context->native_interface->logger(LoggerLevel::ERROR, "FETCH ERROR", response.error);
     auto exception = JS_NewError(ctx);
     JS_SetPropertyStr(ctx, exception, "message", JS_NewString(ctx, response.error.c_str()));
     reject_promise(ctx, reject, exception);

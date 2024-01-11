@@ -371,4 +371,121 @@ class ContextTest {
 
         runner.destroy()
     }
+
+    @Test
+    fun testAPI_Fetch() {
+        val runner = Runner()
+        runner.start()
+
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val future1 = CompletableFuture<JSONObject?>()
+        val future2 = CompletableFuture<Int>()
+        val future3 = CompletableFuture<JSONObject?>()
+
+        class SuccessCallback : NativeJSFunction(jsFunctionName = "successCallback") {
+            override fun run() {
+                super.run()
+                future1.complete(this.jsFunctionArgs)
+            }
+        }
+
+        class FailureCallback : NativeJSFunction(jsFunctionName = "failureCallback") {
+            public var calls: Int = 0
+            override fun run() {
+                super.run()
+                calls++
+                future2.complete(calls)
+            }
+        }
+
+        class OptionsSuccessCallback : NativeJSFunction(jsFunctionName = "successCallback2") {
+            override fun run() {
+                super.run()
+                future3.complete(this.jsFunctionArgs)
+            }
+        }
+
+        val callback1 = SuccessCallback()
+        val callback2 = FailureCallback()
+        val callback3 = OptionsSuccessCallback();
+
+        context.registerFunction("successCallback", callback1)
+        context.registerFunction("failureCallback", callback2)
+        context.registerFunction("successCallback2", callback3)
+
+        val basicFetchExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.json())
+                .then(json => { successCallback(json); })
+                .catch(err => { console.error(err); });
+        """.trimIndent()
+
+        val basicFetchWithTextResponseExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.text())
+                .then(text => { console.log(text); })
+                .catch(err => { console.error(err); });
+        """.trimIndent()
+
+        val basicFetchWithArrayBufferResponseExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.arrayBuffer())
+                .then(buf => { console.log(buf.byteLength); })
+                .catch(err => { console.error(err); });
+        """.trimIndent()
+
+        val basicFetchWithBlobResponseExample = """
+            fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .then(response => response.blob())
+                .then(blob => { console.log(blob.size); })
+                .catch(err => { console.error(err); });
+        """.trimIndent()
+
+        val fetchFailureExample = """
+            fetch('https://blablabla.fake/todos/1')
+                .catch(err => { console.error(err);  failureCallback(); });
+        """.trimIndent()
+
+        val fetchWithOptionsExample = """
+            fetch('https://jsonplaceholder.typicode.com/posts', {
+                method: 'POST',
+                body: JSON.stringify({
+                    title: 'foo',
+                    body: 'bar',
+                    userId: 1,
+                }),
+                headers: {
+                    'Content-type': 'application/json; charset=UTF-8',
+                }
+            })
+            .catch(err => { console.error(err); })
+            .then(response => response.json())
+            .then(json => { successCallback2(json); })
+        """.trimIndent()
+
+        context.execute(basicFetchExample)
+
+        val jsonResponse1 = future1.get(5, TimeUnit.SECONDS);
+        assertEquals("delectus aut autem", jsonResponse1?.getString("title"))
+
+        context.execute(basicFetchWithTextResponseExample)
+
+        context.execute(basicFetchWithArrayBufferResponseExample)
+
+//        context.execute(basicFetchWithBlobResponseExample)
+
+        context.execute(fetchFailureExample)
+
+        assertEquals(1, future2.get(5, TimeUnit.SECONDS))
+
+        context.execute(fetchWithOptionsExample)
+
+        val jsonResponse2 = future3.get(5, TimeUnit.SECONDS)
+        assertEquals("bar", jsonResponse2?.getString("body"))
+
+        runner.stop()
+        runner.destroy()
+
+    }
 }
