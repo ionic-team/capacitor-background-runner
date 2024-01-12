@@ -316,7 +316,7 @@ class ContextTest {
         val value = context.execute("setInterval(() => { intervalCallback() }, 2000)", true)
         assertTrue((value.getIntValue() ?: 0) > 0)
 
-        Thread.sleep(8000)
+        Thread.sleep(9000)
         assertEquals(4, calls)
 
         context.execute("clearInterval(${value.getIntValue()});")
