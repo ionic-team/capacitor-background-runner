@@ -177,8 +177,12 @@ int NativeAndroidInterface::get_random_hash() {
 
 jobject NativeAndroidInterface::native_request_to_native_js_fetch_options(JNIEnv *env, NativeRequest request) {
     auto http_method_j = env->NewStringUTF(request.method.c_str());
-    auto byte_array = env->NewByteArray(request.body.size());
-    env->SetByteArrayRegion(byte_array, 0, request.body.size(), reinterpret_cast<const jbyte *>(request.body.data()));
+    jbyteArray byte_array = nullptr;
+
+    if (!request.body.empty()) {
+        byte_array = env->NewByteArray(request.body.size());
+        env->SetByteArrayRegion(byte_array, 0, request.body.size(), reinterpret_cast<const jbyte *>(request.body.data()));
+    }
 
     // creating HashMap
     jclass hash_map_class = env->FindClass("java/util/HashMap");
@@ -192,9 +196,6 @@ jobject NativeAndroidInterface::native_request_to_native_js_fetch_options(JNIEnv
         auto value_j = env->NewStringUTF(kv.second.c_str());
 
         env->CallObjectMethod(headers_j, hash_map_put, key_j, value_j);
-
-        env->ReleaseStringUTFChars(key_j, kv.first.c_str());
-        env->ReleaseStringUTFChars(value_j, kv.second.c_str());
     }
 
     env->DeleteLocalRef(hash_map_class);

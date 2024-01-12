@@ -27,7 +27,7 @@ JSValue js_response_json_job(JSContext *ctx, int argc, JSValueConst *argv) {
   }
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
-  auto json_string = context->native_interface->byte_array_to_str(data->data.data(), 0, "utf-8");
+  auto json_string = context->native_interface->byte_array_to_str(data->data.data(), data->data.size(), "utf-8");
 
   auto global_obj = JS_GetGlobalObject(ctx);
 
