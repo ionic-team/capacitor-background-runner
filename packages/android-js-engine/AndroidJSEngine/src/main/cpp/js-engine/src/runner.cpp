@@ -64,8 +64,6 @@ void Runner::stop() {
       break;
     }
   }
-
-  this->log_debug("loop stopped");
 }
 
 Context *Runner::create_context(std::string name) {

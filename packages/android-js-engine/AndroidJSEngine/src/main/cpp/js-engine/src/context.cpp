@@ -15,8 +15,6 @@ Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface 
   this->init_api_text();
   this->init_api_fetch();
   //   this->init_api_blob();
-
-  //   this->log_debug("created context");
 }
 
 Context::~Context() {
@@ -37,7 +35,6 @@ void Context::run_loop() { this->run_timers(); }
 
 void Context::run_timers() {
   if (this->timers.empty()) {
-    // this->native_interface->logger(LoggerLevel::INFO, "test", "no timers");
     return;
   }
 
@@ -45,7 +42,7 @@ void Context::run_timers() {
 
   for (const auto &timer_kv : this->timers) {
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - timer_kv.second.start);
-    // this->native_interface->logger(LoggerLevel::INFO, "test", "has timer: " + std::to_string(timer_kv.second.timeout) + " elapsed: " + std::to_string(elapsed.count()));
+
     if (elapsed.count() >= timer_kv.second.timeout) {
       this->execute_timer(timer_kv.second.js_func);
       if (timer_kv.second.repeat) {
@@ -223,8 +220,6 @@ void Context::init_callbacks(JSValue callbacks) const {
 }
 
 void Context::execute_timer(JSValue timerFunc) const {
-  // this->native_interface->logger(LoggerLevel::INFO, "test", "executing timer");
-  //   write_to_logcat(ANDROID_LOG_DEBUG, "[RUNNER DEV TRACER]", "fire timer");
   JSValue dupFunc = JS_DupValue(this->qjs_context, timerFunc);
   auto ret = JS_Call(this->qjs_context, dupFunc, JS_UNDEFINED, 0, nullptr);
   JS_FreeValue(this->qjs_context, dupFunc);

@@ -3,11 +3,7 @@
 #include <string>
 #include <unordered_map>
 
-// #include <jni.h>
-
 #include "./quickjs/quickjs.h"
-
-// #include "java.h"
 #include "api/api_blob.h"
 #include "api/api_console.h"
 #include "api/api_crypto.h"
@@ -28,7 +24,6 @@ class Context {
   std::string name;
 
   JSContext *qjs_context;
-  // Java *java;
   // jobject cap_api;
 
   NativeInterface *native_interface;

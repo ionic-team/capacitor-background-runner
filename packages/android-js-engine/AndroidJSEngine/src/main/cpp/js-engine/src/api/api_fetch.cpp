@@ -103,9 +103,7 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
   NativeResponse response;
 
   try {
-    context->native_interface->logger(LoggerLevel::DEBUG, "FETCH", "trying fetch...");
     response = context->native_interface->fetch(native_request);
-    context->native_interface->logger(LoggerLevel::DEBUG, "FETCH", "...fetch completed");
   } catch (std::exception &ex) {
     auto error_message = ex.what();
     auto exception = throw_js_exception(ctx, error_message);
@@ -114,8 +112,6 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
   }
 
   if (!response.ok) {
-    context->native_interface->logger(LoggerLevel::DEBUG, "FETCH", "...fetch error has occurred");
-    context->native_interface->logger(LoggerLevel::ERROR, "FETCH ERROR", response.error);
     auto exception = JS_NewError(ctx);
     JS_SetPropertyStr(ctx, exception, "message", JS_NewString(ctx, response.error.c_str()));
     reject_promise(ctx, reject, exception);
@@ -130,7 +126,6 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
   resolve_args[0] = js_response;
 
   JS_Call(ctx, resolve, global_obj, 1, resolve_args);
-  context->native_interface->logger(LoggerLevel::DEBUG, "FETCH", "callback called");
 
   JS_FreeValue(ctx, js_response);
   JS_FreeValue(ctx, global_obj);

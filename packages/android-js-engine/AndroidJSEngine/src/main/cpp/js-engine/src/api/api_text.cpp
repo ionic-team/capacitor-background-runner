@@ -85,7 +85,6 @@ static JSValue api_text_encoder_encode(JSContext *ctx, JSValueConst this_val, in
 static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   uint8_t *buf;
   size_t elem, len, offset, buf_size;
-  int size;
 
   auto t_arr_buf = JS_GetTypedArrayBuffer(ctx, argv[0], &offset, &len, &elem);
   buf = JS_GetArrayBuffer(ctx, &buf_size, t_arr_buf);
@@ -94,8 +93,6 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
     JS_FreeValue(ctx, t_arr_buf);
     return JS_EXCEPTION;
   }
-
-  size = buf_size;
 
   JS_FreeValue(ctx, t_arr_buf);
 
