@@ -1,6 +1,6 @@
 #include <android/log.h>
 
-#include "errors.h"
+#include "java_errors.h"
 #include "native_android_interface.h"
 
 void write_to_logcat(android_LogPriority priority, const char *tag, const char *message) { __android_log_write(priority, tag, message); }
@@ -48,19 +48,19 @@ JSValue NativeAndroidInterface::invoke_native_function(const std::string& func_n
 
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-        return JS_Throw(ctx, create_js_error("JVM environment is null", ctx));
+        throw new NativeInterfaceException("JVM environment is null");
     }
 
     auto java_function_class = env->GetObjectClass(java_function_obj);
-    auto jvm_exception = get_jvm_exception(env, ctx);
-    if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
-        return JS_Throw(ctx, jvm_exception);
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
     }
 
     auto java_method = env->GetMethodID(java_function_class, "run", "()V");
-    jvm_exception = get_jvm_exception(env, ctx);
-    if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
-        return JS_Throw(ctx, jvm_exception);
+    jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
     }
 
     if (!JS_IsNull(args) && !JS_IsUndefined(args)) {
@@ -98,29 +98,29 @@ JSValue NativeAndroidInterface::invoke_native_function(const std::string& func_n
         // create a JSONObject
         jclass json_object_class = env->FindClass("org/json/JSONObject");
         jmethodID json_object_constructor = env->GetMethodID(json_object_class, "<init>", "(Ljava/lang/String;)V");
-        jvm_exception = get_jvm_exception(env, ctx);
-        if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
-            return JS_Throw(ctx, jvm_exception);
+        jvm_exception = get_jvm_exception(env);
+        if (jvm_exception != nullptr) {
+            throw *jvm_exception;
         }
 
         jobject json_object = env->NewObject(json_object_class, json_object_constructor, json_j_string);
-        jvm_exception = get_jvm_exception(env, ctx);
-        if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
-            return JS_Throw(ctx, jvm_exception);
+        jvm_exception = get_jvm_exception(env);
+        if (jvm_exception != nullptr) {
+            throw *jvm_exception;
         }
 
         jfieldID args_field = env->GetFieldID(java_function_class, "jsFunctionArgs", "Lorg/json/JSONObject;");
         env->SetObjectField(java_function_obj, args_field, json_object);
-        jvm_exception = get_jvm_exception(env, ctx);
-        if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
-            return JS_Throw(ctx, jvm_exception);
+        jvm_exception = get_jvm_exception(env);
+        if (jvm_exception != nullptr) {
+            throw *jvm_exception;
         }
     }
 
     env->CallVoidMethod(java_function_obj, java_method);
-    jvm_exception = get_jvm_exception(env, ctx);
-    if (!JS_IsNull(jvm_exception) && JS_IsError(ctx, jvm_exception)) {
-        return JS_Throw(ctx, jvm_exception);
+    jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
     }
 
     return JS_UNDEFINED;
@@ -129,10 +129,15 @@ JSValue NativeAndroidInterface::invoke_native_function(const std::string& func_n
 std::string NativeAndroidInterface::crypto_get_random_uuid() {
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-        return "";
+        throw new NativeInterfaceException("JVM environment is null");
     }
 
     auto *str = (jstring) env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_cryptoRandomUUID_method);
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
+
     const auto *c_str = env->GetStringUTFChars(str, nullptr);
 
     std::string return_string(c_str);
@@ -144,14 +149,22 @@ std::string NativeAndroidInterface::crypto_get_random_uuid() {
 std::vector<uint8_t> NativeAndroidInterface::crypto_get_random(size_t size) {
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-        // TODO:
-        return std::vector<uint8_t>();
+        throw new NativeInterfaceException("JVM environment is null");
     }
 
     auto random_vector = std::vector<uint8_t>(size);
 
     auto random_bytes = static_cast<jbyteArray>(env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_cryptoGetRandom_method, size));
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
+
     auto random = env->GetByteArrayElements(random_bytes, nullptr);
+    jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
 
     for (int i = 0; i < size; i++) {
         random_vector[i] = random[i];
@@ -165,12 +178,14 @@ std::vector<uint8_t> NativeAndroidInterface::crypto_get_random(size_t size) {
 int NativeAndroidInterface::get_random_hash() {
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-        // TODO:
-        return 0;
+        throw new NativeInterfaceException("JVM environment is null");
     }
 
     const int unique = env->CallStaticIntMethod(this->java->web_api_class, this->java->web_api_randomHashCode_method);
-    // TODO: check for errors
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
 
     return unique;
 }
@@ -188,6 +203,10 @@ jobject NativeAndroidInterface::native_request_to_native_js_fetch_options(JNIEnv
     jclass hash_map_class = env->FindClass("java/util/HashMap");
     jmethodID hash_map_constructor = env->GetMethodID(hash_map_class, "<init>", "(I)V");
     jobject headers_j = env->NewObject(hash_map_class, hash_map_constructor, (jsize)request.headers.size());
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
 
     jmethodID hash_map_put = env->GetMethodID(hash_map_class, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 
@@ -196,12 +215,21 @@ jobject NativeAndroidInterface::native_request_to_native_js_fetch_options(JNIEnv
         auto value_j = env->NewStringUTF(kv.second.c_str());
 
         env->CallObjectMethod(headers_j, hash_map_put, key_j, value_j);
+        jvm_exception = get_jvm_exception(env);
+        if (jvm_exception != nullptr) {
+            throw *jvm_exception;
+        }
     }
 
     env->DeleteLocalRef(hash_map_class);
 
     // create native js fetch option
     jobject fetch_options_j = env->NewObject(this->java->native_js_fetch_options_class, this->java->native_js_fetch_options_constructor, http_method_j, headers_j, byte_array);
+    jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
+
     auto return_fetch_options_j = env->NewGlobalRef(fetch_options_j);
 
     env->DeleteLocalRef(fetch_options_j);
@@ -246,17 +274,22 @@ NativeResponse NativeAndroidInterface::native_js_response_to_native_response(JNI
 
 
 NativeResponse NativeAndroidInterface::fetch(NativeRequest request) {
-    NativeResponse native_response;
-
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-        // TODO: throw cpp exceptions
-        return native_response;
+        throw new NativeInterfaceException("JVM environment is null");
     }
+
+    NativeResponse native_response;
+
     jstring url = env->NewStringUTF(request.url.c_str());
     jobject fetch_options = this->native_request_to_native_js_fetch_options(env, request);
 
     jobject response = env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_fetch_method, url, fetch_options);
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
+
     native_response = this->native_js_response_to_native_response(env, response);
 
     return native_response;
@@ -265,8 +298,7 @@ NativeResponse NativeAndroidInterface::fetch(NativeRequest request) {
 std::string NativeAndroidInterface::byte_array_to_str(uint8_t* arr, size_t size, const std::string& encoding) {
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-        // TODO: throw cpp exceptions
-        return 0;
+        throw new NativeInterfaceException("JVM environment is null");
     }
 
     auto *j_encoding = env->NewStringUTF(encoding.c_str());
@@ -275,6 +307,11 @@ std::string NativeAndroidInterface::byte_array_to_str(uint8_t* arr, size_t size,
     env->SetByteArrayRegion(byte_array, 0, size, reinterpret_cast<const jbyte *>(arr));
 
     auto *str_j = (jstring)env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_byteArrayToString_method, byte_array, j_encoding);
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
+
     const char *c_str = env->GetStringUTFChars(str_j, nullptr);
 
     auto str = std::string(c_str);
@@ -287,12 +324,16 @@ std::string NativeAndroidInterface::byte_array_to_str(uint8_t* arr, size_t size,
 std::vector<uint8_t> NativeAndroidInterface::string_to_byte_array(std::string str) {
     auto *env = this->java->getEnv();
     if (env == nullptr) {
-        // TODO:
-        return std::vector<uint8_t>();
+        throw new NativeInterfaceException("JVM environment is null");
     }
 
     jstring j_string = env->NewStringUTF(str.c_str());
     auto *byte_array = static_cast<jbyteArray>(env->CallStaticObjectMethod(this->java->web_api_class, this->java->web_api_stringToByteArray_method, j_string));
+    auto jvm_exception = get_jvm_exception(env);
+    if (jvm_exception != nullptr) {
+        throw *jvm_exception;
+    }
+
     auto length = env->GetArrayLength(byte_array);
     auto arr = env->GetByteArrayElements(byte_array, 0);
 

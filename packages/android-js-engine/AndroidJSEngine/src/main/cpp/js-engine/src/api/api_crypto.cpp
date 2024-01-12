@@ -19,8 +19,8 @@ JSValue api_crypto_get_random_values(JSContext *ctx, JSValueConst this_val, int 
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
   if (context == nullptr) {
-    throw_js_exception(ctx, "parent context is null");
-    return JS_UNDEFINED;
+      auto js_error = create_js_error("parent context is null", ctx);
+      return JS_Throw(ctx, js_error);
   }
 
   try {
@@ -34,17 +34,18 @@ JSValue api_crypto_get_random_values(JSContext *ctx, JSValueConst this_val, int 
 
     return JS_DupValue(ctx, argv[0]);
   } catch (std::exception &ex) {
-    auto error_message = ex.what();
-    throw_js_exception(ctx, error_message);
-    return JS_UNDEFINED;
+      JS_FreeValue(ctx, t_arr_buf);
+
+      auto js_error = create_js_error(ex.what(), ctx);
+      return JS_Throw(ctx, js_error);
   }
 }
 
 JSValue api_crypto_random_uuid(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   auto *context = (Context *)JS_GetContextOpaque(ctx);
   if (context == nullptr) {
-    throw_js_exception(ctx, "parent context is null");
-    return JS_UNDEFINED;
+      auto js_error = create_js_error("parent context is null", ctx);
+      return JS_Throw(ctx, js_error);
   }
 
   try {
@@ -52,8 +53,7 @@ JSValue api_crypto_random_uuid(JSContext *ctx, JSValueConst this_val, int argc, 
     auto ret_value = JS_NewString(ctx, uuid_string.c_str());
     return ret_value;
   } catch (std::exception &ex) {
-    auto error_message = ex.what();
-    throw_js_exception(ctx, error_message);
-    return JS_UNDEFINED;
+      auto js_error = create_js_error(ex.what(), ctx);
+      return JS_Throw(ctx, js_error);
   }
 }

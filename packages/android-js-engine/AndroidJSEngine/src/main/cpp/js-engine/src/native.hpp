@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "quickjs/quickjs.h"
+#include "errors.hpp"
 
 enum LoggerLevel { INFO, WARN, ERROR, DEBUG };
 

@@ -1,14 +1,8 @@
-#include "errors.h"
+#import "java_errors.h"
 
-JSValue create_js_error(const char * error_message, JSContext *ctx) {
-    auto error = JS_NewError(ctx);
-    JS_SetPropertyStr(ctx, error, "message", JS_NewString(ctx, error_message));
-    return error;
-}
-
-JSValue get_jvm_exception(JNIEnv *env, JSContext *ctx) {
+NativeInterfaceException* get_jvm_exception(JNIEnv *env) {
     if (!env->ExceptionCheck()) {
-        return JS_NULL;
+        return nullptr;
     }
 
     auto *throwable = env->ExceptionOccurred();
@@ -23,19 +17,8 @@ JSValue get_jvm_exception(JNIEnv *env, JSContext *ctx) {
 
     const auto *err_message_c_str = env->GetStringUTFChars(err_msg, nullptr);
 
-    return create_js_error(err_message_c_str, ctx);
+    return new NativeInterfaceException(err_message_c_str);
 }
-
-JSValue get_js_exception(JSContext *ctx) {
-    auto exception = JS_GetException(ctx);
-    if (!JS_IsException(exception)  && !JS_IsError(ctx, exception)) {
-        return JS_NULL;
-    }
-
-    return exception;
-}
-
-
 
 bool throw_js_error_in_jvm(JNIEnv *env, JSContext *ctx, JSValue value) {
     if (!JS_IsError(ctx, value) && !JS_IsException(value)) {

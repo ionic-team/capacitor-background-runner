@@ -54,8 +54,8 @@ static JSValue api_text_encoder_encode(JSContext *ctx, JSValueConst this_val, in
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
   if (context == nullptr) {
-    throw_js_exception(ctx, "parent context is null");
-    return JS_UNDEFINED;
+      auto js_error = create_js_error("parent context is null", ctx);
+      return JS_Throw(ctx, js_error);
   }
 
   try {
@@ -76,9 +76,8 @@ static JSValue api_text_encoder_encode(JSContext *ctx, JSValueConst this_val, in
 
     return ret_value;
   } catch (std::exception &ex) {
-    auto error_message = ex.what();
-    throw_js_exception(ctx, error_message);
-    return JS_UNDEFINED;
+      auto js_error = create_js_error(ex.what(), ctx);
+      return JS_Throw(ctx, js_error);
   }
 }
 
@@ -98,8 +97,8 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
   if (context == nullptr) {
-    throw_js_exception(ctx, "parent context is null");
-    return JS_UNDEFINED;
+      auto js_error = create_js_error("parent context is null", ctx);
+      return JS_Throw(ctx, js_error);
   }
 
   auto label_prop_str = JS_GetPropertyStr(ctx, this_val, "label");
@@ -114,9 +113,8 @@ static JSValue api_text_decoder_decode(JSContext *ctx, JSValueConst this_val, in
   } catch (std::exception &ex) {
     JS_FreeCString(ctx, encoding);
 
-    auto error_message = ex.what();
-    throw_js_exception(ctx, error_message);
-    return JS_UNDEFINED;
+    auto js_error = create_js_error(ex.what(), ctx);
+    return JS_Throw(ctx, js_error);
   }
 }
 

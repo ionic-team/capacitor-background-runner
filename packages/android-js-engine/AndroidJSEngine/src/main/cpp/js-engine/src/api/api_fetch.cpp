@@ -62,14 +62,16 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
   if (context == nullptr) {
-    auto exception = throw_js_exception(ctx, "parent context is null");
-    reject_promise(ctx, reject, exception);
+    auto js_error = create_js_error("parent context is null", ctx);
+    reject_promise(ctx, reject, js_error);
+    JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 
   if (JS_IsNull(request) || !JS_IsString(request)) {
-    auto exception = throw_js_exception(ctx, "invalid url");
-    reject_promise(ctx, reject, exception);
+    auto js_error = create_js_error("invalid url", ctx);
+    reject_promise(ctx, reject, js_error);
+    JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 
@@ -105,17 +107,16 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
   try {
     response = context->native_interface->fetch(native_request);
   } catch (std::exception &ex) {
-    auto error_message = ex.what();
-    auto exception = throw_js_exception(ctx, error_message);
-    reject_promise(ctx, reject, exception);
+      auto js_error = create_js_error(ex.what(), ctx);
+    reject_promise(ctx, reject, js_error);
+      JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 
   if (!response.ok) {
-    auto exception = JS_NewError(ctx);
-    JS_SetPropertyStr(ctx, exception, "message", JS_NewString(ctx, response.error.c_str()));
-    reject_promise(ctx, reject, exception);
-    JS_FreeValue(ctx, exception);
+      auto js_error = create_js_error(response.error.c_str(), ctx);
+    reject_promise(ctx, reject, js_error);
+    JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 

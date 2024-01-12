@@ -66,7 +66,12 @@ static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int ar
   auto func_name_str = std::string(JS_ToCString(ctx, func_name_obj));
   JS_FreeValue(ctx, func_name_obj);
 
-  return context->native_interface->invoke_native_function(func_name_str, ctx, argv[0]);
+  try {
+      return context->native_interface->invoke_native_function(func_name_str, ctx, argv[0]);
+  } catch(std::exception &ex) {
+      auto js_error = create_js_error(ex.what(), ctx);
+      return JS_Throw(ctx, js_error);
+  }
 }
 
 void Context::register_function(const std::string &func_name, std::any func) {
@@ -193,20 +198,17 @@ void Context::init_callbacks(JSValue callbacks) const {
       std::string const prefix = str_value.substr(0, 7);
 
       if (prefix == "__cbr::") {
-        try {
-          auto global_func_name = str_value.substr(7);
+        auto global_func_name = str_value.substr(7);
 
-          if (this->native_interface->has_native_function(global_func_name)) {
-            auto func_name_value = JS_NewString(this->qjs_context, global_func_name.c_str());
+        if (this->native_interface->has_native_function(global_func_name)) {
+          auto func_name_value = JS_NewString(this->qjs_context, global_func_name.c_str());
 
-            JSValueConst ptr[1];
-            ptr[0] = func_name_value;
+          JSValueConst ptr[1];
+          ptr[0] = func_name_value;
 
-            JS_SetPropertyStr(this->qjs_context, callbacks, key, JS_NewCFunctionData(this->qjs_context, call_registered_function, 1, 0, 1, ptr));
+          JS_SetPropertyStr(this->qjs_context, callbacks, key, JS_NewCFunctionData(this->qjs_context, call_registered_function, 1, 0, 1, ptr));
 
-            JS_FreeValue(this->qjs_context, func_name_value);
-          }
-        } catch (std::exception &ex) {
+          JS_FreeValue(this->qjs_context, func_name_value);
         }
       }
 

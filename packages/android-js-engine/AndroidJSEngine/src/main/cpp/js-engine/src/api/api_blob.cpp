@@ -23,7 +23,8 @@ static JSClassDef js_blob_class = {"Blob", .finalizer = js_blob_data_finalizer};
 static JSValue api_blob_get_array_buffer(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   auto *blob = (blob_data *)JS_GetOpaque(this_val, js_blob_class_id);
   if (blob == nullptr) {
-    return throw_js_exception(ctx, "backing data is null");
+      auto js_error = create_js_error("backing data is null", ctx);
+      return JS_Throw(ctx, js_error);
   }
 
   auto array_buffer = JS_NewArrayBuffer(ctx, blob->data, blob->size, nullptr, nullptr, 0);
@@ -37,11 +38,13 @@ static JSValue api_blob_get_array_buffer(JSContext *ctx, JSValueConst this_val, 
 static JSValue api_blob_get_text(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   auto *blob = (blob_data *)JS_GetOpaque(this_val, js_blob_class_id);
   if (blob == nullptr) {
-    return throw_js_exception(ctx, "backing data is null");
+      auto js_error = create_js_error("backing data is null", ctx);
+      return JS_Throw(ctx, js_error);
   }
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
 
+  //TODO handle exception
   auto text_string = context->native_interface->byte_array_to_str(blob->data, 0, "utf-8").c_str();
   return JS_NewString(ctx, text_string);
 }

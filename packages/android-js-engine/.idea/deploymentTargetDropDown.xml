@@ -18,10 +18,10 @@
           <timeTargetWasSelectedWithDropDown value="2024-01-12T00:10:31.885653Z" />
         </State>
       </entry>
-      <entry key="app">
+      <entry key="RunnerTest">
         <State />
       </entry>
-      <entry key="testAPI_Crypto()">
+      <entry key="app">
         <State />
       </entry>
       <entry key="testAPI_Fetch()">
@@ -54,7 +54,7 @@
       <entry key="testAPI_TextDecoder()">
         <State />
       </entry>
-      <entry key="testAPI_TextEncoder()">
+      <entry key="testErrorHandling()">
         <State />
       </entry>
     </value>

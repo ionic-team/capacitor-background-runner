@@ -81,7 +81,6 @@ void Runner::destroy_context(std::string name) {
 
     this->contexts.erase(name);
   } catch (std::exception &ex) {
-    // TODO:
     this->log_debug("could not destroy context " + name);
   }
 }

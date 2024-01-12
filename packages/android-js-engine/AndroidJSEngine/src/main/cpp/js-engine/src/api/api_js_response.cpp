@@ -20,30 +20,38 @@ JSValue js_response_json_job(JSContext *ctx, int argc, JSValueConst *argv) {
 
   auto *data = (response_data *)JS_GetOpaque(response, js_response_class_id);
   if (data == nullptr) {
-    auto exception = throw_js_exception(ctx, "backing data is null");
-    reject_promise(ctx, reject, exception);
-    JS_FreeValue(ctx, exception);
+      auto js_error = create_js_error("backing data is null", ctx);
+    reject_promise(ctx, reject, js_error);
+    JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
-  auto json_string = context->native_interface->byte_array_to_str(data->data.data(), data->data.size(), "utf-8");
 
-  auto global_obj = JS_GetGlobalObject(ctx);
+  try {
+      auto json_string = context->native_interface->byte_array_to_str(data->data.data(), data->data.size(), "utf-8");
 
-  if (!json_string.empty()) {
-    auto json = JS_ParseJSON(ctx, json_string.c_str(), strlen(json_string.c_str()), "<json>");
-    auto res = JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&json);
-    JS_FreeValue(ctx, res);
-    JS_FreeValue(ctx, json);
-  } else {
-    auto res = JS_Call(ctx, resolve, global_obj, 0, nullptr);
-    JS_FreeValue(ctx, res);
+      auto global_obj = JS_GetGlobalObject(ctx);
+
+      if (!json_string.empty()) {
+          auto json = JS_ParseJSON(ctx, json_string.c_str(), strlen(json_string.c_str()), "<json>");
+          auto res = JS_Call(ctx, resolve, global_obj, 1, (JSValueConst *)&json);
+          JS_FreeValue(ctx, res);
+          JS_FreeValue(ctx, json);
+      } else {
+          auto res = JS_Call(ctx, resolve, global_obj, 0, nullptr);
+          JS_FreeValue(ctx, res);
+      }
+
+      JS_FreeValue(ctx, global_obj);
+
+      return JS_UNDEFINED;
+  } catch(std::exception &ex) {
+    auto js_error = create_js_error(ex.what(), ctx);
+      reject_promise(ctx, reject, js_error);
+      JS_FreeValue(ctx, js_error);
+      return JS_UNDEFINED;
   }
-
-  JS_FreeValue(ctx, global_obj);
-
-  return JS_UNDEFINED;
 }
 
 JSValue js_response_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
@@ -55,28 +63,35 @@ JSValue js_response_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
 
   auto *data = (response_data *)JS_GetOpaque(response, js_response_class_id);
   if (data == nullptr) {
-    auto exception = throw_js_exception(ctx, "backing data is null");
-    reject_promise(ctx, reject, exception);
-    JS_FreeValue(ctx, exception);
+      auto js_error = create_js_error("backing data is null", ctx);
+      reject_promise(ctx, reject, js_error);
+      JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
 
-  auto text_string = context->native_interface->byte_array_to_str(data->data.data(), data->data.size(), "utf-8");
+    try {
+        auto text_string = context->native_interface->byte_array_to_str(data->data.data(), data->data.size(), "utf-8");
 
-  auto text = JS_NewString(ctx, text_string.c_str());
+        auto text = JS_NewString(ctx, text_string.c_str());
 
-  JSValueConst resolve_args[1];
-  resolve_args[0] = text;
+        JSValueConst resolve_args[1];
+        resolve_args[0] = text;
 
-  auto global_obj = JS_GetGlobalObject(ctx);
-  JS_Call(ctx, resolve, global_obj, 1, resolve_args);
+        auto global_obj = JS_GetGlobalObject(ctx);
+        JS_Call(ctx, resolve, global_obj, 1, resolve_args);
 
-  JS_FreeValue(ctx, text);
-  JS_FreeValue(ctx, global_obj);
+        JS_FreeValue(ctx, text);
+        JS_FreeValue(ctx, global_obj);
 
-  return JS_UNDEFINED;
+        return JS_UNDEFINED;
+    } catch(std::exception &ex) {
+        auto js_error = create_js_error(ex.what(), ctx);
+        reject_promise(ctx, reject, js_error);
+        JS_FreeValue(ctx, js_error);
+        return JS_UNDEFINED;
+    }
 }
 
 JSValue js_response_array_buffer_job(JSContext *ctx, int argc, JSValueConst *argv) {
@@ -88,9 +103,9 @@ JSValue js_response_array_buffer_job(JSContext *ctx, int argc, JSValueConst *arg
 
   auto *data = (response_data *)JS_GetOpaque(response, js_response_class_id);
   if (data == nullptr) {
-    auto exception = throw_js_exception(ctx, "backing data is null");
-    reject_promise(ctx, reject, exception);
-    JS_FreeValue(ctx, exception);
+      auto js_error = create_js_error("backing data is null", ctx);
+      reject_promise(ctx, reject, js_error);
+      JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 
@@ -117,9 +132,9 @@ JSValue js_response_blob_job(JSContext *ctx, int argc, JSValueConst *argv) {
 
   auto *data = (response_data *)JS_GetOpaque(response, js_response_class_id);
   if (data == nullptr) {
-    auto exception = throw_js_exception(ctx, "backing data is null");
-    reject_promise(ctx, reject, exception);
-    JS_FreeValue(ctx, exception);
+      auto js_error = create_js_error("backing data is null", ctx);
+      reject_promise(ctx, reject, js_error);
+      JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 

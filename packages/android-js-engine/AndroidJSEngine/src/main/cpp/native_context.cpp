@@ -1,6 +1,7 @@
 #include <jni.h>
 
-#include "errors.h"
+#include "java_errors.h"
+#include "./js-engine/src/errors.hpp"
 #include "./js-engine/src/runner.hpp"
 #include "./js-engine/src/context.hpp"
 
