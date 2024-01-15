@@ -1,0 +1,22 @@
+{
+    "name": "android-js-engine",
+    "private": true,
+    "dependencies": {
+      "@naturalcycles/ktlint": "1.7.0",
+      "clang-format": "^1.8.0",
+      "prettier": "~2.3.2",
+      "prettier-plugin-java": "~1.0.2"
+    },
+    "devDependencies": {
+      "@ionic/prettier-config": "^1.0.1"
+    },
+    "prettier": "@ionic/prettier-config",
+    "scripts": {
+      "lint": "pnpm prettier --check && pnpm clang-format --dry-run && ktlint 'android-js-engine/src/**/*.kt'",
+      "fmt": "pnpm prettier --write && pnpm clang-format -i && ktlint --format 'android-js-engine/src/**/*.kt'",
+      "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java}\"",
+      "clang-format": "clang-format --glob=android-js-engine/src/main/cpp/**/*.{cpp,h}"
+    },
+    "version": "1.0.5"
+  }
+  

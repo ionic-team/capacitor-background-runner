@@ -37,7 +37,7 @@ class Runner {
     fun destroyContext(name: String) {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
 
-        val context = contexts[name] ?: return
+        val context = contexts[name] ?: throw EngineErrors.RunnerException("could not find context named: $name")
         context.destroy()
 
         this.contexts.remove(name)
