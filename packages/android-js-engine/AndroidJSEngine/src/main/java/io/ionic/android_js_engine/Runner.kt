@@ -20,7 +20,7 @@ class Runner {
     private external fun stopRunner(ptr: Long)
     private external fun destroyRunner(ptr: Long)
 
-    fun createContext(name: String, capAPI: NativeCapacitorAPI?): Context {
+    fun createContext(name: String, capAPI: NativeCapacitorAPI? = null): Context {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
 
         if (contexts.containsKey(name)) {
