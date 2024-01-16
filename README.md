@@ -99,7 +99,7 @@ Note that even if the permission is present, users can still disable exact notif
 Read about [Setting Permissions](https://capacitorjs.com/docs/android/configuration#setting-permissions) in the [Android Guide](https://capacitorjs.com/docs/android) for more information on setting Android permissions.
 
 ## About Background Runner
-During the corse of building complex applications, its sometimes necessary to perform work while the application is not in the foreground.  The challenge with standard Capacitor applications is that the webview is not available when these background events occur, requiring you to write native code to handle these events. This is where the Background Runner plugin comes in.
+During the course of building complex applications, its sometimes necessary to perform work while the application is not in the foreground.  The challenge with standard Capacitor applications is that the webview is not available when these background events occur, requiring you to write native code to handle these events. This is where the Background Runner plugin comes in.
 
 Background Runner makes it easy to write JavaScript code to handle native background events.  All you need to do is create your runner JavaScript file and [define your configuration](#configuring-background-runner), then the Background Runner plugin will automatically configure and schedule a native background task that will be executed according to your config and the rules of the platform.  No modification to your UI code is necessary.
 
