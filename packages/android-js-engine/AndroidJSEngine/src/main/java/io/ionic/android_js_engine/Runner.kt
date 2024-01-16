@@ -20,14 +20,14 @@ class Runner {
     private external fun stopRunner(ptr: Long)
     private external fun destroyRunner(ptr: Long)
 
-    fun createContext(name: String): Context {
+    fun createContext(name: String, capAPI: NativeCapacitorAPI?): Context {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
 
         if (contexts.containsKey(name)) {
             throw EngineErrors.RunnerException("context with name $name already exists")
         }
 
-        val context = Context(name, runnerPtr)
+        val context = Context(name, runnerPtr, capAPI)
 
         contexts[name] = context
 

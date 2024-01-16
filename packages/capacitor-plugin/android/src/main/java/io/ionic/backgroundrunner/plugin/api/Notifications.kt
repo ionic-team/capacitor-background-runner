@@ -15,7 +15,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.getcapacitor.Logger.config
 import com.getcapacitor.plugin.util.AssetUtil
-import io.ionic.android_js_engine.api.NotificationsAPI
+import io.ionic.android_js_engine.capacitor_api.NotificationsAPI
 import org.json.JSONArray
 
 class Notifications(context: Context) : NotificationsAPI {

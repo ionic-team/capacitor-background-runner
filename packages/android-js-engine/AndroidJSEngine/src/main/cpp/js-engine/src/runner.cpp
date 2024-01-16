@@ -1,4 +1,5 @@
 #include "runner.hpp"
+#include "capacitor.hpp"
 
 #include <string>
 
@@ -66,8 +67,8 @@ void Runner::stop() {
   }
 }
 
-Context *Runner::create_context(std::string name) {
-  auto *context = new Context(name, this->rt, this->native);
+Context *Runner::create_context(std::string name, CapacitorInterface *cap_api) {
+  auto *context = new Context(name, this->rt, this->native, cap_api);
   this->contexts.insert_or_assign(name, context);
 
   return context;
@@ -101,6 +102,9 @@ void Runner::execute_jobs() {
   JSContext *job_ctx;
 
   while (JS_IsJobPending(this->rt)) {
+      if (this->rt == nullptr) {
+          this->log_debug("JSRuntime is null...");
+      }
     int const status = JS_ExecutePendingJob(this->rt, &job_ctx);
     if (status <= 0) {
       if (status < 0) {

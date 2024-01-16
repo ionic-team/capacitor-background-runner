@@ -2,7 +2,7 @@ package io.ionic.android_js_engine
 
 import org.json.JSONObject
 
-class Context(name: String, runnerPtr: Long) {
+class Context(name: String, runnerPtr: Long, capAPI: NativeCapacitorAPI?) {
     val name: String
     private val runnerPtr: Long
 
@@ -12,16 +12,14 @@ class Context(name: String, runnerPtr: Long) {
         System.loadLibrary("android_js_engine")
         this.name = name
         this.runnerPtr = runnerPtr
-        this.ptr = createRunnerContext(runnerPtr, name)
+        this.ptr = createRunnerContext(runnerPtr, name, capAPI)
     }
 
-    private external fun createRunnerContext(runnerPtr: Long, name: String): Long
+    private external fun createRunnerContext(runnerPtr: Long, name: String, capAPI: NativeCapacitorAPI?): Long
     private external fun destroyRunnerContext(runnerPtr: Long, ptr: Long)
     private external fun evaluate(ptr: Long, code: String, retValue: Boolean): String
     private external fun registerGlobalFunction(ptr: Long, functionName: String, function: NativeJSFunction)
     private external fun dispatchEvent(ptr: Long, event: String, details: String)
-
-//    private external fun setCapacitorAPI(ptr: Long, api: CapacitorAPI)
 
     fun execute(code: String, returnValue: Boolean = false): NativeJSValue {
         val contextPtr = this.ptr ?: throw EngineErrors.ContextException("pointer is nil")

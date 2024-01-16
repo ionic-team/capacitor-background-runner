@@ -4,12 +4,17 @@
 #include "./js-engine/src/errors.hpp"
 #include "./js-engine/src/runner.hpp"
 #include "./js-engine/src/context.hpp"
+#include "native_capacitor_interface.h"
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_io_ionic_android_1js_1engine_Context_createRunnerContext(JNIEnv *env, jobject thiz, jlong runner_ptr, jstring name) {
+Java_io_ionic_android_1js_1engine_Context_createRunnerContext(JNIEnv *env, jobject thiz, jlong runner_ptr, jstring name, jobject cap_api) {
     auto *runner = (Runner *)runner_ptr;
-    return (jlong)(long)runner->create_context(env->GetStringUTFChars(name, nullptr));
+
+    auto *api_global = env->NewGlobalRef(cap_api);
+    auto *cap_native = new NativeCapacitorInterface(env, api_global);
+
+    return (jlong)(long)runner->create_context(env->GetStringUTFChars(name, nullptr), cap_native);
 }
 extern "C"
 JNIEXPORT void JNICALL

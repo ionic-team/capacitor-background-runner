@@ -22,7 +22,7 @@ class Runner {
   void start();
   void stop();
 
-  Context *create_context(std::string name);
+  Context *create_context(std::string name, CapacitorInterface *cap_api);
   void destroy_context(std::string name);
   std::unordered_map<std::string, Context *>::iterator destroy_context(std::unordered_map<std::string, Context *>::iterator delete_itr);
   void execute_jobs();

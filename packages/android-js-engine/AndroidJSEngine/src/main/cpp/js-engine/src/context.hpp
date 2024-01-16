@@ -13,6 +13,7 @@
 #include "api/api_text.h"
 #include "api/api_timeout.h"
 #include "native.hpp"
+#include "capacitor.hpp"
 
 // #include "cap_api/api_cap_kv.h"
 // #include "cap_api/api_cap_device.h"
@@ -24,14 +25,14 @@ class Context {
   std::string name;
 
   JSContext *qjs_context;
-  // jobject cap_api;
 
   NativeInterface *native_interface;
+  CapacitorInterface *capacitor_interface;
 
   std::unordered_map<std::string, JSValue> event_listeners;
   std::unordered_map<int, Timer> timers;
 
-  Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native);
+  Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native, CapacitorInterface *cap);
   ~Context();
 
   void run_loop();
@@ -39,8 +40,6 @@ class Context {
   void register_function(const std::string &func_name, std::any func);
   JSValue evaluate(const std::string &code, bool ret_val) const;
   JSValue dispatch_event(const std::string &event, JSValue details);
-
-  // void init_capacitor_api(jobject cap_api_obj);
 
  private:
   void init_callbacks(JSValue callbacks) const;
@@ -56,10 +55,11 @@ class Context {
   void init_api_fetch() const;
   // void init_api_blob() const;
 
-  // void init_capacitor_kv_api() const;
-  // void init_capacitor_device_api() const;
-  // void init_capacitor_notifications_api() const;
-  // void init_capacitor_geolocation_api() const;
+  void init_capacitor_api();
+  void init_capacitor_device_api() const;
+  void init_capacitor_geolocation_api() const;
+  void init_capacitor_kv_api() const;
+  void init_capacitor_notifications_api() const;
 };
 
 #endif  // CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H
