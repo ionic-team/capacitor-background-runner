@@ -18,23 +18,23 @@ JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueCon
   auto *context = (Context *)JS_GetContextOpaque(ctx);
 
   try {
-      int const unique = context->native_interface->get_random_hash();
+    int const unique = context->native_interface->get_random_hash();
 
-      Timer timer{};
-      timer.js_func = JS_DupValue(ctx, argv[0]);
+    Timer timer{};
+    timer.js_func = JS_DupValue(ctx, argv[0]);
 
-      timer.timeout = timeout;
-      timer.start = std::chrono::system_clock::now();
-      timer.repeat = repeat;
+    timer.timeout = timeout;
+    timer.start = std::chrono::system_clock::now();
+    timer.repeat = repeat;
 
-      context->timers[unique] = timer;
+    context->timers[unique] = timer;
 
-      ret_value = JS_NewInt32(ctx, unique);
+    ret_value = JS_NewInt32(ctx, unique);
 
-      return ret_value;
-  } catch(std::exception &ex) {
-        auto js_error = create_js_error(ex.what(), ctx);
-        return JS_Throw(ctx, js_error);
+    return ret_value;
+  } catch (std::exception &ex) {
+    auto js_error = create_js_error(ex.what(), ctx);
+    return JS_Throw(ctx, js_error);
   }
 }
 

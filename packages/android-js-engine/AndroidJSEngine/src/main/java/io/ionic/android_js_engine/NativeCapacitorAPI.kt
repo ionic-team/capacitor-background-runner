@@ -9,7 +9,7 @@ class NativeCapacitorAPI {
     private var kv: KVAPI? = null
     private var device: DeviceAPI? = null
     private var notifications: NotificationsAPI? = null
-    private var geolocation: GeolocationAPI? =  null
+    private var geolocation: GeolocationAPI? = null
 
     fun initNotificationsAPI(api: NotificationsAPI) {
         this.notifications = api

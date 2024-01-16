@@ -107,14 +107,14 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
   try {
     response = context->native_interface->fetch(native_request);
   } catch (std::exception &ex) {
-      auto js_error = create_js_error(ex.what(), ctx);
+    auto js_error = create_js_error(ex.what(), ctx);
     reject_promise(ctx, reject, js_error);
-      JS_FreeValue(ctx, js_error);
+    JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;
   }
 
   if (!response.ok) {
-      auto js_error = create_js_error(response.error.c_str(), ctx);
+    auto js_error = create_js_error(response.error.c_str(), ctx);
     reject_promise(ctx, reject, js_error);
     JS_FreeValue(ctx, js_error);
     return JS_UNDEFINED;

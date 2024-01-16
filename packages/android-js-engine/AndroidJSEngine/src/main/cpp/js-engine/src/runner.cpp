@@ -1,7 +1,8 @@
 #include "runner.hpp"
-#include "capacitor.hpp"
 
 #include <string>
+
+#include "capacitor.hpp"
 
 Runner::Runner(NativeInterface *native) {
   this->native = native;
@@ -55,9 +56,9 @@ void Runner::start() {
 }
 
 void Runner::stop() {
-    if(!this->run_loop_started) {
-        return;
-    }
+  if (!this->run_loop_started) {
+    return;
+  }
 
   this->stop_run_loop = true;
   for (;;) {
@@ -102,9 +103,9 @@ void Runner::execute_jobs() {
   JSContext *job_ctx;
 
   while (JS_IsJobPending(this->rt)) {
-      if (this->rt == nullptr) {
-          this->log_debug("JSRuntime is null...");
-      }
+    if (this->rt == nullptr) {
+      this->log_debug("JSRuntime is null...");
+    }
     int const status = JS_ExecutePendingJob(this->rt, &job_ctx);
     if (status <= 0) {
       if (status < 0) {

@@ -1,9 +1,10 @@
 #include "context.hpp"
-#include "quickjs/cutils.h"
+
 #include "capacitor-api/api_device.h"
 #include "capacitor-api/api_geolocation.h"
 #include "capacitor-api/api_kv.h"
 #include "capacitor-api/api_notifications.h"
+#include "quickjs/cutils.h"
 
 Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native, CapacitorInterface *cap) {
   this->name = name;
@@ -22,7 +23,7 @@ Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface 
   //   this->init_api_blob();
 
   if (this->capacitor_interface != nullptr) {
-   this->init_capacitor_api();
+    this->init_capacitor_api();
   }
 }
 
@@ -78,10 +79,10 @@ static JSValue call_registered_function(JSContext *ctx, JSValue this_val, int ar
   JS_FreeValue(ctx, func_name_obj);
 
   try {
-      return context->native_interface->invoke_native_function(func_name_str, ctx, argv[0]);
-  } catch(std::exception &ex) {
-      auto js_error = create_js_error(ex.what(), ctx);
-      return JS_Throw(ctx, js_error);
+    return context->native_interface->invoke_native_function(func_name_str, ctx, argv[0]);
+  } catch (std::exception &ex) {
+    auto js_error = create_js_error(ex.what(), ctx);
+    return JS_Throw(ctx, js_error);
   }
 }
 
@@ -299,63 +300,63 @@ void Context::init_api_fetch() const {
 // void Context::init_api_blob() const { init_blob_class(this->qjs_context); }
 
 void Context::init_capacitor_api() {
-    this->init_capacitor_device_api();
-    this->init_capacitor_geolocation_api();
-    this->init_capacitor_kv_api();
-    this->init_capacitor_notifications_api();
+  this->init_capacitor_device_api();
+  this->init_capacitor_geolocation_api();
+  this->init_capacitor_kv_api();
+  this->init_capacitor_notifications_api();
 }
 
 void Context::init_capacitor_device_api() const {
-    JSValue global_obj, device;
+  JSValue global_obj, device;
 
-    global_obj = JS_GetGlobalObject(this->qjs_context);
+  global_obj = JS_GetGlobalObject(this->qjs_context);
 
-    device = JS_NewObject(this->qjs_context);
-    JS_SetPropertyStr(this->qjs_context, device, "getBatteryStatus", JS_NewCFunction(this->qjs_context, api_device_battery, "getBatteryStatus", 0));
-    JS_SetPropertyStr(this->qjs_context, device, "getNetworkStatus", JS_NewCFunction(this->qjs_context, api_device_network, "getNetworkStatus", 0));
+  device = JS_NewObject(this->qjs_context);
+  JS_SetPropertyStr(this->qjs_context, device, "getBatteryStatus", JS_NewCFunction(this->qjs_context, api_device_battery, "getBatteryStatus", 0));
+  JS_SetPropertyStr(this->qjs_context, device, "getNetworkStatus", JS_NewCFunction(this->qjs_context, api_device_network, "getNetworkStatus", 0));
 
-    JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorDevice", device);
+  JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorDevice", device);
 
-    JS_FreeValue(this->qjs_context, global_obj);
+  JS_FreeValue(this->qjs_context, global_obj);
 }
 
- void Context::init_capacitor_kv_api() const {
-   JSValue global_obj, kv;
+void Context::init_capacitor_kv_api() const {
+  JSValue global_obj, kv;
 
-   global_obj = JS_GetGlobalObject(this->qjs_context);
+  global_obj = JS_GetGlobalObject(this->qjs_context);
 
-   kv = JS_NewObject(this->qjs_context);
-   JS_SetPropertyStr(this->qjs_context, kv, "set", JS_NewCFunction(this->qjs_context, api_kv_set, "set", 2));
-   JS_SetPropertyStr(this->qjs_context, kv, "get", JS_NewCFunction(this->qjs_context, api_kv_get, "get", 1));
-   JS_SetPropertyStr(this->qjs_context, kv, "remove", JS_NewCFunction(this->qjs_context, api_kv_remove, "remove", 1));
+  kv = JS_NewObject(this->qjs_context);
+  JS_SetPropertyStr(this->qjs_context, kv, "set", JS_NewCFunction(this->qjs_context, api_kv_set, "set", 2));
+  JS_SetPropertyStr(this->qjs_context, kv, "get", JS_NewCFunction(this->qjs_context, api_kv_get, "get", 1));
+  JS_SetPropertyStr(this->qjs_context, kv, "remove", JS_NewCFunction(this->qjs_context, api_kv_remove, "remove", 1));
 
-   JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorKV", kv);
+  JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorKV", kv);
 
-   JS_FreeValue(this->qjs_context, global_obj);
- }
+  JS_FreeValue(this->qjs_context, global_obj);
+}
 
- void Context::init_capacitor_notifications_api() const {
-   JSValue global_obj, notifications;
+void Context::init_capacitor_notifications_api() const {
+  JSValue global_obj, notifications;
 
-   global_obj = JS_GetGlobalObject(this->qjs_context);
+  global_obj = JS_GetGlobalObject(this->qjs_context);
 
-   notifications = JS_NewObject(this->qjs_context);
-   JS_SetPropertyStr(this->qjs_context, notifications, "schedule", JS_NewCFunction(this->qjs_context, api_notifications_schedule, "schedule", 1));
+  notifications = JS_NewObject(this->qjs_context);
+  JS_SetPropertyStr(this->qjs_context, notifications, "schedule", JS_NewCFunction(this->qjs_context, api_notifications_schedule, "schedule", 1));
 
-   JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorNotifications", notifications);
+  JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorNotifications", notifications);
 
-   JS_FreeValue(this->qjs_context, global_obj);
- }
+  JS_FreeValue(this->qjs_context, global_obj);
+}
 
- void Context::init_capacitor_geolocation_api() const {
-   JSValue global_obj, geolocation;
+void Context::init_capacitor_geolocation_api() const {
+  JSValue global_obj, geolocation;
 
-   global_obj = JS_GetGlobalObject(this->qjs_context);
-   geolocation = JS_NewObject(this->qjs_context);
+  global_obj = JS_GetGlobalObject(this->qjs_context);
+  geolocation = JS_NewObject(this->qjs_context);
 
-   JS_SetPropertyStr(this->qjs_context, geolocation, "getCurrentPosition", JS_NewCFunction(this->qjs_context, api_geolocation_current_location, "getCurrentPosition", 0));
+  JS_SetPropertyStr(this->qjs_context, geolocation, "getCurrentPosition", JS_NewCFunction(this->qjs_context, api_geolocation_current_location, "getCurrentPosition", 0));
 
-   JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorGeolocation", geolocation);
+  JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorGeolocation", geolocation);
 
-   JS_FreeValue(this->qjs_context, global_obj);
- }
+  JS_FreeValue(this->qjs_context, global_obj);
+}
