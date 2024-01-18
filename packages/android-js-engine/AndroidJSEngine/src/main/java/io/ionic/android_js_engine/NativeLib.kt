@@ -1,7 +1,6 @@
 package io.ionic.android_js_engine
 
 class NativeLib {
-
     /**
      * A native method that is implemented by the 'android_js_engine' native library,
      * which is packaged with this application.

@@ -16,11 +16,17 @@ class Runner {
     }
 
     private external fun initRunner(): Long
+
     private external fun startRunner(ptr: Long)
+
     private external fun stopRunner(ptr: Long)
+
     private external fun destroyRunner(ptr: Long)
 
-    fun createContext(name: String, capAPI: NativeCapacitorAPI? = null): Context {
+    fun createContext(
+        name: String,
+        capAPI: NativeCapacitorAPI? = null,
+    ): Context {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
 
         if (contexts.containsKey(name)) {
@@ -45,9 +51,10 @@ class Runner {
 
     fun start() {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
-        this.job = GlobalScope.launch {
-            startRunner(runnerPtr)
-        }
+        this.job =
+            GlobalScope.launch {
+                startRunner(runnerPtr)
+            }
     }
 
     fun stop() {

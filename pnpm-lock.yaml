@@ -155,8 +155,8 @@ importers:
   packages/android-js-engine:
     dependencies:
       '@naturalcycles/ktlint':
-        specifier: 1.7.0
-        version: 1.7.0
+        specifier: 1.9.0
+        version: 1.9.0
       clang-format:
         specifier: ^1.8.0
         version: 1.8.0
@@ -2857,8 +2857,8 @@ packages:
       read-yaml-file: 1.1.0
     dev: true
 
-  /@naturalcycles/ktlint@1.7.0:
-    resolution: {integrity: sha512-x6j4GgrsSSPKpuq7nqUjBJlVEVSDxlzIdRM1BdOcPw9H95OBMvP1fX7h/DlNP7J9GW6vFKT/t9/rpvGtB/p9jQ==}
+  /@naturalcycles/ktlint@1.9.0:
+    resolution: {integrity: sha512-IO00kIIW+qHZxiINPbKnIIj3tchsmVhZN7Y6zLT/3s+5eIeOb8nKFjdI9y9zaEGi8JIwwhrV4/8aPP3oWIpoCg==}
     engines: {node: '>=16.15.0'}
     hasBin: true
     dev: false

@@ -2,7 +2,7 @@
     "name": "android-js-engine",
     "private": true,
     "dependencies": {
-      "@naturalcycles/ktlint": "1.7.0",
+      "@naturalcycles/ktlint": "1.9.0",
       "clang-format": "^1.8.0",
       "prettier": "~2.3.2",
       "prettier-plugin-java": "~1.0.2"

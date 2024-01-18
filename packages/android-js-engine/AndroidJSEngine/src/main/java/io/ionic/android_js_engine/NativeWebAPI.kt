@@ -39,7 +39,10 @@ class NativeWebAPI {
         }
 
         @JvmStatic
-        fun byteArrayToString(arr: ByteArray, encoding: String): String {
+        fun byteArrayToString(
+            arr: ByteArray,
+            encoding: String,
+        ): String {
             val enc = getCharset(encoding)
             return arr.toString(enc)
         }
@@ -62,7 +65,10 @@ class NativeWebAPI {
         }
 
         @JvmStatic
-        fun fetch(urlStr: String, options: NativeJSFetchOptions?): NativeJSResponse {
+        fun fetch(
+            urlStr: String,
+            options: NativeJSFetchOptions?,
+        ): NativeJSResponse {
             val url = URL(urlStr)
             val connection = url.openConnection() as HttpURLConnection
 

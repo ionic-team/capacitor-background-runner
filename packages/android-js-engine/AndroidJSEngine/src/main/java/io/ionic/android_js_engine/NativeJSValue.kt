@@ -37,14 +37,16 @@ class NativeJSValue(jsonString: String) {
     fun getJSONArray(): JSONArray? {
         try {
             return JSONArray(this.json)
-        } catch (`_`: java.lang.Exception) {}
+        } catch (`_`: java.lang.Exception) {
+        }
         return null
     }
 
     fun getJSONObject(): JSONObject? {
         try {
             return JSONObject(this.json)
-        } catch (`_`: java.lang.Exception) {}
+        } catch (`_`: java.lang.Exception) {
+        }
         return null
     }
 
