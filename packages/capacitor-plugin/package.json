@@ -45,7 +45,8 @@
     "pack": "npm run build && ./scripts/copy-native-sdks.sh && npm pack && mv ./capacitor-background-runner-*.tgz ../../",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "postinstall": "node ./scripts/install_libs.js"
   },
   "devDependencies": {
     "@capacitor/android": "^5.2.2",
