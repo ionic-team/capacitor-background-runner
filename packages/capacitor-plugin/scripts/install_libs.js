@@ -29,7 +29,7 @@ const insertText =
 
 let gradleFile = fs.readFileSync(androidGradlePath).toString('utf-8');
 if (gradleFile.indexOf(insertText) != -1) {
-  return
+  return;
 }
 
 let insertIndex = gradleFile.indexOf(searchText) + searchText.length;
