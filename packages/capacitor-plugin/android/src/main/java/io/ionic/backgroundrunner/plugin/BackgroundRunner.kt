@@ -152,7 +152,7 @@ class BackgroundRunner(context: android.content.Context) {
             val plugins = configObject.getJSONObject("plugins") ?: throw Exception("could not read config file")
             val runnerConfigObj = plugins.getJSONObject("BackgroundRunner") ?: throw Exception("could not read config file")
 
-            return  RunnerConfig(runnerConfigObj)
+            return  RunnerConfig.fromJSON(runnerConfigObj)
         }
     }
 
@@ -173,7 +173,6 @@ class BackgroundRunner(context: android.content.Context) {
         api.initNotificationsAPI(Notifications(context))
 
         val newContext  = runner.createContext(contextName, api)
-
         newContext.execute(srcFile, false)
 
         return newContext

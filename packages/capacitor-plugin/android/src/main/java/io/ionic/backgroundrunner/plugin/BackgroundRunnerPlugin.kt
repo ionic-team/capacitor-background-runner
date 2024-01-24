@@ -71,13 +71,15 @@ class BackgroundRunnerPlugin: Plugin() {
             val runnerEvent = call.getString("event") ?: throw Exception("event is missing or invalid")
             val details = call.getObject("details")
             val config = impl.config ?: throw Exception("no runner config loaded")
-            config.event = runnerEvent
+
+            val runningConfig = config.copy()
+            runningConfig.event = runnerEvent
 
             GlobalScope.launch(Dispatchers.Default) {
                 try {
                     val returnData = impl.execute(
                         this@BackgroundRunnerPlugin.context,
-                        config,
+                        runningConfig,
                         details,
                         call.callbackId
                     )
