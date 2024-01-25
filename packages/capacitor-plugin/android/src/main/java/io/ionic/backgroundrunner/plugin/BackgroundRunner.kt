@@ -24,21 +24,27 @@ import java.util.concurrent.TimeUnit
 
 
 class BackgroundRunner(context: android.content.Context) {
+    private var runner: Runner?
     val config: RunnerConfig?
-
-    private var runner: Runner = Runner()
-
-    companion object {
-        @Volatile private var instance: BackgroundRunner? = null
-
-        fun getInstance(context: android.content.Context): BackgroundRunner = instance ?: synchronized(this) {
-            instance ?: BackgroundRunner(context).also { instance = it }
-        }
-    }
 
     init {
         config = loadRunnerConfig(context.assets)
+        runner = null
+    }
+
+    fun start() {
+        runner = Runner()
+
+        val runner = runner ?: return
         runner.start()
+    }
+
+    fun shutdown() {
+        val runner = runner ?: return
+
+        runner.stop()
+        runner.destroy()
+        this.runner = null
     }
 
     fun scheduleBackgroundTask(androidContext: android.content.Context) {
@@ -157,6 +163,8 @@ class BackgroundRunner(context: android.content.Context) {
     }
 
     private fun initContext(config: RunnerConfig, context: android.content.Context, callbackId: String?): Context {
+        val runner = runner ?: throw Exception("runner is not started")
+
         val srcFile = context.assets.open("public/${config.src}").bufferedReader().use {
             it.readText()
         }
@@ -179,6 +187,8 @@ class BackgroundRunner(context: android.content.Context) {
     }
 
     private fun destroyContext(context: Context) {
+        val runner = this.runner ?: throw Exception("runner is not started")
+
         runner.destroyContext(context.name)
     }
 }

@@ -31,8 +31,10 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
             val config = RunnerConfig.fromJSON(runnerConfigObj)
 
             runBlocking {
-                val impl = BackgroundRunner.getInstance(this@RunnerWorker.applicationContext)
+                val impl = BackgroundRunner(this@RunnerWorker.applicationContext)
+                impl.start()
                 impl.execute(this@RunnerWorker.applicationContext, config, JSONObject())
+                impl.shutdown()
             }
 
             return Result.success()
