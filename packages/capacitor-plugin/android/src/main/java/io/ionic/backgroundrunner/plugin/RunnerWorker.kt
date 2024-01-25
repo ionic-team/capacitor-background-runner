@@ -28,7 +28,7 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
             runnerConfigObj.put("repeats", false)
             runnerConfigObj.put("interval", 0)
 
-            val config = RunnerConfig(runnerConfigObj)
+            val config = RunnerConfig.fromJSON(runnerConfigObj)
 
             runBlocking {
                 val impl = BackgroundRunner.getInstance(this@RunnerWorker.applicationContext)
@@ -39,6 +39,7 @@ class RunnerWorker(context: Context, workerParams: WorkerParameters) : Worker(co
         } catch (ex: Exception) {
             val label = this.inputData.getString("label") ?: ""
             Log.e("[RUNNER WORKER for $label]", ex.toString())
+            ex.printStackTrace()
             val data = Data.Builder()
                 .putString("error", ex.toString())
                 .build()

@@ -29,7 +29,7 @@ class Runner {
     ): Context {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
 
-        if (contexts.containsKey(name)) {
+        if (hasContext(name)) {
             throw EngineErrors.RunnerException("context with name $name already exists")
         }
 
@@ -38,6 +38,18 @@ class Runner {
         contexts[name] = context
 
         return context
+    }
+
+    fun hasContext(name: String): Boolean {
+        return contexts.containsKey(name)
+    }
+
+    fun getContext(name: String): Context? {
+        if (!hasContext(name)) {
+            return null
+        }
+
+        return contexts[name]
     }
 
     fun destroyContext(name: String) {
