@@ -52,7 +52,10 @@ android {
 repositories {
     google()
     mavenCentral()
-    flatDir { dirs "./src/main/libs" }
+    flatDir {
+        dirs "./src/main/libs", "libs"
+        dirs "$rootDir/../node_modules/@capacitor/background-runner/android/src/main/libs", "libs"
+    }
 }
 
 dependencies {

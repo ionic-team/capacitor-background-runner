@@ -1,6 +1,10 @@
 import { WebPlugin } from '@capacitor/core';
 
-import type { BackgroundRunnerPlugin, PermissionStatus } from './definitions';
+import type {
+  BackgroundRunnerPlugin,
+  DispatchEventOptions,
+  PermissionStatus,
+} from './definitions';
 
 export class BackgroundRunnerWeb
   extends WebPlugin
@@ -18,7 +22,7 @@ export class BackgroundRunnerWeb
     throw new Error('not available on web');
   }
 
-  dispatchEvent(): Promise<void> {
+  dispatchEvent<T = void>(_options: DispatchEventOptions): Promise<T> {
     throw new Error('not available on web');
   }
 }

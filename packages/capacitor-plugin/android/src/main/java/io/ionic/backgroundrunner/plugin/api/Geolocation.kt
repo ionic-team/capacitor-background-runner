@@ -4,7 +4,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationManager
 import androidx.core.location.LocationManagerCompat
-import io.ionic.android_js_engine.api.GeolocationAPI
+import io.ionic.android_js_engine.capacitor_api.GeolocationAPI
 import org.json.JSONObject
 import java.lang.Exception
 

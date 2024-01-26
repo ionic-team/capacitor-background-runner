@@ -37,12 +37,15 @@ class BackgroundRunnerPlugin: Plugin() {
 
     override fun load() {
         super.load()
-        impl = BackgroundRunner.getInstance(this.context)
+        impl = BackgroundRunner(this.context)
 
         bridge.app.setStatusChangeListener {
             if (!it) {
                 Log.d("Background Runner", "registering runner workers")
                 impl?.scheduleBackgroundTask(this.context)
+                impl?.shutdown()
+            } else {
+                impl?.start()
             }
         }
     }
@@ -66,18 +69,20 @@ class BackgroundRunnerPlugin: Plugin() {
     @PluginMethod
     fun dispatchEvent(call: PluginCall) {
         try {
-            val impl = BackgroundRunner.getInstance(this.context)
+            val impl = this.impl ?: throw Exception("background runner not initialized")
 
             val runnerEvent = call.getString("event") ?: throw Exception("event is missing or invalid")
             val details = call.getObject("details")
             val config = impl.config ?: throw Exception("no runner config loaded")
-            config.event = runnerEvent
+
+            val runningConfig = config.copy()
+            runningConfig.event = runnerEvent
 
             GlobalScope.launch(Dispatchers.Default) {
                 try {
                     val returnData = impl.execute(
                         this@BackgroundRunnerPlugin.context,
-                        config,
+                        runningConfig,
                         details,
                         call.callbackId
                     )

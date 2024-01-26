@@ -150,7 +150,7 @@ export interface BackgroundRunnerPlugin {
    * @param options
    * @since 1.0.0
    */
-  dispatchEvent(options: DispatchEventOptions): Promise<void>;
+  dispatchEvent<T = void>(options: DispatchEventOptions): Promise<T>;
 }
 
 declare module '@capacitor/cli' {

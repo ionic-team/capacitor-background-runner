@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cd ../android-engine
+cd ../android-js-engine
 ./gradlew clean
-./gradlew :android-js-engine:assemble
+./gradlew :AndroidJSEngine:assemble

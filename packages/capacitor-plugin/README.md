@@ -314,7 +314,7 @@ Request permission to display local notifications.
 ### dispatchEvent(...)
 
 ```typescript
-dispatchEvent(options: DispatchEventOptions) => any
+dispatchEvent<T = void>(options: DispatchEventOptions) => any
 ```
 
 Dispatches an event to the configured runner.
