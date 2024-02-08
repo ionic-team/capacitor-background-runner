@@ -253,7 +253,7 @@ export interface CapacitorGeolocation {
    * Get the device's last known location
    * @since 1.0.0
    */
-  getCurrentLocation: () => GetCurrentPositionResult;
+  getCurrentPosition: () => GetCurrentPositionResult;
 }
 
 /**
