@@ -27,6 +27,10 @@ JSValue js_response_json_job(JSContext *ctx, int argc, JSValueConst *argv) {
   }
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
   try {
     auto json_string = context->native_interface->byte_array_to_str(data->data.data(), data->data.size(), "utf-8");

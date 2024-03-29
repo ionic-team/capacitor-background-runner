@@ -4,6 +4,12 @@
 
 JSValue api_notifications_schedule(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
+
+  
   auto options_str = JS_JSONStringify(ctx, argv[0], JS_UNDEFINED, JS_UNDEFINED);
   const auto *options_c_str = JS_ToCString(ctx, options_str);
 

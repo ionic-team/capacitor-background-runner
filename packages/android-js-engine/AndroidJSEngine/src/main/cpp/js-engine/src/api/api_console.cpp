@@ -8,6 +8,11 @@ JSValue api_console_log(JSContext *ctx, JSValueConst this_val, int argc, JSValue
   size_t len;
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  if (parent_ctx == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
+
   std::string const tag = "Runner Context " + parent_ctx->name;
 
   for (i = 0; i < argc; i++) {

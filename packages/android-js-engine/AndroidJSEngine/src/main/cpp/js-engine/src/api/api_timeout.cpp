@@ -16,6 +16,10 @@ JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueCon
   int const timeout = JS_VALUE_GET_INT(argv[1]);
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
   try {
     int const unique = context->native_interface->get_random_hash();
@@ -52,7 +56,11 @@ JSValue api_clear_timeout(JSContext *ctx, JSValueConst this_val, int argc, JSVal
   int const id = JS_VALUE_GET_INT(argv[0]);
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
-
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
+  
   JS_FreeValue(ctx, context->timers[id].js_func);
   context->timers.erase(id);
 

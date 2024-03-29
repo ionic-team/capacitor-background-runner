@@ -43,6 +43,10 @@ static JSValue api_blob_get_text(JSContext *ctx, JSValueConst this_val, int argc
   }
 
   auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
   // TODO handle exception
   auto text_string = context->native_interface->byte_array_to_str(blob->data, 0, "utf-8").c_str();

@@ -4,6 +4,10 @@
 
 JSValue api_kv_set(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
   const auto *key_c_str = JS_ToCString(ctx, argv[0]);
   const auto *value_c_str = JS_ToCString(ctx, argv[1]);
@@ -26,6 +30,10 @@ JSValue api_kv_set(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst
 
 JSValue api_kv_get(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
   const auto *key_c_str = JS_ToCString(ctx, argv[0]);
 
@@ -57,6 +65,10 @@ JSValue api_kv_get(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst
 
 JSValue api_kv_remove(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
   auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
   const auto *key_c_str = JS_ToCString(ctx, argv[0]);
 
