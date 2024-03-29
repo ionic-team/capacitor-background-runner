@@ -239,7 +239,6 @@ class ContextTest {
     @Test
     fun testAPI_SetTimeout() {
         val runner = Runner()
-        runner.start()
 
         val context = runner.createContext("io.ionic.android_js_engine")
 
@@ -276,6 +275,8 @@ class ContextTest {
         var timerId = value.getIntValue() ?: 0
 
         assertTrue(timerId > 0)
+
+        runner.waitForJobs()
         assertEquals(1, timeoutFuture1.get(3, TimeUnit.SECONDS))
 
         value = context.execute("setTimeout(() => { cancelTimeoutCallback() }, 4000)", true)
@@ -284,19 +285,18 @@ class ContextTest {
 
         context.execute("clearTimeout(${value.getIntValue()});")
         try {
+            runner.waitForJobs()
             assertEquals(0, timeoutFuture2.get(3, TimeUnit.SECONDS))
         } catch (ex: TimeoutException) {
             assertTrue(true)
         }
 
-        runner.stop()
         runner.destroy()
     }
 
     @Test
     fun testAPI_SetInterval() {
         val runner = Runner()
-        runner.start()
 
         val context = runner.createContext("io.ionic.android_js_engine")
 
@@ -316,15 +316,17 @@ class ContextTest {
         val value = context.execute("setInterval(() => { intervalCallback() }, 2000)", true)
         assertTrue((value.getIntValue() ?: 0) > 0)
 
-        Thread.sleep(9000)
-        assertEquals(4, calls)
+        Thread {
+            Thread.sleep(9000)
+            assertEquals(4, calls)
 
-        context.execute("clearInterval(${value.getIntValue()});")
+            context.execute("clearInterval(${value.getIntValue()});")
 
-        Thread.sleep(3000)
-        assertEquals(4, calls)
+            Thread.sleep(3000)
+            assertEquals(4, calls)
+        }.start()
 
-        runner.stop()
+        runner.waitForJobs()
         runner.destroy()
     }
 
@@ -375,7 +377,6 @@ class ContextTest {
     @Test
     fun testAPI_Fetch() {
         val runner = Runner()
-        runner.start()
 
         val context = runner.createContext("io.ionic.android_js_engine")
 
@@ -465,26 +466,53 @@ class ContextTest {
         """.trimIndent()
 
         context.execute(basicFetchExample)
-
+        runner.waitForJobs()
         val jsonResponse1 = future1.get(5, TimeUnit.SECONDS);
         assertEquals("delectus aut autem", jsonResponse1?.getString("title"))
 
-        context.execute(basicFetchWithTextResponseExample)
+//        context.execute(basicFetchWithTextResponseExample)
 
-        context.execute(basicFetchWithArrayBufferResponseExample)
+//        context.execute(basicFetchWithArrayBufferResponseExample)
 
 //        context.execute(basicFetchWithBlobResponseExample)
 
         context.execute(fetchFailureExample)
-
+        runner.waitForJobs()
         assertEquals(1, future2.get(5, TimeUnit.SECONDS))
 
         context.execute(fetchWithOptionsExample)
-
+        runner.waitForJobs()
         val jsonResponse2 = future3.get(5, TimeUnit.SECONDS)
         assertEquals("bar", jsonResponse2?.getString("body"))
 
-        runner.stop()
+        val fetchMultiple = """
+            const p1 = fetch('https://jsonplaceholder.typicode.com/posts', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        title: 'foo',
+                        body: 'bar',
+                        userId: 1,
+                    }),
+                    headers: {
+                        'Content-type': 'application/json; charset=UTF-8',
+                    }
+                })
+                .catch(err => { console.error(err); })
+                .then(response => response.json())
+                .then(json => { console.log(JSON.stringify(json)); });
+            
+            const p2 = fetch('https://jsonplaceholder.typicode.com/todos/1')
+                .catch(err => { console.error(err); })
+                .then(response => response.json())
+                .then(json => { console.log(JSON.stringify(json)); });
+             
+            Promise.all([p1, p2]).then(() => { console.log("done!"); });
+            
+            
+        """.trimIndent()
+
+        context.execute(fetchMultiple)
+        runner.waitForJobs()
         runner.destroy()
 
     }

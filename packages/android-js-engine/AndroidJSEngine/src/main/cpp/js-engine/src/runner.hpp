@@ -27,6 +27,9 @@ class Runner {
   std::unordered_map<std::string, Context *>::iterator destroy_context(std::unordered_map<std::string, Context *>::iterator delete_itr);
 
   void log_debug(const std::string &msg);
+
+ private:
+  bool has_active_timers();
 };
 
 #endif  // CAPACITOR_BACKGROUND_RUNNER_RUNNER_H

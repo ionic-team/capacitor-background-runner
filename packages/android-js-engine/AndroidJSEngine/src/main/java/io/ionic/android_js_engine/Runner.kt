@@ -56,6 +56,12 @@ class Runner {
         this.contexts.remove(name)
     }
 
+    fun waitForJobs() {
+        while(hasPendingJobs()) {
+            executePendingJobs()
+        }
+    }
+
     fun hasPendingJobs(): Boolean {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
         return hasPendingJobs(runnerPtr)

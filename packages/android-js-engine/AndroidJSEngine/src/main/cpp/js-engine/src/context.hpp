@@ -15,11 +15,6 @@
 #include "native.hpp"
 #include "capacitor.hpp"
 
-// #include "cap_api/api_cap_kv.h"
-// #include "cap_api/api_cap_device.h"
-// #include "cap_api/api_cap_geolocation.h"
-// #include "cap_api/api_cap_notifications.h"
-
 class Context {
  public:
   std::string name;
@@ -35,7 +30,8 @@ class Context {
   Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native, CapacitorInterface *cap);
   ~Context();
 
-  void run_loop();
+  void run_timers();
+  bool has_timers();
 
   void register_function(const std::string &func_name, std::any func);
   JSValue evaluate(const std::string &code, bool ret_val) const;
@@ -44,7 +40,6 @@ class Context {
  private:
   void init_callbacks(JSValue callbacks) const;
 
-  void run_timers();
   void execute_timer(JSValue timerFunc) const;
 
   void init_api_console() const;

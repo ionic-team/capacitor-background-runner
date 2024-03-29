@@ -33,39 +33,20 @@ Runner::~Runner() {
   this->log_debug("destroyed runner");
 }
 
-//void Runner::start() {
-//  this->log_debug("starting runner run loop...");
-//
-//  this->run_loop_started = true;
-//
-//  for (;;) {
-//    if (this->stop_run_loop) {
-//      break;
-//    }
-//
-//    this->execute_jobs();
-//  }
-//
-//  this->run_loop_started = false;
-//  this->stop_run_loop = false;
-//}
-//
-//void Runner::stop() {
-//  if (!this->run_loop_started) {
-//    return;
-//  }
-//
-//  this->stop_run_loop = true;
-//  for (;;) {
-//    if (this->run_loop_started == false) {
-//      break;
-//    }
-//  }
-//}
+bool Runner::has_active_timers()  {
+  bool active = false;
 
+  for (const auto &kv : this->contexts) {
+      if (kv.second->has_timers()) {
+        active = true;
+      }
+  }
+
+  return active;
+}
 
 bool Runner::has_pending_jobs() {
-  return JS_IsJobPending(this->rt);
+  return JS_IsJobPending(this->rt) || this->has_active_timers();
 }
 
 void Runner::execute_pending_jobs() {
@@ -75,7 +56,7 @@ void Runner::execute_pending_jobs() {
 
   JSContext *job_ctx;
 
-  while (JS_IsJobPending(this->rt)) {
+  while (JS_IsJobPending(this->rt) || this->has_active_timers()) {
     int const status = JS_ExecutePendingJob(this->rt, &job_ctx);
     if (status <= 0) {
       if (status < 0) {
@@ -88,6 +69,12 @@ void Runner::execute_pending_jobs() {
         JS_FreeValue(job_ctx, exception_val);
         JS_FreeCString(job_ctx, err_str);
         JS_FreeValue(job_ctx, err_message);
+      }
+    }
+
+    for (const auto &kv : this->contexts) {
+      if (kv.second->has_timers()) {
+        kv.second->run_timers();
       }
     }
   }
@@ -124,38 +111,5 @@ std::unordered_map<std::string, Context *>::iterator Runner::destroy_context(std
     return itr;
   }
 }
-
-//void Runner::execute_jobs() {
-//  JSContext *job_ctx;
-//
-//  if (this->rt == nullptr) {
-//    return;
-//  }
-//
-//  while (JS_IsJobPending(this->rt)) {
-//    if (this->rt == nullptr) {
-//      return;
-//    }
-//
-//    int const status = JS_ExecutePendingJob(this->rt, &job_ctx);
-//    if (status <= 0) {
-//      if (status < 0) {
-//        auto exception_val = JS_GetException(job_ctx);
-//        auto err_message = JS_GetPropertyStr(job_ctx, exception_val, "message");
-//        const char *err_str = JS_ToCString(job_ctx, err_message);
-//
-//        this->log_debug(std::string(err_str));
-//
-//        JS_FreeValue(job_ctx, exception_val);
-//        JS_FreeCString(job_ctx, err_str);
-//        JS_FreeValue(job_ctx, err_message);
-//      }
-//    }
-//  }
-//
-//  for (const auto &kv : this->contexts) {
-//    kv.second->run_loop();
-//  }
-//}
 
 void Runner::log_debug(const std::string &msg) { this->native->logger(DEBUG, "Runner", msg); }
