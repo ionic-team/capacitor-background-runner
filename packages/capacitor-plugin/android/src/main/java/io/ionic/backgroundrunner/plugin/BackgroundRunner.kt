@@ -130,6 +130,10 @@ class BackgroundRunner(context: android.content.Context) {
 
         context.dispatchEvent(config.event, args)
 
+        while(runner!!.hasPendingJobs()) {
+            runner!!.executePendingJobs()
+        }
+
         val finished = future.conditionalAwait {
             it != null
         }

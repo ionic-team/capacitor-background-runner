@@ -8,13 +8,14 @@ extern "C" JNIEXPORT jlong JNICALL Java_io_ionic_android_1js_1engine_Runner_init
 
   return (jlong)(long)runner;
 }
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Runner_startRunner(JNIEnv *env, jobject thiz, jlong ptr) {
+extern "C" JNIEXPORT jboolean JNICALL Java_io_ionic_android_1js_1engine_Runner_hasPendingJobs(JNIEnv *env, jobject thiz, jlong ptr) {
   auto *runner = (Runner *)ptr;
-  runner->start();
+  return runner->has_pending_jobs();
 }
-extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Runner_stopRunner(JNIEnv *env, jobject thiz, jlong ptr) {
+
+extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Runner_executePendingJobs(JNIEnv *env, jobject thiz, jlong ptr) {
   auto *runner = (Runner *)ptr;
-  runner->stop();
+  runner->execute_pending_jobs();
 }
 extern "C" JNIEXPORT void JNICALL Java_io_ionic_android_1js_1engine_Runner_destroyRunner(JNIEnv *env, jobject thiz, jlong ptr) {
   auto *runner = (Runner *)ptr;

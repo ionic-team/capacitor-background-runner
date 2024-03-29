@@ -1,13 +1,8 @@
 package io.ionic.android_js_engine
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-
 class Runner {
     private val contexts: HashMap<String, Context> = HashMap()
     private var ptr: Long? = null
-    private var job: Job? = null
 
     init {
         System.loadLibrary("android_js_engine")
@@ -17,9 +12,9 @@ class Runner {
 
     private external fun initRunner(): Long
 
-    private external fun startRunner(ptr: Long)
+    private external fun hasPendingJobs(ptr: Long): Boolean
 
-    private external fun stopRunner(ptr: Long)
+    private external fun executePendingJobs(ptr: Long)
 
     private external fun destroyRunner(ptr: Long)
 
@@ -61,27 +56,18 @@ class Runner {
         this.contexts.remove(name)
     }
 
-    fun start() {
+    fun hasPendingJobs(): Boolean {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
-        this.job =
-            GlobalScope.launch {
-                startRunner(runnerPtr)
-            }
+        return hasPendingJobs(runnerPtr)
     }
 
-    fun stop() {
+    fun executePendingJobs() {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
-        this.stopRunner(runnerPtr)
-        if (this.job != null) {
-            this.job?.cancel()
-            this.job = null
-        }
+        executePendingJobs(runnerPtr)
     }
 
     fun destroy() {
         val runnerPtr = this.ptr ?: throw EngineErrors.RunnerException("pointer is nil")
-
-        this.stop()
 
         if (this.contexts.isNotEmpty()) {
             val allKeys = mutableListOf<String>()

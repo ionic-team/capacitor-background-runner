@@ -19,19 +19,14 @@ class Runner {
   Runner(NativeInterface *native);
   ~Runner();
 
-  void start();
-  void stop();
+  bool has_pending_jobs();
+  void execute_pending_jobs();
 
   Context *create_context(std::string name, CapacitorInterface *cap_api);
   void destroy_context(std::string name);
   std::unordered_map<std::string, Context *>::iterator destroy_context(std::unordered_map<std::string, Context *>::iterator delete_itr);
-  void execute_jobs();
 
   void log_debug(const std::string &msg);
-
- private:
-  bool run_loop_started;
-  bool stop_run_loop;
 };
 
 #endif  // CAPACITOR_BACKGROUND_RUNNER_RUNNER_H

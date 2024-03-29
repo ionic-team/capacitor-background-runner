@@ -12,6 +12,7 @@ import com.getcapacitor.annotation.PermissionCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 @CapacitorPlugin(
@@ -78,7 +79,7 @@ class BackgroundRunnerPlugin: Plugin() {
             val runningConfig = config.copy()
             runningConfig.event = runnerEvent
 
-            GlobalScope.launch(Dispatchers.Default) {
+            runBlocking(Dispatchers.IO) {
                 try {
                     val returnData = impl.execute(
                         this@BackgroundRunnerPlugin.context,
