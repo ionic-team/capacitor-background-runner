@@ -33,16 +33,12 @@ class BackgroundRunner(context: android.content.Context) {
     }
 
     fun start() {
-        runner = Runner()
-
-        val runner = runner ?: return
-        runner.start()
+        this.runner = Runner()
     }
 
     fun shutdown() {
         val runner = runner ?: return
 
-        runner.stop()
         runner.destroy()
         this.runner = null
     }
@@ -80,6 +76,8 @@ class BackgroundRunner(context: android.content.Context) {
     }
 
     suspend fun execute(androidContext: android.content.Context, config: RunnerConfig, dataArgs: JSONObject = JSONObject(), callbackId: String? = null): JSONObject? {
+        val runner = runner ?: throw Exception("runner is not started")
+
         val context = initContext(config, androidContext, callbackId)
 
         class ResolveCallback(future: MutableStateFlow<Result<JSONObject?>?>) : NativeJSFunction(jsFunctionName = "resolve") {
@@ -130,9 +128,7 @@ class BackgroundRunner(context: android.content.Context) {
 
         context.dispatchEvent(config.event, args)
 
-        while(runner!!.hasPendingJobs()) {
-            runner!!.executePendingJobs()
-        }
+        runner.waitForJobs()
 
         val finished = future.conditionalAwait {
             it != null
