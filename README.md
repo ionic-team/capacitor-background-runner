@@ -488,4 +488,5 @@ They could be used if a native watch app is developed as a companion app to a Ca
 | **`updateWatchUI`**            | <code>(options: { watchUI: string; }) =&gt; void</code>                  | Replaces the current UI on the watch with what is specified here.                                                                                           |
 | **`updateWatchData`**          | <code>(options: { data: { [key: string]: string; }; }) =&gt; void</code> | Updates the data the watch is using to display variables in text and button fields                                                                          |
 
+
 </capacitor-api-docs>
