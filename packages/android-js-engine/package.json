@@ -12,10 +12,10 @@
     },
     "prettier": "@ionic/prettier-config",
     "scripts": {
-      "lint": "pnpm clang-format --dry-run && ktlint 'AndroidJSEngine/src/**/*.kt'",
-      "fmt": "pnpm clang-format -i && ktlint --format 'AndroidJSEngine/src/**/*.kt'",
+      "lint": "pnpm run-clang-format --dry-run && ktlint 'AndroidJSEngine/src/**/*.kt'",
+      "fmt": "pnpm run-clang-format -i && ktlint --format 'AndroidJSEngine/src/**/*.kt'",
       "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java}\"",
-      "clang-format": "clang-format --glob=AndroidJSEngine/src/main/cpp/**/*.{cpp,h}"
+      "run-clang-format": "pnpm clang-format --glob=AndroidJSEngine/src/main/cpp/**/*.{cpp,h}"
     },
     "version": "1.0.5"
   }

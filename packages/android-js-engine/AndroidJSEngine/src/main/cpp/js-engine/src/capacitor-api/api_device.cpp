@@ -28,7 +28,7 @@ JSValue api_device_network(JSContext *ctx, JSValueConst this_val, int argc, JSVa
     auto js_error = create_js_error("context is null", ctx);
     return JS_Throw(ctx, js_error);
   }
-  
+
   try {
     auto json_result = context->capacitor_interface->device_api_getNetworkStatus();
     if (json_result.empty()) {

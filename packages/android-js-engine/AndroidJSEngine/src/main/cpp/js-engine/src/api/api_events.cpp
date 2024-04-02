@@ -18,7 +18,7 @@ JSValue api_add_event_listener(JSContext *ctx, JSValueConst this_val, int argc, 
     auto js_error = create_js_error("context is null", ctx);
     return JS_Throw(ctx, js_error);
   }
-  
+
   auto itr = context->event_listeners.find(event);
 
   if (itr == context->event_listeners.end()) {

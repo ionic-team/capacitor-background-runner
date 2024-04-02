@@ -60,7 +60,7 @@ JSValue api_clear_timeout(JSContext *ctx, JSValueConst this_val, int argc, JSVal
     auto js_error = create_js_error("context is null", ctx);
     return JS_Throw(ctx, js_error);
   }
-  
+
   JS_FreeValue(ctx, context->timers[id].js_func);
   context->timers.erase(id);
 

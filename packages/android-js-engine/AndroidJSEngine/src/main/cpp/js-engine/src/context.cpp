@@ -43,9 +43,7 @@ Context::~Context() {
   this->native_interface->logger(LoggerLevel::INFO, this->name, "Destroying context");
 }
 
-bool Context::has_timers() {
-  return !this->timers.empty();
-}
+bool Context::has_timers() { return !this->timers.empty(); }
 
 void Context::run_timers() {
   if (this->timers.empty()) {

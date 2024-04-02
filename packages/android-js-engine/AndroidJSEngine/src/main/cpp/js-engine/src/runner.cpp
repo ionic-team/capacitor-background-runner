@@ -33,21 +33,19 @@ Runner::~Runner() {
   this->log_debug("destroyed runner");
 }
 
-bool Runner::has_active_timers()  {
+bool Runner::has_active_timers() {
   bool active = false;
 
   for (const auto &kv : this->contexts) {
-      if (kv.second->has_timers()) {
-        active = true;
-      }
+    if (kv.second->has_timers()) {
+      active = true;
+    }
   }
 
   return active;
 }
 
-bool Runner::has_pending_jobs() {
-  return JS_IsJobPending(this->rt) || this->has_active_timers();
-}
+bool Runner::has_pending_jobs() { return JS_IsJobPending(this->rt) || this->has_active_timers(); }
 
 void Runner::execute_pending_jobs() {
   if (this->rt == nullptr) {
@@ -79,7 +77,6 @@ void Runner::execute_pending_jobs() {
     }
   }
 }
-
 
 Context *Runner::create_context(std::string name, CapacitorInterface *cap_api) {
   auto *context = new Context(name, this->rt, this->native, cap_api);

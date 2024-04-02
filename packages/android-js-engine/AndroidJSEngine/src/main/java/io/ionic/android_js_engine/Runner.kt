@@ -57,7 +57,7 @@ class Runner {
     }
 
     fun waitForJobs() {
-        while(hasPendingJobs()) {
+        while (hasPendingJobs()) {
             executePendingJobs()
         }
     }
