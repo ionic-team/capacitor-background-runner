@@ -1,6 +1,6 @@
 #include "api_console.h"
 
-#include "context.h"
+#include "../context.h"
 
 void write_to_logcat(android_LogPriority priority, const char *tag, const char *message) { __android_log_write(priority, tag, message); }
 
@@ -10,7 +10,7 @@ JSValue api_console_log(JSContext *ctx, JSValueConst this_val, int argc, JSValue
   size_t len;
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
-  std::string tag = "[Runner Context " + parent_ctx->name + "]";
+  std::string const tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
     str = JS_ToCStringLen(ctx, &len, argv[i]);
@@ -32,7 +32,7 @@ JSValue api_console_warn(JSContext *ctx, JSValueConst this_val, int argc, JSValu
   size_t len;
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
-  std::string tag = "[Runner Context " + parent_ctx->name + "]";
+  std::string const tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
     str = JS_ToCStringLen(ctx, &len, argv[i]);
@@ -54,7 +54,7 @@ JSValue api_console_error(JSContext *ctx, JSValueConst this_val, int argc, JSVal
   size_t len;
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
-  std::string tag = "[Runner Context " + parent_ctx->name + "]";
+  std::string const tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
     str = JS_ToCStringLen(ctx, &len, argv[i]);
@@ -76,7 +76,7 @@ JSValue api_console_debug(JSContext *ctx, JSValueConst this_val, int argc, JSVal
   size_t len;
 
   auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
-  std::string tag = "[Runner Context " + parent_ctx->name + "]";
+  std::string const tag = "[Runner Context " + parent_ctx->name + "]";
 
   for (i = 0; i < argc; i++) {
     str = JS_ToCStringLen(ctx, &len, argv[i]);

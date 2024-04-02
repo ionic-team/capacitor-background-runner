@@ -78,7 +78,8 @@ class BackgroundRunnerPlugin: Plugin() {
                     val returnData = impl.execute(
                         this@BackgroundRunnerPlugin.context,
                         config,
-                        details
+                        details,
+                        call.callbackId
                     )
 
                     if (returnData != null) {

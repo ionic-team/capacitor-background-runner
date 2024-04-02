@@ -2,10 +2,10 @@ import Foundation
 
 extension Context {
     public func setupCapacitorAPI() {
-        ctx.setObject(CapacitorKVStore.self, forKeyedSubscript: "CapacitorKV" as NSString)
-        ctx.setObject(CapacitorGeolocation(context: self), forKeyedSubscript: "CapacitorGeolocation" as NSString)
-        ctx.setObject(CapacitorWatch(), forKeyedSubscript: "CapacitorWatch" as NSString)
-        ctx.setObject(CapacitorNotifications.self, forKeyedSubscript: "CapacitorNotifications" as NSString)
-        ctx.setObject(CapacitorDevice(), forKeyedSubscript: "CapacitorDevice" as NSString)
+        jsContext.setObject(CapacitorKVStore.self, forKeyedSubscript: "CapacitorKV" as NSString)
+        jsContext.setObject(CapacitorGeolocation(context: self), forKeyedSubscript: "CapacitorGeolocation" as NSString)
+        jsContext.setObject(CapacitorWatch(), forKeyedSubscript: "CapacitorWatch" as NSString)
+        jsContext.setObject(CapacitorNotifications.self, forKeyedSubscript: "CapacitorNotifications" as NSString)
+        jsContext.setObject(CapacitorDevice(), forKeyedSubscript: "CapacitorDevice" as NSString)
     }
 }

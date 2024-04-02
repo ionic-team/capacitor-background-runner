@@ -37,21 +37,58 @@ const Tab1: React.FC = () => {
     }
   };
 
-  const onTestCapKV = async () => {
+  const onTestCapKVSet = async () => {
     setCommandOutput("");
     try {
-      const response = await BackgroundRunner.dispatchEvent({
+      await BackgroundRunner.dispatchEvent({
         label: "com.example.background.task",
-        event: "testCapKV",
-        details: {},
+        event: "testCapKVSet",
+        details: {
+          value: "Hello World"
+        },
       });
       setCommandOutput(
-        `success: stored and retrieved ${JSON.stringify(response)}`
+        `success: stored value 'Hello World'`
       );
     } catch (err) {
       setCommandOutput(`ERROR: ${err}`);
     }
   };
+
+  const onTestCapKVGet = async () => {
+    setCommandOutput("");
+    try {
+      const response = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testCapKVGet",
+        details: {},
+      });
+      setCommandOutput(
+        `success: retrieved ${JSON.stringify(response)}`
+      );
+    } catch (err) {
+      setCommandOutput(`ERROR: ${err}`);
+    }
+  };
+
+  const onTestCapKVRemove = async () => {
+    setCommandOutput("");
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testCapKVRemove",
+        details: {
+          
+        },
+      });
+      setCommandOutput(
+        `success: value removed`
+      );
+    } catch (err) {
+      setCommandOutput(`ERROR: ${err}`);
+    }
+  };
+  
 
   const onTestCapNotification = async () => {
     setCommandOutput("");
@@ -135,7 +172,9 @@ const Tab1: React.FC = () => {
         <IonButton expand="block" color={"success"} onClick={onRequestPermissions}>
           Request API Permissions
         </IonButton>
-        <IonButton expand="block" onClick={onTestCapKV}>Test Capacitor KV</IonButton>
+        <IonButton expand="block" onClick={onTestCapKVSet}>Capacitor KV - Set</IonButton>
+        <IonButton expand="block" onClick={onTestCapKVGet}>Capacitor KV - Get</IonButton>
+        <IonButton expand="block" onClick={onTestCapKVRemove}>Capacitor KV - Delete</IonButton>
         <IonButton expand="block" onClick={onTestCapNotification}>
           Test Capacitor Notification
         </IonButton>

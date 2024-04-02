@@ -1,10 +1,10 @@
-#ifndef ANDROID_ENGINE_API_KV_H
-#define ANDROID_ENGINE_API_KV_H
+#ifndef CAPACITOR_BACKGROUND_RUNNER_API_CAP_KV_H
+#define CAPACITOR_BACKGROUND_RUNNER_API_CAP_KV_H
 
-#include "quickjs/quickjs.h"
+#include "../quickjs/quickjs.h"
 
 JSValue api_kv_set(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 JSValue api_kv_get(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 JSValue api_kv_remove(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 
-#endif //ANDROID_ENGINE_API_KV_H
+#endif //CAPACITOR_BACKGROUND_RUNNER_API_CAP_KV_H

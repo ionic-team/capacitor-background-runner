@@ -1,13 +1,10 @@
 #include "api_timeout.h"
 
-#include "context.h"
-#include "errors.h"
+#include "../context.h"
+#include "../errors.h"
 
 JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv, bool repeat) {
   JSValue ret_value = JS_UNDEFINED;
-  JSValue jni_exception;
-
-  int timeout;
 
   if (!JS_IsNumber(argv[1])) {
     return JS_EXCEPTION;
@@ -17,17 +14,19 @@ JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueCon
     return JS_EXCEPTION;
   }
 
-  timeout = JS_VALUE_GET_INT(argv[1]);
+  int const timeout = JS_VALUE_GET_INT(argv[1]);
 
-  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
 
-  auto *env = parent_ctx->getJNIEnv();
+  auto *env = context->java->getEnv();
+  if (env == nullptr) {
+    return throw_js_exception(ctx, "JVM Environment is null");
+  }
 
-  int unique = env->CallIntMethod(parent_ctx->api, parent_ctx->jni_classes->context_api_randomHashCode_method);
-  jni_exception = check_and_throw_jni_exception(env, ctx);
-
-  if (JS_IsException(jni_exception)) {
-    return jni_exception;
+  int const unique = env->CallStaticIntMethod(context->java->web_api_class, context->java->web_api_randomHashCode_method);
+  auto exception = throw_jvm_exception_in_js(env, ctx);
+  if (JS_IsException(exception)) {
+    return exception;
   }
 
   Timer timer{};
@@ -37,11 +36,7 @@ JSValue create_timer(JSContext *ctx, JSValueConst this_val, int argc, JSValueCon
   timer.start = std::chrono::system_clock::now();
   timer.repeat = repeat;
 
-  parent_ctx->timers_mutex.lock();
-
-  parent_ctx->timers[unique] = timer;
-
-  parent_ctx->timers_mutex.unlock();
+  context->timers[unique] = timer;
 
   ret_value = JS_NewInt32(ctx, unique);
 
@@ -59,16 +54,12 @@ JSValue api_clear_timeout(JSContext *ctx, JSValueConst this_val, int argc, JSVal
     return JS_EXCEPTION;
   }
 
-  int id = JS_VALUE_GET_INT(argv[0]);
+  int const id = JS_VALUE_GET_INT(argv[0]);
 
-  auto *parent_ctx = (Context *)JS_GetContextOpaque(ctx);
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
 
-  parent_ctx->timers_mutex.lock();
-
-  JS_FreeValue(ctx, parent_ctx->timers[id].js_func);
-  parent_ctx->timers.erase(id);
-
-  parent_ctx->timers_mutex.unlock();
+  JS_FreeValue(ctx, context->timers[id].js_func);
+  context->timers.erase(id);
 
   return ret_value;
 }

@@ -1,9 +1,8 @@
+#ifndef CAPACITOR_BACKGROUND_RUNNER_API_CONSOLE_H
+#define CAPACITOR_BACKGROUND_RUNNER_API_CONSOLE_H
+
 #include <android/log.h>
-
-#include "quickjs/quickjs.h"
-
-#ifndef ANDROID_ENGINE_API_CONSOLE_H
-#define ANDROID_ENGINE_API_CONSOLE_H
+#include "../quickjs/quickjs.h"
 
 void write_to_logcat(android_LogPriority priority, const char *tag, const char *message);
 
@@ -12,4 +11,4 @@ JSValue api_console_warn(JSContext *ctx, JSValueConst this_val, int argc, JSValu
 JSValue api_console_error(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 JSValue api_console_debug(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 
-#endif //ANDROID_ENGINE_API_CONSOLE_H
+#endif //CAPACITOR_BACKGROUND_RUNNER_API_CONSOLE_H
