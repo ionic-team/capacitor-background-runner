@@ -456,7 +456,7 @@ Get access to device location information.
 
 | Prop                     | Type                                                                                   | Description                          | Since |
 | ------------------------ | -------------------------------------------------------------------------------------- | ------------------------------------ | ----- |
-| **`getCurrentLocation`** | <code>() =&gt; <a href="#getcurrentpositionresult">GetCurrentPositionResult</a></code> | Get the device's last known location | 1.0.0 |
+| **`getCurrentPosition`** | <code>() =&gt; <a href="#getcurrentpositionresult">GetCurrentPositionResult</a></code> | Get the device's last known location | 1.0.0 |
 
 
 #### GetCurrentPositionResult
@@ -487,5 +487,6 @@ They could be used if a native watch app is developed as a companion app to a Ca
 | **`isReachable`**              | <code>boolean</code>                                                     | Checks to see if the compaion watch is reachable                                                                                                            |
 | **`updateWatchUI`**            | <code>(options: { watchUI: string; }) =&gt; void</code>                  | Replaces the current UI on the watch with what is specified here.                                                                                           |
 | **`updateWatchData`**          | <code>(options: { data: { [key: string]: string; }; }) =&gt; void</code> | Updates the data the watch is using to display variables in text and button fields                                                                          |
+
 
 </capacitor-api-docs>
