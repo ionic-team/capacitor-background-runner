@@ -35,16 +35,15 @@ class BackgroundRunnerPlugin: Plugin() {
         const val NOTIFICATIONS = "notifications"
     }
 
+    override fun handleOnPause() {
+        super.handleOnPause()
+        Log.d("Background Runner", "registering runner workers")
+        impl?.scheduleBackgroundTask(this.context)
+    }
+
     override fun load() {
         super.load()
         impl = BackgroundRunner.getInstance(this.context)
-
-        bridge.app.setStatusChangeListener {
-            if (!it) {
-                Log.d("Background Runner", "registering runner workers")
-                impl?.scheduleBackgroundTask(this.context)
-            }
-        }
     }
 
     @PluginMethod
