@@ -1,9 +1,11 @@
 package io.ionic.backgroundrunner.plugin
 
 import android.content.res.AssetManager
+import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
@@ -58,11 +60,16 @@ class BackgroundRunner(context: android.content.Context) {
             .putString("event", config.event)
             .build()
 
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+
         if (!config.repeats) {
             val work = OneTimeWorkRequest.Builder(RunnerWorker::class.java)
                 .setInitialDelay(interval.toLong(), TimeUnit.MINUTES)
                 .setInputData(data)
                 .addTag(config.label)
+                .setConstraints(constraints)
                 .build()
             WorkManager.getInstance(androidContext).enqueueUniqueWork(config.label, ExistingWorkPolicy.REPLACE, work)
         } else {
@@ -70,6 +77,7 @@ class BackgroundRunner(context: android.content.Context) {
                 .setInitialDelay(interval.toLong(), TimeUnit.MINUTES)
                 .setInputData(data)
                 .addTag(config.label)
+                .setConstraints(constraints)
                 .build()
             WorkManager.getInstance(androidContext).enqueueUniquePeriodicWork(config.label, ExistingPeriodicWorkPolicy.UPDATE, work)
         }
