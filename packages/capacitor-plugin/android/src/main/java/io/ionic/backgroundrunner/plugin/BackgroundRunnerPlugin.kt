@@ -42,9 +42,22 @@ class BackgroundRunnerPlugin: Plugin() {
         impl?.scheduleBackgroundTask(this.context)
     }
 
+    override fun handleOnStop() {
+        super.handleOnStop()
+        Log.d("Background Runner", "shutting down foreground runner")
+        impl?.shutdown()
+    }
+
+    override fun handleOnResume() {
+        super.handleOnResume()
+        Log.d("Background Runner", "starting foreground runner")
+        impl?.start()
+    }
+
     override fun load() {
         super.load()
-        impl = BackgroundRunner.getInstance(this.context)
+        impl = BackgroundRunner(this.context)
+        impl?.start()
     }
 
     @PluginMethod
