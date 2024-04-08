@@ -19,7 +19,7 @@ import kotlinx.coroutines.runBlocking
     name = "BackgroundRunner",
     permissions = [
         Permission(
-            strings = [Manifest.permission.ACCESS_COARSE_LOCATION],
+            strings = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
             alias = BackgroundRunnerPlugin.GEOLOCATION
         ),
         Permission(
