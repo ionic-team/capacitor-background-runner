@@ -40,4 +40,13 @@ gradleFile =
 
 fs.writeFileSync(androidGradlePath, gradleFile);
 
+// remove old version of aar
+const oldReleaseAARPath = path.join(
+  workingDir,
+  'android/src/main/libs/android-js-engine-release.aar',
+);
+if (fs.existsSync(oldReleaseAARPath)) {
+  fs.rmSync(oldReleaseAARPath);
+}
+
 console.log(`${msgPrefix} installed lib path to gradle repositories`);
