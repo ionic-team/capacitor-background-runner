@@ -2,7 +2,7 @@ package io.ionic.backgroundrunner.plugin.api
 
 import android.content.Context
 import android.content.SharedPreferences
-import io.ionic.android_js_engine.api.KVAPI
+import io.ionic.android_js_engine.capacitor_api.KVAPI
 
 class KV (context: android.content.Context, label: String) : KVAPI {
     private val prefs: SharedPreferences

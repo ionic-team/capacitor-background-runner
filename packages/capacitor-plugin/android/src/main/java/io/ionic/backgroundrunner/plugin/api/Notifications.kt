@@ -13,14 +13,15 @@ import android.net.Uri
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.getcapacitor.Logger.config
+import com.getcapacitor.CapConfig
 import com.getcapacitor.plugin.util.AssetUtil
-import io.ionic.android_js_engine.api.NotificationsAPI
+import io.ionic.android_js_engine.capacitor_api.NotificationsAPI
 import org.json.JSONArray
 
 class Notifications(context: Context) : NotificationsAPI {
     private val manager: NotificationManagerCompat
     private val context: Context
+    private val config: CapConfig
 
     var defaultSmallIconID = AssetUtil.RESOURCE_ID_ZERO_VALUE
     var defaultSoundID = AssetUtil.RESOURCE_ID_ZERO_VALUE
@@ -28,6 +29,7 @@ class Notifications(context: Context) : NotificationsAPI {
     init {
         this.context = context
         this.manager = NotificationManagerCompat.from(context)
+        this.config = CapConfig.loadDefault(context)
 
         this.createNotificationChannel()
     }

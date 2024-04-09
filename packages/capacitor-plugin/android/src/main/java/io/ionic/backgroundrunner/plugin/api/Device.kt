@@ -8,9 +8,8 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import android.os.Build
-import io.ionic.android_js_engine.api.DeviceAPI
+import io.ionic.android_js_engine.capacitor_api.DeviceAPI
 import org.json.JSONObject
-
 
 class Device (context: android.content.Context) : DeviceAPI {
     private val context: android.content.Context

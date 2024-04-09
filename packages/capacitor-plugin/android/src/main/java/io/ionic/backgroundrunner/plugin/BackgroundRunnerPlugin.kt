@@ -12,13 +12,14 @@ import com.getcapacitor.annotation.PermissionCallback
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 @CapacitorPlugin(
     name = "BackgroundRunner",
     permissions = [
         Permission(
-            strings = [Manifest.permission.ACCESS_COARSE_LOCATION],
+            strings = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
             alias = BackgroundRunnerPlugin.GEOLOCATION
         ),
         Permission(
@@ -41,9 +42,22 @@ class BackgroundRunnerPlugin: Plugin() {
         impl?.scheduleBackgroundTask(this.context)
     }
 
+    override fun handleOnStop() {
+        super.handleOnStop()
+        Log.d("Background Runner", "shutting down foreground runner")
+        impl?.shutdown()
+    }
+
+    override fun handleOnResume() {
+        super.handleOnResume()
+        Log.d("Background Runner", "starting foreground runner")
+        impl?.start()
+    }
+
     override fun load() {
         super.load()
-        impl = BackgroundRunner.getInstance(this.context)
+        impl = BackgroundRunner(this.context)
+        impl?.start()
     }
 
     @PluginMethod
@@ -65,18 +79,20 @@ class BackgroundRunnerPlugin: Plugin() {
     @PluginMethod
     fun dispatchEvent(call: PluginCall) {
         try {
-            val impl = BackgroundRunner.getInstance(this.context)
+            val impl = this.impl ?: throw Exception("background runner not initialized")
 
             val runnerEvent = call.getString("event") ?: throw Exception("event is missing or invalid")
             val details = call.getObject("details")
             val config = impl.config ?: throw Exception("no runner config loaded")
-            config.event = runnerEvent
 
-            GlobalScope.launch(Dispatchers.Default) {
+            val runningConfig = config.copy()
+            runningConfig.event = runnerEvent
+
+            runBlocking(Dispatchers.IO) {
                 try {
                     val returnData = impl.execute(
                         this@BackgroundRunnerPlugin.context,
-                        config,
+                        runningConfig,
                         details,
                         call.callbackId
                     )
