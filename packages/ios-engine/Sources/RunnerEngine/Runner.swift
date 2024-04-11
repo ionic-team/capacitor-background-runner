@@ -15,11 +15,11 @@ public class Runner {
     }
 
     func createContext(name: String) throws -> Context {
-        let context = try Context(vm: machine, contextName: name, runLoop: runLoop)
-
-        if contexts.keys.contains(name) {
+         if contexts.keys.contains(name) {
             throw EngineError.runnerError(details: "context with name \(name) already exists")
         }
+
+        let context = try Context(vm: machine, contextName: name, runLoop: runLoop)
 
         contexts[name] = context
 
@@ -54,6 +54,7 @@ public class Runner {
         }
 
         thread.cancel()
+        
         while !thread.isFinished {
             Thread.sleep(forTimeInterval: 0.05)
         }

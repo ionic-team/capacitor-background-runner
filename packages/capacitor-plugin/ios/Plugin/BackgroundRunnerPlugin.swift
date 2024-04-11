@@ -13,6 +13,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
+        
         initWatchConnectivity()
     }
 
@@ -54,22 +55,23 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
     @objc func dispatchEvent(_ call: CAPPluginCall) {
         do {
-            guard let runnerEvent = call.getString("event") else {
+            guard let runnerEvent = call.getString("event"), !runnerEvent.isEmpty else {
                 throw BackgroundRunnerPluginError.invalidArgument(reason: "event is missing or invalid")
             }
 
             let details = call.getObject("details", JSObject())
 
-            guard let config = impl.getConfig() else {
-                throw BackgroundRunnerPluginError.runnerError(reason: "no runner config loaded")
+            guard var config = impl.config else {
+                throw BackgroundRunnerPluginError.noRunnerConfig
             }
+            
+            config.event = runnerEvent
 
             // swiftlint:disable:next unowned_variable_capture
             DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
                 do {
                     let result = try self.impl.execute(
                         config: config,
-                        event: runnerEvent,
                         inputArgs: details as [String: Any],
                         callbackId: call.callbackId
                     )
@@ -94,14 +96,27 @@ public class BackgroundRunnerPlugin: CAPPlugin {
     }
 
     @objc private func didEnterBackground() {
-        impl.scheduleBackgroundTasks()
+        do {
+            try impl.scheduleBackgroundTasks()
+        } catch {
+            print("could not schedule background task: \(error)")
+        }
     }
 
     public static func registerBackgroundTask() {
-        BackgroundRunner.shared.registerBackgroundTask()
+        do {
+            try BackgroundRunner.shared.registerBackgroundTask()
+        } catch {
+            print("could not register background task: \(error)")
+        }
     }
 
     public static func dispatchEvent(event: String, eventArgs: [AnyHashable: Any], completionHandler: ((Result<Bool, Error>) -> Void)) {
+        if event.isEmpty {
+            completionHandler(.failure(BackgroundRunnerPluginError.invalidArgument(reason: "event is missing or invalid")))
+            return
+        }
+        
         var args: [String: Any] = [:]
 
         eventArgs.forEach { (key: AnyHashable, value: Any) in
@@ -147,7 +162,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             return
         }
 
-        guard let config = impl.getConfig() else {
+        guard let config = impl.config else {
             return
         }
 

@@ -5,8 +5,8 @@ import JavaScriptCore
 
 public class BackgroundRunner {
     public static let shared = BackgroundRunner()
-
-    private var config: RunnerConfig?
+    public var config: RunnerConfig?
+    
     private var runner = Runner()
 
     public init() {
@@ -17,16 +17,31 @@ public class BackgroundRunner {
             print("could not initialize BackgroundRunner: \(error)")
         }
     }
-
-    public func registerBackgroundTask() {
+    
+    public func scheduleBackgroundTasks() throws {
         guard let config = config else {
-            print("no runner to register")
+            throw BackgroundRunnerPluginError.noRunnerConfig
+        }
+        
+        if !config.autoSchedule {
             return
         }
 
-        if config.event == nil {
-            print("cannot register background task without a event to call")
-            return
+        guard let interval = config.interval else {
+            throw BackgroundRunnerPluginError.invalidRunnerConfig(reason: "cannot register background task without a configured interval")
+        }
+
+        let request = BGAppRefreshTaskRequest(identifier: config.label)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: Double(interval) * 60)
+
+        print("Scheduling \(config.label)")
+
+        try BGTaskScheduler.shared.submit(request)
+    }
+
+    public func registerBackgroundTask() throws {
+        guard let config = config else {
+            throw BackgroundRunnerPluginError.noRunnerConfig
         }
 
         BGTaskScheduler.shared.register(forTaskWithIdentifier: config.label, using: nil) { task in
@@ -35,11 +50,7 @@ public class BackgroundRunner {
                     print("task timed out")
                 }
 
-                guard let event = config.event else {
-                    throw BackgroundRunnerPluginError.invalidRunnerConfig(reason: "runner event is missing or invalid")
-                }
-
-                _ = try BackgroundRunner.shared.execute(config: config, event: event)
+                _ = try BackgroundRunner.shared.execute(config: config)
 
                 task.setTaskCompleted(success: true)
             } catch {
@@ -48,62 +59,9 @@ public class BackgroundRunner {
             }
         }
     }
-
-    public func scheduleBackgroundTasks() {
-        guard let config = config else {
-            return
-        }
-
-        guard let interval = config.interval else {
-            print("cannot register background task without a configured interval")
-            return
-        }
-
-        let request = BGAppRefreshTaskRequest(identifier: config.label)
-        request.earliestBeginDate = Date(timeIntervalSinceNow: Double(interval) * 60)
-
-        do {
-            print("Scheduling \(config.label)")
-
-            try BGTaskScheduler.shared.submit(request)
-        } catch {
-            print("Could not schedule app refresh: \(error)")
-        }
-    }
-
-    public func getConfig() -> RunnerConfig? {
-        return config
-    }
-
-    public func dispatchEvent(event: String, inputArgs: [String: Any]?, callbackId: String? = nil) throws {
-        if let config = config {
-            let waitGroup = DispatchGroup()
-            waitGroup.enter()
-
-            var err: Error?
-
-            // swiftlint:disable:next unowned_variable_capture
-            DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
-                do {
-                    _ = try self.execute(config: config, event: event, inputArgs: inputArgs, callbackId: callbackId)
-                } catch {
-                    err = error
-                    print("[\(config.label)]: \(error)")
-                }
-
-                waitGroup.leave()
-            }
-
-            waitGroup.wait()
-
-            if let err = err {
-                throw err
-            }
-        }
-    }
-
+    
     // swiftlint:disable:next cyclomatic_complexity function_body_length
-    public func execute(config: RunnerConfig, event: String, inputArgs: [String: Any]? = nil, callbackId: String? = nil) throws -> [String: Any]? {
+    public func execute(config: RunnerConfig, inputArgs: [String: Any]? = nil, callbackId: String? = nil) throws -> [String: Any]? {
         do {
             let context = try initContext(config: config, callbackId: callbackId)
 
@@ -170,9 +128,11 @@ public class BackgroundRunner {
 
             waitGroup.enter()
 
-            try context.dispatchEvent(event: event, details: args)
+            try context.dispatchEvent(event: config.event, details: args)
 
             waitGroup.wait()
+            
+            runner.destroyContext(name: context.name)
 
             if let rejection = rejectionErr {
                 throw EngineError.jsException(details: rejection.message)
@@ -182,6 +142,33 @@ public class BackgroundRunner {
         } catch {
             print("error executing task: \(error)")
             throw error
+        }
+    }
+
+    public func dispatchEvent(event: String, inputArgs: [String: Any]?, callbackId: String? = nil) throws {
+        if let config = config {
+            let waitGroup = DispatchGroup()
+            waitGroup.enter()
+
+            var err: Error?
+
+            // swiftlint:disable:next unowned_variable_capture
+            DispatchQueue.global(qos: .userInitiated).async { [unowned self] in
+                do {
+                    _ = try self.execute(config: config, inputArgs: inputArgs, callbackId: callbackId)
+                } catch {
+                    err = error
+                    print("[\(config.label)]: \(error)")
+                }
+
+                waitGroup.leave()
+            }
+
+            waitGroup.wait()
+
+            if let err = err {
+                throw err
+            }
         }
     }
 
