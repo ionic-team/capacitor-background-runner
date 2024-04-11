@@ -132,7 +132,6 @@ public class BackgroundRunner {
 
             waitGroup.wait()
             
-            runner.destroyContext(name: context.name)
 
             if let rejection = rejectionErr {
                 throw EngineError.jsException(details: rejection.message)
