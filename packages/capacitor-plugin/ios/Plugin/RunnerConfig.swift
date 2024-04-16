@@ -5,7 +5,7 @@ public struct RunnerConfig {
     let label: String
     let src: String
     var autoSchedule: Bool
-    let event: String?
+    var event: String
     let repeats: Bool?
     let enableWatchConnectivity: Bool
 
@@ -20,7 +20,7 @@ public struct RunnerConfig {
             throw BackgroundRunnerPluginError.invalidRunnerConfig(reason: "runner source file path is missing or invalid")
         }
 
-        let event = jsObject["event"] as? String
+        let event = jsObject["event"] as? String ?? ""
         let repeats = jsObject["repeat"] as? Bool
         let interval = jsObject["interval"] as? Int
         let autoStart = jsObject["autoStart"] as? Bool
