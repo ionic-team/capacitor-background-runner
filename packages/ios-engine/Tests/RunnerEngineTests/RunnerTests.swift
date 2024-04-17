@@ -3,25 +3,8 @@ import XCTest
 @testable import RunnerEngine
 
 final class RunnerTests: XCTestCase {
-    func testRunnerCreateDestroy() {
-        let runner = Runner()
-        runner.start()
-
-        runner.stop()
-    }
-
-    func testContextCreateDestroy() throws {
-        let runner = Runner()
-        runner.start()
-
-        _ = try runner.createContext(name: "io.ionic.android_js_engine")
-
-        runner.stop()
-    }
-
     func testMultipleContexts() throws {
         let runner = Runner()
-        runner.start()
 
         var calls = 0
         let count = Int.random(in: 20..<40)
@@ -43,8 +26,6 @@ final class RunnerTests: XCTestCase {
         }
 
         wait(for: [expectation], timeout: 5)
-
-        runner.stop()
     }
 
 }

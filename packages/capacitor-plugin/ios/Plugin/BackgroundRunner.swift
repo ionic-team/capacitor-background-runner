@@ -11,8 +11,7 @@ public class BackgroundRunner {
 
     public init() {
         do {
-            config = try self.loadRunnerConfig()
-            runner.start()
+            config = try self.loadRunnerConfig()            
         } catch {
             print("could not initialize BackgroundRunner: \(error)")
         }
