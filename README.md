@@ -275,6 +275,7 @@ It’s not possible to run persistent, always running background services on mob
 
 - Each invocation of your task has approximately up to 30 seconds of runtime before you must call `completed()` or your task is killed.
 - While you can set an interval to define when your task runs after the app is backgrounded, or how often it should run, this is not guaranteed. iOS will determine when and how often you task will ultimately run, determined in part by how often you app is used.
+- Background tasks are not executed in the simulator.
 
 ### Android
 
