@@ -151,6 +151,8 @@ addEventListener('remoteNotification', (resolve, reject, args) => {
 
 Calling `resolve()` \ `reject()` is **required** within every event handler called by the runner. Failure to do this could result in your runner being killed by the OS if your event is called while the app is in the background. If the app is in the foreground, async calls to `dispatchEvent` may not resolve.
 
+For more real world examples of using Background Runner, check out the [Background Runner Test App](https://github.com/ionic-team/background-runner-testapp).
+
 ## Configuring Background Runner
 
 <docgen-config>
