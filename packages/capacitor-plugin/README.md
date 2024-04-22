@@ -69,6 +69,23 @@ Read about [Configuring `Info.plist`](https://capacitorjs.com/docs/ios/configura
 
 ## Android
 
+Insert the following line to `android/app/build.gradle`:
+
+```diff
+...
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
++		dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'
+    }
+}
+...
+
+```
+
+If you are upgrading from 1.0.5 with an existing Android project, be sure to delete the `android-js-engine-release.aar` from `android/src/main/libs`.
+
 ### Geolocation
 
 This API requires the following permissions be added to your `AndroidManifest.xml`:
