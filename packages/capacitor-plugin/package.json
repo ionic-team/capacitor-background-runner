@@ -1,6 +1,6 @@
 {
   "name": "@capacitor/background-runner",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Capacitor Background Runner",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

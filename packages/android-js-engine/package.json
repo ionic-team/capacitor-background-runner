@@ -1,22 +1,21 @@
 {
-    "name": "android-js-engine",
-    "private": true,
-    "dependencies": {
-      "@naturalcycles/ktlint": "1.9.0",
-      "clang-format": "^1.8.0",
-      "prettier": "~2.3.2",
-      "prettier-plugin-java": "~1.0.2"
-    },
-    "devDependencies": {
-      "@ionic/prettier-config": "^1.0.1"
-    },
-    "prettier": "@ionic/prettier-config",
-    "scripts": {
-      "lint": "pnpm run-clang-format --dry-run && ktlint 'AndroidJSEngine/src/**/*.kt'",
-      "fmt": "pnpm run-clang-format -i && ktlint --format 'AndroidJSEngine/src/**/*.kt'",
-      "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java}\"",
-      "run-clang-format": "pnpm clang-format --glob=AndroidJSEngine/src/main/cpp/**/*.{cpp,h}"
-    },
-    "version": "1.0.5"
-  }
-  
+  "name": "android-js-engine",
+  "private": true,
+  "dependencies": {
+    "@naturalcycles/ktlint": "1.9.0",
+    "clang-format": "^1.8.0",
+    "prettier": "~2.3.2",
+    "prettier-plugin-java": "~1.0.2"
+  },
+  "devDependencies": {
+    "@ionic/prettier-config": "^1.0.1"
+  },
+  "prettier": "@ionic/prettier-config",
+  "scripts": {
+    "lint": "pnpm run-clang-format --dry-run && ktlint 'AndroidJSEngine/src/**/*.kt'",
+    "fmt": "pnpm run-clang-format -i && ktlint --format 'AndroidJSEngine/src/**/*.kt'",
+    "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java}\"",
+    "run-clang-format": "pnpm clang-format --glob=AndroidJSEngine/src/main/cpp/**/*.{cpp,h}"
+  },
+  "version": "1.1.0"
+}
