@@ -69,6 +69,23 @@ Read about [Configuring `Info.plist`](https://capacitorjs.com/docs/ios/configura
 
 ## Android
 
+Insert the following line to `android/app/build.gradle`:
+
+```diff
+...
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
++		dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'
+    }
+}
+...
+
+```
+
+If you are upgrading from 1.0.5 with an existing Android project, be sure to delete the `android-js-engine-release.aar` from `android/src/main/libs`.
+
 ### Geolocation
 
 This API requires the following permissions be added to your `AndroidManifest.xml`:
@@ -150,6 +167,8 @@ addEventListener('remoteNotification', (resolve, reject, args) => {
 ```
 
 Calling `resolve()` \ `reject()` is **required** within every event handler called by the runner. Failure to do this could result in your runner being killed by the OS if your event is called while the app is in the background. If the app is in the foreground, async calls to `dispatchEvent` may not resolve.
+
+For more real world examples of using Background Runner, check out the [Background Runner Test App](https://github.com/ionic-team/background-runner-testapp).
 
 ## Configuring Background Runner
 
@@ -256,6 +275,7 @@ It’s not possible to run persistent, always running background services on mob
 
 - Each invocation of your task has approximately up to 30 seconds of runtime before you must call `completed()` or your task is killed.
 - While you can set an interval to define when your task runs after the app is backgrounded, or how often it should run, this is not guaranteed. iOS will determine when and how often you task will ultimately run, determined in part by how often you app is used.
+- Background tasks are not executed in the simulator.
 
 ### Android
 
