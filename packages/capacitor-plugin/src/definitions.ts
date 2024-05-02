@@ -41,6 +41,7 @@ export interface BackgroundRunnerConfig {
    * @since 1.0.0
    */
   autoStart?: boolean;
+  apis?: API[];
 }
 
 declare module '@capacitor/cli' {
@@ -95,11 +96,12 @@ declare module '@capacitor/cli' {
        * @example true
        */
       autoStart?: boolean;
+      apis?: API[];
     };
   }
 }
 
-export type API = 'geolocation' | 'notifications';
+export type API = 'geolocation' | 'notifications' | 'kv' | 'device';
 
 export interface PermissionStatus {
   geolocation: PermissionState;

@@ -1,0 +1,25 @@
+{
+  "name": "@capacitor/background-runner-cli",
+  "version": "1.1.0",
+  "description": "Capacitor Background Runner CLI Tool",
+  "author": "Ionic Team",
+  "license": "MIT",
+  "bin": {
+    "cap-br": "bin/background-runner-cli"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@capacitor/background-runner": "workspace:^",
+    "@capacitor/cli": "^5.2.2",
+    "commander": "^12.0.0",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.20.55",
+    "@types/prompts": "^2.4.9",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

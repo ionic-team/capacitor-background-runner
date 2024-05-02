@@ -8,6 +8,7 @@
     "@capacitor/android": "^5.2.2",
     "@capacitor/app": "^5.0.6",
     "@capacitor/background-runner": "workspace:^",
+    "@capacitor/background-runner-cli": "workspace:^",
     "@capacitor/core": "^5.2.2",
     "@capacitor/haptics": "^5.0.6",
     "@capacitor/ios": "^5.2.2",

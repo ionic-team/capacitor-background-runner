@@ -187,6 +187,7 @@ backgrounded.
 | **`repeat`**    | <code>boolean</code> | If background task should repeat based on the interval set in `interval`.                                                                                                                            | 1.0.0 |
 | **`interval`**  | <code>number</code>  | The number of minutes after the the app is put into the background in which the background task should begin. If `repeat` is true, this also specifies the number of minutes between each execution. | 1.0.0 |
 | **`autoStart`** | <code>boolean</code> | Automatically register and schedule background task on app load.                                                                                                                                     | 1.0.0 |
+| **`apis`**      | <code>{}</code>      |                                                                                                                                                                                                      |       |
 
 ### Examples
 
@@ -201,7 +202,8 @@ In `capacitor.config.json`:
       "event": "myCustomEvent",
       "repeat": true,
       "interval": 15,
-      "autoStart": true
+      "autoStart": true,
+      "apis": undefined
     }
   }
 }
@@ -223,6 +225,7 @@ const config: CapacitorConfig = {
       repeat: true,
       interval: 15,
       autoStart: true,
+      apis: undefined,
     },
   },
 };
@@ -387,7 +390,7 @@ Dispatches an event to the configured runner.
 
 #### API
 
-<code>'geolocation' | 'notifications'</code>
+<code>'geolocation' | 'notifications' | 'kv' | 'device'</code>
 
 </docgen-api>
 
