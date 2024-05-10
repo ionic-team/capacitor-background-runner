@@ -234,7 +234,7 @@ export default config;
 
 ## JavaScript API
 
-Background Runner does not execute your Javascript code in a browser or web view, therefore the typical Web APIs you may be used to may not be available. This includes DOM APIs nor ability to interact with your application's DOM.
+Background Runner does not execute your Javascript code in a browser or web view; therefore, the typical Web APIs you may be used to may not be available. This includes DOM APIs nor ability to interact with your application's DOM.
 
 Below is a list of the available Web APIs provided in Background Runner:
 
