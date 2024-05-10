@@ -13,6 +13,7 @@
   "dependencies": {
     "@capacitor/background-runner": "workspace:^",
     "@capacitor/cli": "^5.2.2",
+    "@ionic/utils-fs": "^3.1.7",
     "commander": "^12.0.0",
     "prompts": "^2.4.2"
   },

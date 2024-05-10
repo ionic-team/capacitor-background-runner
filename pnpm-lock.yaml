@@ -230,6 +230,9 @@ importers:
       '@capacitor/cli':
         specifier: ^5.2.2
         version: 5.2.2
+      '@ionic/utils-fs':
+        specifier: ^3.1.7
+        version: 3.1.7
       commander:
         specifier: ^12.0.0
         version: 12.0.0

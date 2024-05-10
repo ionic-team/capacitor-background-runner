@@ -1,25 +1,7 @@
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { join, resolve } from "path";
-import { CapacitorConfig } from "@capacitor/cli";
+import util from "util";
+import { readFileSync, existsSync } from "fs";
+import { resolve } from "path";
 import type typescript from "typescript";
-
-export const writeCapConfig = (
-  capConfig: CapacitorConfig,
-  projectDir: string
-) => {
-  const capConfigPath = join(projectDir, "capacitor.config.json");
-  const data = JSON.stringify(capConfig, null, 2);
-
-  writeFileSync(capConfigPath, data);
-};
-
-export const readCapConfig = (projectDir: string): CapacitorConfig => {
-  const json = readFileSync(
-    join(projectDir, "capacitor.config.json")
-  ).toString();
-
-  return JSON.parse(json);
-};
 
 interface NodeModuleWithCompile extends NodeJS.Module {
   _compile?(code: string, filename: string): any;
@@ -81,4 +63,19 @@ export function resolveNode(
     }
     return null;
   }
+}
+
+export function formatJSObject(o: { [key: string]: any }): string {
+  try {
+    o = JSON.parse(JSON.stringify(o));
+  } catch (e: any) {
+    throw new Error(`Cannot parse object as JSON: ${e.stack ? e.stack : e}`);
+  }
+
+  return util.inspect(o, {
+    compact: false,
+    breakLength: Infinity,
+    depth: Infinity,
+    maxArrayLength: Infinity,
+  });
 }
