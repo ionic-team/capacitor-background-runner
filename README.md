@@ -274,7 +274,7 @@ It’s not possible to run persistent, always running background services on mob
 ### iOS
 
 - Each invocation of your task has approximately up to 30 seconds of runtime before you must call `completed()` or your task is killed.
-- While you can set an interval to define when your task runs after the app is backgrounded, or how often it should run, this is not guaranteed. iOS will determine when and how often you task will ultimately run, determined in part by how often you app is used.
+- While you can set an interval to define when your task runs after the app is backgrounded or how often it should run, this is not guaranteed. iOS will determine when and how often your task will ultimately run, determined in part by how often your app is used.
 - Background tasks are not executed in the simulator.
 
 ### Android
@@ -496,8 +496,7 @@ Get access to device location information.
 
 Interact with a watch paired with this app
 
-sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapactiorWatch Watch application.
-They could be used if a native watch app is developed as a companion app to a Capacitor app
+sendMessage, transferUserInfo, and updateApplicationContext are raw routes to the WCSession delegate methods but have no effects currently in a CapacitorWatch Watch application. They could be used if a native watch app is developed as a companion app to a capacitor app.
 
 | Prop                           | Type                                                                     | Description                                                                                                                                                 |
 | ------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
