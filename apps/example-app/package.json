@@ -5,14 +5,14 @@
   "dependencies": {
     "@babel/plugin-syntax-flow": "^7.22.5",
     "@babel/plugin-transform-react-jsx": "^7.22.5",
-    "@capacitor/android": "^5.2.2",
-    "@capacitor/app": "^5.0.6",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/app": "^6.0.0",
     "@capacitor/background-runner": "workspace:^",
-    "@capacitor/core": "^5.2.2",
-    "@capacitor/haptics": "^5.0.6",
-    "@capacitor/ios": "^5.2.2",
-    "@capacitor/keyboard": "^5.0.6",
-    "@capacitor/status-bar": "^5.0.6",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/haptics": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/keyboard": "^6.0.0",
+    "@capacitor/status-bar": "^6.0.0",
     "@ionic/react": "^6.7.5",
     "@ionic/react-router": "^6.7.5",
     "@testing-library/dom": "^9.3.1",
@@ -53,17 +53,10 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": ["react-app", "react-app/jest"]
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -71,7 +64,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^5.2.2"
+    "@capacitor/cli": "^6.0.0"
   },
   "description": "An Ionic project"
 }
