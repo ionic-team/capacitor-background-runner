@@ -10,7 +10,7 @@ This guide provides instructions for contributing to this Capacitor plugin.
 1. Install the dependencies.
 
     ```shell
-    npm install
+    pnpm install
     ```
 
 1. Install SwiftLint if you're on macOS.
