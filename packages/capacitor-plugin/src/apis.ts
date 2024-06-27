@@ -323,7 +323,7 @@ export interface CapacitorNotifications {
  * sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapactiorWatch Watch application.
  * They could be used if a native watch app is developed as a companion app to a Capacitor app
  */
-export interface CapcacitorWatch {
+export interface CapacitorWatch {
   /**
    * Sends a message to the watch with the sendMessage() WCSession delegate method
    *
@@ -365,5 +365,5 @@ export interface CapacitorAPI {
   CapacitorKV: CapacitorKV;
   CapacitorNotifications: CapacitorNotifications;
   CapacitorGeolocation: CapacitorGeolocation;
-  CapacitorWatch: CapcacitorWatch;
+  CapacitorWatch: CapacitorWatch;
 }
