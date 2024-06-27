@@ -360,6 +360,12 @@ export interface CapcacitorWatch {
   updateWatchData: (options: { data: { [key: string]: string } }) => void;
 }
 
+export interface CapacitorApp {
+  getState: () => void;
+  getInfo: () => void;
+  setBadge: () => void;
+}
+
 export interface CapacitorAPI {
   CapacitorDevice: CapacitorDevice;
   CapacitorKV: CapacitorKV;
