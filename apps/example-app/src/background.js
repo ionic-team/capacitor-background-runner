@@ -153,6 +153,48 @@ addEventListener(
   }
 );
 
+addEventListener("testCapacitorAppSetBadge", (resolve, reject, args) => {
+  try {
+    CapacitorApp.setBadge(55);
+    resolve();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorAppClearBadge", (resolve, reject, args) => {
+  try {
+    CapacitorApp.clearBadge();
+    resolve();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorAppGetInfo", (resolve, reject, args) => {
+  try {
+    const info = CapacitorApp.getInfo();
+    console.log(JSON.stringify(info));
+    resolve(info);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorAppGetState", (resolve, reject, args) => {
+  try {
+    const state = CapacitorApp.getState();
+    console.log(JSON.stringify(state));
+    resolve(state);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
 addEventListener("remoteNotification", (resolve, reject, args) => {
   console.log("received silent push notification");
 

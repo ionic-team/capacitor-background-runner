@@ -243,6 +243,51 @@ export interface NotificationScheduleOptions {
   channelId?: string;
 }
 
+export interface AppInfo {
+  /**
+   * The name of the app.
+   *
+   * @since 1.0.0
+   */
+  name: string;
+
+  /**
+   * The identifier of the app.
+   * On iOS it's the Bundle Identifier.
+   * On Android it's the Application ID
+   *
+   * @since 1.0.0
+   */
+  id: string;
+
+  /**
+   * The build version.
+   * On iOS it's the CFBundleVersion.
+   * On Android it's the versionCode.
+   *
+   * @since 1.0.0
+   */
+  build: string;
+
+  /**
+   * The app version.
+   * On iOS it's the CFBundleShortVersionString.
+   * On Android it's package's versionName.
+   *
+   * @since 1.0.0
+   */
+  version: string;
+}
+
+export interface AppState {
+  /**
+   * Whether the app is active or not.
+   *
+   * @since 1.0.0
+   */
+  isActive: boolean;
+}
+
 /**
  * Get access to device location information.
  *
@@ -361,9 +406,10 @@ export interface CapacitorWatch {
 }
 
 export interface CapacitorApp {
-  getState: () => void;
-  getInfo: () => void;
-  setBadge: () => void;
+  getState: () => AppState;
+  getInfo: () => AppInfo;
+  setBadge: (value: number) => void;
+  clearBadge: () => void;
 }
 
 export interface CapacitorAPI {
@@ -372,4 +418,5 @@ export interface CapacitorAPI {
   CapacitorNotifications: CapacitorNotifications;
   CapacitorGeolocation: CapacitorGeolocation;
   CapacitorWatch: CapacitorWatch;
+  CapacitorApp: CapacitorApp;
 }
