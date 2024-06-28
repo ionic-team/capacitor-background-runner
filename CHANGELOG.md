@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.0.0
+
+### Major Changes
+
+- 36d9a61: Fixing typo in CapacitorWatch interface name
+- 3194a7d: Updates to support Capacitor 6
+
 ## 1.1.0
 
 ### Minor Changes
