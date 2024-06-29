@@ -1,5 +1,6 @@
 package io.ionic.android_js_engine
 
+import io.ionic.android_js_engine.capacitor_api.AppAPI
 import io.ionic.android_js_engine.capacitor_api.DeviceAPI
 import io.ionic.android_js_engine.capacitor_api.GeolocationAPI
 import io.ionic.android_js_engine.capacitor_api.KVAPI
@@ -10,6 +11,7 @@ class NativeCapacitorAPI {
     private var device: DeviceAPI? = null
     private var notifications: NotificationsAPI? = null
     private var geolocation: GeolocationAPI? = null
+    private var app: AppAPI? = null
 
     fun initNotificationsAPI(api: NotificationsAPI) {
         this.notifications = api
@@ -26,4 +28,9 @@ class NativeCapacitorAPI {
     fun initKVAPI(api: KVAPI) {
         this.kv = api
     }
+
+    fun initAppAPI(api: AppAPI) {
+        this.app = api
+    }
+
 }

@@ -102,6 +102,13 @@ Java::Java(JNIEnv *env) {
   env->DeleteLocalRef(tmp_class);
   tmp_class = nullptr;
 
+  tmp_class = env->FindClass("io/ionic/android_js_engine/capacitor_api/AppAPI");
+  this->check_exception(env);
+
+  this->capacitor_app_api_class = (jclass)env->NewGlobalRef(tmp_class);
+    env->DeleteLocalRef(tmp_class);
+    tmp_class = nullptr;
+
   this->capacitor_api_kv_field = env->GetFieldID(this->capacitor_api_class, "kv", "Lio/ionic/android_js_engine/capacitor_api/KVAPI;");
   this->check_exception(env);
 
@@ -113,6 +120,9 @@ Java::Java(JNIEnv *env) {
 
   this->capacitor_api_notification_field = env->GetFieldID(this->capacitor_api_class, "notifications", "Lio/ionic/android_js_engine/capacitor_api/NotificationsAPI;");
   this->check_exception(env);
+
+  this->capacitor_api_app_field = env->GetFieldID(this->capacitor_api_class, "app", "Lio/ionic/android_js_engine/capacitor_api/AppAPI;");
+    this->check_exception(env);
 
   this->capacitor_api_kv_set_method = env->GetMethodID(this->capacitor_kv_api_class, "set", "(Ljava/lang/String;Ljava/lang/String;)V");
   this->check_exception(env);
@@ -134,6 +144,21 @@ Java::Java(JNIEnv *env) {
 
   this->capacitor_api_notifications_schedule_method = env->GetMethodID(this->capacitor_notification_api_class, "schedule", "(Ljava/lang/String;)V");
   this->check_exception(env);
+
+  this->capacitor_api_app_getBadge_method = env->GetMethodID(this->capacitor_app_api_class, "getBadge", "()I");
+    this->check_exception(env);
+
+    this->capacitor_api_app_setBadge_method = env->GetMethodID(this->capacitor_app_api_class, "setBadge", "(I)V");
+    this->check_exception(env);
+
+    this->capacitor_api_app_clearBadge_method = env->GetMethodID(this->capacitor_app_api_class, "clearBadge", "()V");
+    this->check_exception(env);
+
+    this->capacitor_api_app_getState_method = env->GetMethodID(this->capacitor_app_api_class, "getState", "()Ljava/lang/String;");
+    this->check_exception(env);
+
+    this->capacitor_api_app_getInfo_method = env->GetMethodID(this->capacitor_app_api_class, "getInfo", "()Ljava/lang/String;");
+    this->check_exception(env);
 }
 
 JNIEnv *Java::getEnv() {
