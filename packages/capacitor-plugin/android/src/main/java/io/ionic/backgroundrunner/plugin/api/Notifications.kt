@@ -17,6 +17,8 @@ import com.getcapacitor.CapConfig
 import com.getcapacitor.plugin.util.AssetUtil
 import io.ionic.android_js_engine.capacitor_api.NotificationsAPI
 import org.json.JSONArray
+import org.json.JSONObject
+
 
 class Notifications(context: Context) : NotificationsAPI {
     private val manager: NotificationManagerCompat
@@ -32,11 +34,33 @@ class Notifications(context: Context) : NotificationsAPI {
         this.config = CapConfig.loadDefault(context)
 
         this.createNotificationChannel()
+        this.createBadgeNotificationChannel()
     }
     companion object {
         const val notificationIntentKey = "LocalNotificationId"
         const val defaultNotificationChannelID = "default"
+        const val defaultBadgeNotificationChannelID = "badge"
     }
+
+    override fun clearBadge() {
+        val builder = NotificationCompat.Builder(context, defaultNotificationChannelID)
+        builder.setSmallIcon(getDefaultSmallIcon())
+        builder.setNumber(0)
+
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(0, builder.build())
+    }
+
+    override fun setBadge(value: Int) {
+        val builder = NotificationCompat.Builder(context, defaultBadgeNotificationChannelID)
+        builder.setContentTitle("A Required Title")
+        builder.setSmallIcon(getDefaultSmallIcon())
+        builder.setNumber(value)
+
+        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(0, builder.build())
+    }
+
 
     override fun schedule(jsonString: String) {
         val notifications = mutableListOf<Notification>()
@@ -88,6 +112,22 @@ class Notifications(context: Context) : NotificationsAPI {
             if (soundUri != null) {
                 channel.setSound(soundUri, audioAttributes)
             }
+
+            val notificationManager = context.getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun createBadgeNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name: CharSequence = "Badge"
+            val description = "Badge"
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val channel = NotificationChannel(defaultBadgeNotificationChannelID, name, importance)
+            channel.description = description
+            channel.setShowBadge(true)
 
             val notificationManager = context.getSystemService(
                 NotificationManager::class.java

@@ -145,9 +145,6 @@ Java::Java(JNIEnv *env) {
   this->capacitor_api_notifications_schedule_method = env->GetMethodID(this->capacitor_notification_api_class, "schedule", "(Ljava/lang/String;)V");
   this->check_exception(env);
 
-  this->capacitor_api_notifications_getBadge_method = env->GetMethodID(this->capacitor_notification_api_class, "getBadge", "()I");
-    this->check_exception(env);
-
     this->capacitor_api_notifications_setBadge_method = env->GetMethodID(this->capacitor_notification_api_class, "setBadge", "(I)V");
     this->check_exception(env);
 

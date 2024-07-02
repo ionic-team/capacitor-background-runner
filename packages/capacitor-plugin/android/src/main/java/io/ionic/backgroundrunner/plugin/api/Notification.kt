@@ -35,12 +35,15 @@ class Notification(jsonObject: JSONObject) {
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
 
-        val scheduleDateString = jsonObject.getString("scheduleAt")
+        val scheduleDateString = jsonObject.optString("scheduleAt", "")
+        if (scheduleDateString.isNotEmpty()) {
+            val sdf = SimpleDateFormat(jsDateFormat)
+            val parsedDate = sdf.parse(scheduleDateString)
 
-        val sdf = SimpleDateFormat(jsDateFormat)
-        val parsedDate = sdf.parse(scheduleDateString)
-
-        scheduleAt = parsedDate ?: Date()
+            scheduleAt = parsedDate ?: Date()
+        } else {
+            scheduleAt = Date()
+        }
     }
 
     fun smallIcon(context: android.content.Context, defaultIcon: Int): Int {

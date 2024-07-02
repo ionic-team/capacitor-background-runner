@@ -26,7 +26,6 @@ public:
     virtual void notifications_api_schedule(std::string options_json);
     virtual void notifications_api_setBadge(int value);
     virtual void notifications_api_clearBadge();
-    virtual int notifications_api_getBadge();
 
     virtual std::string app_api_getInfo();
     virtual std::string app_api_getState();

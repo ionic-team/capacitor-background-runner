@@ -47,22 +47,6 @@ JSValue api_notifications_set_badge(JSContext *ctx, JSValueConst this_val, int a
     }
 }
 
-JSValue api_notifications_get_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-    auto *context = (Context *)JS_GetContextOpaque(ctx);
-    if (context == nullptr) {
-        auto js_error = create_js_error("context is null", ctx);
-        return JS_Throw(ctx, js_error);
-    }
-
-    try {
-        int value = context->capacitor_interface->notifications_api_getBadge();
-        return JS_NewInt32(ctx, value);
-    } catch (std::exception &ex) {
-        auto js_error = create_js_error(ex.what(), ctx);
-        return JS_Throw(ctx, js_error);
-    }
-}
-
 JSValue api_notifications_clear_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
     auto *context = (Context *)JS_GetContextOpaque(ctx);
     if (context == nullptr) {
