@@ -52,6 +52,8 @@ struct NotificationOption {
 
 @objc protocol CapacitorNotificationsExports: JSExport {
     static func schedule(_ options: JSValue)
+    static func setBadge(_ number: Int)
+    static func clearBadge()
 }
 
 class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
@@ -162,6 +164,26 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             }
         } catch {
             JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
+        }
+    }
+    
+    static func setBadge(_ number: Int) {
+        DispatchQueue.main.sync {
+            if #available(iOS 16.0, *) {
+                UNUserNotificationCenter.current().setBadgeCount(number)
+            } else {
+                UIApplication.shared.applicationIconBadgeNumber = number
+            }
+        }
+    }
+    
+    static func clearBadge() {
+        DispatchQueue.main.sync {
+            if #available(iOS 16.0, *) {
+                UNUserNotificationCenter.current().setBadgeCount(0)
+            } else {
+                UIApplication.shared.applicationIconBadgeNumber = 0
+            }
         }
     }
 }
