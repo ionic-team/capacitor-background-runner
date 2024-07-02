@@ -33,9 +33,9 @@ public:
     jmethodID capacitor_api_device_getNetworkStatus_method;
     jmethodID capacitor_api_geolocation_getCurrentPosition_method;
     jmethodID capacitor_api_notifications_schedule_method;
-    jmethodID capacitor_api_app_getBadge_method;
-    jmethodID capacitor_api_app_setBadge_method;
-    jmethodID capacitor_api_app_clearBadge_method;
+    jmethodID capacitor_api_notifications_getBadge_method;
+    jmethodID capacitor_api_notifications_setBadge_method;
+    jmethodID capacitor_api_notifications_clearBadge_method;
     jmethodID capacitor_api_app_getInfo_method;
     jmethodID capacitor_api_app_getState_method;
 

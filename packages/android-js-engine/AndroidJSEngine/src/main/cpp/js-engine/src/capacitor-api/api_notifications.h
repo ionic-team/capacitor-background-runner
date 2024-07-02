@@ -4,5 +4,8 @@
 #include "../quickjs/quickjs.h"
 
 JSValue api_notifications_schedule(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
+JSValue api_notifications_set_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
+JSValue api_notifications_get_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
+JSValue api_notifications_clear_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv);
 
 #endif //ANDROID_JS_ENGINE_API_NOTIFICATIONS_H

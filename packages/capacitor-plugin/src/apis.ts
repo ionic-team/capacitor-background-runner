@@ -360,12 +360,14 @@ export interface CapacitorNotifications {
    * @since 1.0.0
    */
   schedule: (options: NotificationScheduleOptions[]) => void;
+  setBadge: (value: number) => void;
+  clearBadge: () => void;
 }
 
 /**
  * Interact with a watch paired with this app
  *
- * sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapactiorWatch Watch application.
+ * sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapacitorWatch Watch application.
  * They could be used if a native watch app is developed as a companion app to a Capacitor app
  */
 export interface CapacitorWatch {
@@ -408,8 +410,6 @@ export interface CapacitorWatch {
 export interface CapacitorApp {
   getState: () => AppState;
   getInfo: () => AppInfo;
-  setBadge: (value: number) => void;
-  clearBadge: () => void;
 }
 
 export interface CapacitorAPI {

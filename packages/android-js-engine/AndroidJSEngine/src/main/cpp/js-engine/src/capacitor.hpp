@@ -21,10 +21,10 @@ public:
     virtual void kv_api_remove(std::string key) = 0;
 
     virtual void notifications_api_schedule(std::string options_json) = 0;
+    virtual void notifications_api_setBadge(int value) = 0;
+    virtual void notifications_api_clearBadge() = 0;
+    virtual int notifications_api_getBadge() = 0;
 
-    virtual void app_api_setBadge(int value) = 0;
-    virtual void app_api_clearBadge() = 0;
-    virtual int app_api_getBadge() = 0;
     virtual std::string app_api_getInfo() = 0;
     virtual std::string app_api_getState() = 0;
 protected:
