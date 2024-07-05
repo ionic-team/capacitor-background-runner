@@ -168,7 +168,7 @@ void NativeCapacitorInterface::notifications_api_schedule(std::string options_js
   }
 }
 
-void NativeCapacitorInterface::notifications_api_setBadge(int value) {
+void NativeCapacitorInterface::notifications_api_setBadge(std::string options_json) {
   auto *env = this->java->getEnv();
   if (env == nullptr) {
     throw new NativeInterfaceException("JVM environment is null");
@@ -180,7 +180,9 @@ void NativeCapacitorInterface::notifications_api_setBadge(int value) {
     throw *jvm_exception;
   }
 
-  env->CallVoidMethod(notification, this->java->capacitor_api_notifications_setBadge_method, value);
+    auto *options_j_str = env->NewStringUTF(options_json.c_str());
+
+  env->CallVoidMethod(notification, this->java->capacitor_api_notifications_setBadge_method, options_j_str);
   jvm_exception = get_jvm_exception(env);
   if (jvm_exception != nullptr) {
     throw *jvm_exception;

@@ -55,6 +55,12 @@ export interface NetworkStatus {
   connectionType: string;
 }
 
+export interface NotificationBadgeOptions {
+  count: number;
+  notificationTitle: string;
+  notificationSubtitle: string;
+}
+
 export interface NotificationScheduleOptions {
   /**
    * The notification identifier.
@@ -360,7 +366,7 @@ export interface CapacitorNotifications {
    * @since 1.0.0
    */
   schedule: (options: NotificationScheduleOptions[]) => void;
-  setBadge: (value: number) => void;
+  setBadge: (options: NotificationBadgeOptions) => void;
   clearBadge: () => void;
 }
 

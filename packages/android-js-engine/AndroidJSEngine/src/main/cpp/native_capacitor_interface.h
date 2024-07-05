@@ -24,7 +24,7 @@ public:
     virtual void kv_api_remove(std::string key);
 
     virtual void notifications_api_schedule(std::string options_json);
-    virtual void notifications_api_setBadge(int value);
+    virtual void notifications_api_setBadge(std::string options_json);
     virtual void notifications_api_clearBadge();
 
     virtual std::string app_api_getInfo();

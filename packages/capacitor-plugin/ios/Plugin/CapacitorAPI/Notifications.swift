@@ -8,6 +8,18 @@ enum CapacitorNotificationsErrors: Error, Equatable {
     case permissionDenied
 }
 
+struct SetBadgeOption {
+    let count: Int
+    
+    init(from dict: [String: Any?]) {
+        if let optionsCount = dict["count"] as? Int {
+            count = optionsCount
+        } else {
+            count = 0
+        }
+    }
+}
+
 struct NotificationOption {
     let id: Int
     let title: String
@@ -52,7 +64,7 @@ struct NotificationOption {
 
 @objc protocol CapacitorNotificationsExports: JSExport {
     static func schedule(_ options: JSValue)
-    static func setBadge(_ number: Int)
+    static func setBadge(_ options: JSValue)
     static func clearBadge()
 }
 
@@ -167,23 +179,50 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
         }
     }
 
-    static func setBadge(_ number: Int) {
-        DispatchQueue.main.sync {
-            if #available(iOS 16.0, *) {
-                UNUserNotificationCenter.current().setBadgeCount(number)
-            } else {
-                UIApplication.shared.applicationIconBadgeNumber = number
+    static func setBadge(_ options: JSValue) {
+        do {
+            if CapacitorNotifications.checkPermission() != "granted" {
+                throw CapacitorNotificationsErrors.permissionDenied
             }
+
+            if options.isUndefined || options.isNull {
+                throw CapacitorNotificationsErrors.invalidOptions(reason: "options are null")
+            }
+            
+            
+            guard let jsonDict = options.toDictionary() as? [String: Any?] else {
+                throw CapacitorNotificationsErrors.invalidOptions(reason: "options must be an valid object")
+            }
+            
+            let badgeOptions = SetBadgeOption(from: jsonDict)
+            
+            DispatchQueue.main.sync {
+                if #available(iOS 16.0, *) {
+                    UNUserNotificationCenter.current().setBadgeCount(badgeOptions.count)
+                } else {
+                    UIApplication.shared.applicationIconBadgeNumber = badgeOptions.count
+                }
+            }
+        } catch {
+            JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
         }
     }
 
     static func clearBadge() {
-        DispatchQueue.main.sync {
-            if #available(iOS 16.0, *) {
-                UNUserNotificationCenter.current().setBadgeCount(0)
-            } else {
-                UIApplication.shared.applicationIconBadgeNumber = 0
+        do {
+            if CapacitorNotifications.checkPermission() != "granted" {
+                throw CapacitorNotificationsErrors.permissionDenied
             }
+            
+            DispatchQueue.main.sync {
+                if #available(iOS 16.0, *) {
+                    UNUserNotificationCenter.current().setBadgeCount(0)
+                } else {
+                    UIApplication.shared.applicationIconBadgeNumber = 0
+                }
+            }
+        } catch {
+            JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
         }
     }
 }

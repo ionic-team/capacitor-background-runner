@@ -153,9 +153,24 @@ addEventListener(
   }
 );
 
+addEventListener("testCapacitorAppGetBadge", (resolve, reject, args) => {
+  try {
+    const value = CapacitorNotifications.getBadge();
+    console.log(JSON.stringify(value));
+    resolve(value);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
 addEventListener("testCapacitorAppSetBadge", (resolve, reject, args) => {
   try {
-    CapacitorApp.setBadge(55);
+    CapacitorNotifications.setBadge({
+      count: 55,
+      notificationTitle: "You have new messages",
+      notificationSubtitle: "testing, testing, 1, 2, 3"
+    });
     resolve();
   } catch (err) {
     console.error(err);
@@ -165,7 +180,7 @@ addEventListener("testCapacitorAppSetBadge", (resolve, reject, args) => {
 
 addEventListener("testCapacitorAppClearBadge", (resolve, reject, args) => {
   try {
-    CapacitorApp.clearBadge();
+    CapacitorNotifications.clearBadge();
     resolve();
   } catch (err) {
     console.error(err);

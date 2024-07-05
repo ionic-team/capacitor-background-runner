@@ -33,12 +33,11 @@ JSValue api_notifications_set_badge(JSContext *ctx, JSValueConst this_val, int a
     return JS_Throw(ctx, js_error);
   }
 
-  int32_t badgeValue = 0;
-
-  JS_ToInt32(ctx, &badgeValue, argv[0]);
+    auto options_str = JS_JSONStringify(ctx, argv[0], JS_UNDEFINED, JS_UNDEFINED);
+    const auto *options_c_str = JS_ToCString(ctx, options_str);
 
   try {
-    context->capacitor_interface->notifications_api_setBadge(badgeValue);
+    context->capacitor_interface->notifications_api_setBadge(options_c_str);
 
     return JS_UNDEFINED;
   } catch (std::exception &ex) {

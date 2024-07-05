@@ -43,22 +43,28 @@ class Notifications(context: Context) : NotificationsAPI {
     }
 
     override fun clearBadge() {
-        val builder = NotificationCompat.Builder(context, defaultNotificationChannelID)
+        val builder = NotificationCompat.Builder(context, defaultBadgeNotificationChannelID)
         builder.setSmallIcon(getDefaultSmallIcon())
         builder.setNumber(0)
+        builder.setAutoCancel(true)
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(0, builder.build())
+        manager.notify(1001, builder.build())
     }
 
-    override fun setBadge(value: Int) {
+    override fun setBadge(jsonString: String) {
+        val obj = JSONObject(jsonString)
+        val options = SetBadgeOptions(obj)
+
         val builder = NotificationCompat.Builder(context, defaultBadgeNotificationChannelID)
-        builder.setContentTitle("A Required Title")
         builder.setSmallIcon(getDefaultSmallIcon())
-        builder.setNumber(value)
+        builder.setContentTitle(options.messageTitle)
+        builder.setContentText(options.messageSubtitle)
+        builder.setNumber(options.count)
+        builder.setAutoCancel(true)
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(0, builder.build())
+        manager.notify(1001, builder.build())
     }
 
 
