@@ -139,7 +139,7 @@ const Tab1: React.FC = () => {
   const onTestCapAppSetBadge = async () => {
     setCommandOutput("");
     try {
-      const response = await BackgroundRunner.dispatchEvent({
+      await BackgroundRunner.dispatchEvent({
         label: "com.example.background.task",
         event: "testCapacitorAppSetBadge",
         details: {},
@@ -153,7 +153,7 @@ const Tab1: React.FC = () => {
   const onTestCapAppClearBadge = async () => {
     setCommandOutput("");
     try {
-      const response = await BackgroundRunner.dispatchEvent({
+      await BackgroundRunner.dispatchEvent({
         label: "com.example.background.task",
         event: "testCapacitorAppClearBadge",
         details: {},
@@ -236,7 +236,13 @@ const Tab1: React.FC = () => {
           Capacitor KV - Delete
         </IonButton>
         <IonButton expand="block" onClick={onTestCapNotification}>
-          Test Capacitor Notification
+          Test Capacitor Notif.- Schedule Notification
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapAppSetBadge}>
+          Test Capacitor Notif. - Set Badge
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapAppClearBadge}>
+          Test Capacitor Notif. - Clear Badge
         </IonButton>
         <IonButton expand="block" onClick={onTestCapLocation}>
           Test Capacitor Geolocation
@@ -247,11 +253,11 @@ const Tab1: React.FC = () => {
         <IonButton expand="block" onClick={onTestCapDeviceNetwork}>
           Test Capacitor Device - Network
         </IonButton>
-        <IonButton expand="block" onClick={onTestCapAppSetBadge}>
-          Test Capacitor App - Set Badge
+        <IonButton expand="block" onClick={onTestCapAppGetInfo}>
+          Test Capacitor App - Get App Info
         </IonButton>
-        <IonButton expand="block" onClick={onTestCapAppClearBadge}>
-          Test Capacitor App - Clear Badge
+        <IonButton expand="block" onClick={onTestCapAppGetState}>
+          Test Capacitor App - Get App State
         </IonButton>
       </IonContent>
     </IonPage>
