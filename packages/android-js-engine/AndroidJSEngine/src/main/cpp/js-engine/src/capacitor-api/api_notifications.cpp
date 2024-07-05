@@ -27,39 +27,39 @@ JSValue api_notifications_schedule(JSContext *ctx, JSValueConst this_val, int ar
 }
 
 JSValue api_notifications_set_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-    auto *context = (Context *)JS_GetContextOpaque(ctx);
-    if (context == nullptr) {
-        auto js_error = create_js_error("context is null", ctx);
-        return JS_Throw(ctx, js_error);
-    }
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
-    int32_t badgeValue = 0;
+  int32_t badgeValue = 0;
 
-    JS_ToInt32(ctx, &badgeValue, argv[0]);
+  JS_ToInt32(ctx, &badgeValue, argv[0]);
 
-    try {
-        context->capacitor_interface->notifications_api_setBadge(badgeValue);
+  try {
+    context->capacitor_interface->notifications_api_setBadge(badgeValue);
 
-        return JS_UNDEFINED;
-    } catch (std::exception &ex) {
-        auto js_error = create_js_error(ex.what(), ctx);
-        return JS_Throw(ctx, js_error);
-    }
+    return JS_UNDEFINED;
+  } catch (std::exception &ex) {
+    auto js_error = create_js_error(ex.what(), ctx);
+    return JS_Throw(ctx, js_error);
+  }
 }
 
 JSValue api_notifications_clear_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-    auto *context = (Context *)JS_GetContextOpaque(ctx);
-    if (context == nullptr) {
-        auto js_error = create_js_error("context is null", ctx);
-        return JS_Throw(ctx, js_error);
-    }
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
 
-    try {
-        context->capacitor_interface->notifications_api_clearBadge();
+  try {
+    context->capacitor_interface->notifications_api_clearBadge();
 
-        return JS_UNDEFINED;
-    } catch (std::exception &ex) {
-        auto js_error = create_js_error(ex.what(), ctx);
-        return JS_Throw(ctx, js_error);
-    }
+    return JS_UNDEFINED;
+  } catch (std::exception &ex) {
+    auto js_error = create_js_error(ex.what(), ctx);
+    return JS_Throw(ctx, js_error);
+  }
 }

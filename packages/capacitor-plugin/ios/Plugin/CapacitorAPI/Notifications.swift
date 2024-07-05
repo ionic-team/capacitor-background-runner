@@ -166,7 +166,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
         }
     }
-    
+
     static func setBadge(_ number: Int) {
         DispatchQueue.main.sync {
             if #available(iOS 16.0, *) {
@@ -176,7 +176,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             }
         }
     }
-    
+
     static func clearBadge() {
         DispatchQueue.main.sync {
             if #available(iOS 16.0, *) {

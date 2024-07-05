@@ -169,41 +169,41 @@ void NativeCapacitorInterface::notifications_api_schedule(std::string options_js
 }
 
 void NativeCapacitorInterface::notifications_api_setBadge(int value) {
-    auto *env = this->java->getEnv();
-    if (env == nullptr) {
-        throw new NativeInterfaceException("JVM environment is null");
-    }
+  auto *env = this->java->getEnv();
+  if (env == nullptr) {
+    throw new NativeInterfaceException("JVM environment is null");
+  }
 
-    auto *notification = env->GetObjectField(this->api, this->java->capacitor_api_notification_field);
-    auto jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  auto *notification = env->GetObjectField(this->api, this->java->capacitor_api_notification_field);
+  auto jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 
-    env->CallVoidMethod(notification, this->java->capacitor_api_notifications_setBadge_method, value);
-    jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  env->CallVoidMethod(notification, this->java->capacitor_api_notifications_setBadge_method, value);
+  jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 }
 
-void NativeCapacitorInterface::notifications_api_clearBadge()  {
-    auto *env = this->java->getEnv();
-    if (env == nullptr) {
-        throw new NativeInterfaceException("JVM environment is null");
-    }
+void NativeCapacitorInterface::notifications_api_clearBadge() {
+  auto *env = this->java->getEnv();
+  if (env == nullptr) {
+    throw new NativeInterfaceException("JVM environment is null");
+  }
 
-    auto *notification = env->GetObjectField(this->api, this->java->capacitor_api_notification_field);
-    auto jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  auto *notification = env->GetObjectField(this->api, this->java->capacitor_api_notification_field);
+  auto jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 
-    env->CallVoidMethod(notification, this->java->capacitor_api_notifications_clearBadge_method);
-    jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  env->CallVoidMethod(notification, this->java->capacitor_api_notifications_clearBadge_method);
+  jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 }
 
 // Geolocation API
@@ -239,61 +239,61 @@ std::string NativeCapacitorInterface::geolocation_api_getCurrentPosition() {
 
 // App API
 std::string NativeCapacitorInterface::app_api_getInfo() {
-    auto *env = this->java->getEnv();
-    if (env == nullptr) {
-        throw new NativeInterfaceException("JVM environment is null");
-    }
+  auto *env = this->java->getEnv();
+  if (env == nullptr) {
+    throw new NativeInterfaceException("JVM environment is null");
+  }
 
-    auto *app = env->GetObjectField(this->api, this->java->capacitor_api_app_field);
-    auto jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  auto *app = env->GetObjectField(this->api, this->java->capacitor_api_app_field);
+  auto jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 
-    auto value_j_str = (jstring)env->CallObjectMethod(app, this->java->capacitor_api_app_getInfo_method);
-    jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  auto value_j_str = (jstring)env->CallObjectMethod(app, this->java->capacitor_api_app_getInfo_method);
+  jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 
-    if (value_j_str == nullptr) {
-        return "";
-    }
+  if (value_j_str == nullptr) {
+    return "";
+  }
 
-    const auto *c_json_str = env->GetStringUTFChars(value_j_str, nullptr);
+  const auto *c_json_str = env->GetStringUTFChars(value_j_str, nullptr);
 
-    auto json = std::string(c_json_str);
-    env->ReleaseStringUTFChars(value_j_str, c_json_str);
+  auto json = std::string(c_json_str);
+  env->ReleaseStringUTFChars(value_j_str, c_json_str);
 
-    return json;
+  return json;
 }
 
-std::string NativeCapacitorInterface::app_api_getState()  {
-    auto *env = this->java->getEnv();
-    if (env == nullptr) {
-        throw new NativeInterfaceException("JVM environment is null");
-    }
+std::string NativeCapacitorInterface::app_api_getState() {
+  auto *env = this->java->getEnv();
+  if (env == nullptr) {
+    throw new NativeInterfaceException("JVM environment is null");
+  }
 
-    auto *app = env->GetObjectField(this->api, this->java->capacitor_api_app_field);
-    auto jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  auto *app = env->GetObjectField(this->api, this->java->capacitor_api_app_field);
+  auto jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 
-    auto value_j_str = (jstring)env->CallObjectMethod(app, this->java->capacitor_api_app_getState_method);
-    jvm_exception = get_jvm_exception(env);
-    if (jvm_exception != nullptr) {
-        throw *jvm_exception;
-    }
+  auto value_j_str = (jstring)env->CallObjectMethod(app, this->java->capacitor_api_app_getState_method);
+  jvm_exception = get_jvm_exception(env);
+  if (jvm_exception != nullptr) {
+    throw *jvm_exception;
+  }
 
-    if (value_j_str == nullptr) {
-        return "";
-    }
+  if (value_j_str == nullptr) {
+    return "";
+  }
 
-    const auto *c_json_str = env->GetStringUTFChars(value_j_str, nullptr);
+  const auto *c_json_str = env->GetStringUTFChars(value_j_str, nullptr);
 
-    auto json = std::string(c_json_str);
-    env->ReleaseStringUTFChars(value_j_str, c_json_str);
+  auto json = std::string(c_json_str);
+  env->ReleaseStringUTFChars(value_j_str, c_json_str);
 
-    return json;
+  return json;
 }

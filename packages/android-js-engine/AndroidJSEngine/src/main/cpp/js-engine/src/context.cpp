@@ -1,10 +1,10 @@
 #include "context.hpp"
 
+#include "capacitor-api/api_app.h"
 #include "capacitor-api/api_device.h"
 #include "capacitor-api/api_geolocation.h"
 #include "capacitor-api/api_kv.h"
 #include "capacitor-api/api_notifications.h"
-#include "capacitor-api/api_app.h"
 #include "quickjs/cutils.h"
 
 Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native, CapacitorInterface *cap) {
@@ -344,8 +344,8 @@ void Context::init_capacitor_notifications_api() const {
 
   notifications = JS_NewObject(this->qjs_context);
   JS_SetPropertyStr(this->qjs_context, notifications, "schedule", JS_NewCFunction(this->qjs_context, api_notifications_schedule, "schedule", 1));
-JS_SetPropertyStr(this->qjs_context, notifications, "setBadge", JS_NewCFunction(this->qjs_context, api_notifications_set_badge, "setBadge", 1));
-JS_SetPropertyStr(this->qjs_context, notifications, "clearBadge", JS_NewCFunction(this->qjs_context, api_notifications_clear_badge, "clearBadge", 0));
+  JS_SetPropertyStr(this->qjs_context, notifications, "setBadge", JS_NewCFunction(this->qjs_context, api_notifications_set_badge, "setBadge", 1));
+  JS_SetPropertyStr(this->qjs_context, notifications, "clearBadge", JS_NewCFunction(this->qjs_context, api_notifications_clear_badge, "clearBadge", 0));
   JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorNotifications", notifications);
 
   JS_FreeValue(this->qjs_context, global_obj);
@@ -365,16 +365,15 @@ void Context::init_capacitor_geolocation_api() const {
 }
 
 void Context::init_capacitor_app_api() const {
-    JSValue global_obj, app;
+  JSValue global_obj, app;
 
-    global_obj = JS_GetGlobalObject(this->qjs_context);
-    app = JS_NewObject(this->qjs_context);
+  global_obj = JS_GetGlobalObject(this->qjs_context);
+  app = JS_NewObject(this->qjs_context);
 
-    JS_SetPropertyStr(this->qjs_context, app, "getState", JS_NewCFunction(this->qjs_context, api_app_get_state, "getState", 0));
-    JS_SetPropertyStr(this->qjs_context, app, "getInfo", JS_NewCFunction(this->qjs_context, api_app_get_info, "getInfo", 0));
+  JS_SetPropertyStr(this->qjs_context, app, "getState", JS_NewCFunction(this->qjs_context, api_app_get_state, "getState", 0));
+  JS_SetPropertyStr(this->qjs_context, app, "getInfo", JS_NewCFunction(this->qjs_context, api_app_get_info, "getInfo", 0));
 
-    JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorApp", app);
+  JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorApp", app);
 
-    JS_FreeValue(this->qjs_context, global_obj);
+  JS_FreeValue(this->qjs_context, global_obj);
 }
-

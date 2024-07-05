@@ -16,7 +16,7 @@ class CapacitorKVStore: NSObject, CapacitorKVStoreExports {
         guard let value = UserDefaults.standard.string(forKey: key) else {
             return JSValue(nullIn: JSContext.current())
         }
-        
+
         var valueWrapper: [String: String] = [:]
         valueWrapper["value"] = value
 

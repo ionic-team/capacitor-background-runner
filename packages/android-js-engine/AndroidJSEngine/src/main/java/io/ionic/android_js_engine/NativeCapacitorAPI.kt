@@ -32,5 +32,4 @@ class NativeCapacitorAPI {
     fun initAppAPI(api: AppAPI) {
         this.app = api
     }
-
 }
