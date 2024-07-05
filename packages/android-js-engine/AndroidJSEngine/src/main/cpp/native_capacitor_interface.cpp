@@ -180,7 +180,7 @@ void NativeCapacitorInterface::notifications_api_setBadge(std::string options_js
     throw *jvm_exception;
   }
 
-    auto *options_j_str = env->NewStringUTF(options_json.c_str());
+  auto *options_j_str = env->NewStringUTF(options_json.c_str());
 
   env->CallVoidMethod(notification, this->java->capacitor_api_notifications_setBadge_method, options_j_str);
   jvm_exception = get_jvm_exception(env);

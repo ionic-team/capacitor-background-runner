@@ -10,7 +10,7 @@ enum CapacitorNotificationsErrors: Error, Equatable {
 
 struct SetBadgeOption {
     let count: Int
-    
+
     init(from dict: [String: Any?]) {
         if let optionsCount = dict["count"] as? Int {
             count = optionsCount
@@ -188,14 +188,13 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             if options.isUndefined || options.isNull {
                 throw CapacitorNotificationsErrors.invalidOptions(reason: "options are null")
             }
-            
-            
+
             guard let jsonDict = options.toDictionary() as? [String: Any?] else {
                 throw CapacitorNotificationsErrors.invalidOptions(reason: "options must be an valid object")
             }
-            
+
             let badgeOptions = SetBadgeOption(from: jsonDict)
-            
+
             DispatchQueue.main.sync {
                 if #available(iOS 16.0, *) {
                     UNUserNotificationCenter.current().setBadgeCount(badgeOptions.count)
@@ -213,7 +212,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             if CapacitorNotifications.checkPermission() != "granted" {
                 throw CapacitorNotificationsErrors.permissionDenied
             }
-            
+
             DispatchQueue.main.sync {
                 if #available(iOS 16.0, *) {
                     UNUserNotificationCenter.current().setBadgeCount(0)

@@ -33,8 +33,8 @@ JSValue api_notifications_set_badge(JSContext *ctx, JSValueConst this_val, int a
     return JS_Throw(ctx, js_error);
   }
 
-    auto options_str = JS_JSONStringify(ctx, argv[0], JS_UNDEFINED, JS_UNDEFINED);
-    const auto *options_c_str = JS_ToCString(ctx, options_str);
+  auto options_str = JS_JSONStringify(ctx, argv[0], JS_UNDEFINED, JS_UNDEFINED);
+  const auto *options_c_str = JS_ToCString(ctx, options_str);
 
   try {
     context->capacitor_interface->notifications_api_setBadge(options_c_str);

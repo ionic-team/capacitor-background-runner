@@ -56,8 +56,27 @@ export interface NetworkStatus {
 }
 
 export interface NotificationBadgeOptions {
+  /**
+   * The number to set on the application badge count.
+   *
+   * @since 2.0.0
+   */
   count: number;
+  /**
+   * The **required** title for the associated badge count notification.
+   *
+   * Only for Android.
+   *
+   * @since 2.0.0
+   */
   notificationTitle: string;
+  /**
+   * The subtitle for the associated badge count notification.
+   *
+   * Only for Android.
+   *
+   * @since 2.0.0
+   */
   notificationSubtitle: string;
 }
 
@@ -366,7 +385,20 @@ export interface CapacitorNotifications {
    * @since 1.0.0
    */
   schedule: (options: NotificationScheduleOptions[]) => void;
+  /**
+   * Set the application badge count
+   * @example `CapacitorNotifications.setBadge({...})`
+   * @param options
+   * @returns void
+   * @since 2.0.0
+   */
   setBadge: (options: NotificationBadgeOptions) => void;
+  /**
+   * Clears the application badge count
+   * @example `CapacitorNotifications.clearBadge()`
+   * @returns void
+   * @since 2.0.0
+   */
   clearBadge: () => void;
 }
 
