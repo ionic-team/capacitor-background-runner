@@ -5,12 +5,7 @@ import com.getcapacitor.util.InternalUtils
 import io.ionic.android_js_engine.capacitor_api.AppAPI
 import org.json.JSONObject
 
-class App(context: android.content.Context): AppAPI {
-    private val context: android.content.Context
-
-    init {
-        this.context = context
-    }
+class App(private val context: android.content.Context): AppAPI {
 
     override fun getInfo(): String {
         val packageInfo = InternalUtils.getPackageInfo(context.packageManager, context.packageName)
@@ -28,8 +23,9 @@ class App(context: android.content.Context): AppAPI {
     }
 
     override fun getState(): String {
+
         val state = JSONObject()
-        state.put("isActive", false)
+        state.put("isActive", AppState.getInstance().isActive)
         return state.toString()
     }
 }
