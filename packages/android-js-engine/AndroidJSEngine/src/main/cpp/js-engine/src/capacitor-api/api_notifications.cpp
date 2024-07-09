@@ -25,3 +25,40 @@ JSValue api_notifications_schedule(JSContext *ctx, JSValueConst this_val, int ar
     return JS_Throw(ctx, js_error);
   }
 }
+
+JSValue api_notifications_set_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
+
+  auto options_str = JS_JSONStringify(ctx, argv[0], JS_UNDEFINED, JS_UNDEFINED);
+  const auto *options_c_str = JS_ToCString(ctx, options_str);
+
+  try {
+    context->capacitor_interface->notifications_api_setBadge(options_c_str);
+
+    return JS_UNDEFINED;
+  } catch (std::exception &ex) {
+    auto js_error = create_js_error(ex.what(), ctx);
+    return JS_Throw(ctx, js_error);
+  }
+}
+
+JSValue api_notifications_clear_badge(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
+
+  try {
+    context->capacitor_interface->notifications_api_clearBadge();
+
+    return JS_UNDEFINED;
+  } catch (std::exception &ex) {
+    auto js_error = create_js_error(ex.what(), ctx);
+    return JS_Throw(ctx, js_error);
+  }
+}

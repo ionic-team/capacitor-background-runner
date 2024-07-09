@@ -6,22 +6,22 @@ import JavaScriptCore
 public class BackgroundRunner {
     public static let shared = BackgroundRunner()
     public var config: RunnerConfig?
-    
+
     private var runner = Runner()
 
     public init() {
         do {
-            config = try self.loadRunnerConfig()            
+            config = try self.loadRunnerConfig()
         } catch {
             print("could not initialize BackgroundRunner: \(error)")
         }
     }
-    
+
     public func scheduleBackgroundTasks() throws {
         guard let config = config else {
             throw BackgroundRunnerPluginError.noRunnerConfig
         }
-        
+
         if !config.autoSchedule {
             return
         }
@@ -58,7 +58,7 @@ public class BackgroundRunner {
             }
         }
     }
-    
+
     // swiftlint:disable:next cyclomatic_complexity function_body_length
     public func execute(config: RunnerConfig, inputArgs: [String: Any]? = nil, callbackId: String? = nil) throws -> [String: Any]? {
         do {
@@ -130,7 +130,6 @@ public class BackgroundRunner {
             try context.dispatchEvent(event: config.event, details: args)
 
             waitGroup.wait()
-            
 
             if let rejection = rejectionErr {
                 throw EngineError.jsException(details: rejection.message)

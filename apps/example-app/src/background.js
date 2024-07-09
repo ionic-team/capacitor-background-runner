@@ -153,6 +153,63 @@ addEventListener(
   }
 );
 
+addEventListener("testCapacitorAppGetBadge", (resolve, reject, args) => {
+  try {
+    const value = CapacitorNotifications.getBadge();
+    console.log(JSON.stringify(value));
+    resolve(value);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorAppSetBadge", (resolve, reject, args) => {
+  try {
+    CapacitorNotifications.setBadge({
+      count: 55,
+      notificationTitle: "You have new messages",
+      notificationSubtitle: "testing, testing, 1, 2, 3",
+    });
+    resolve();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorAppClearBadge", (resolve, reject, args) => {
+  try {
+    CapacitorNotifications.clearBadge();
+    resolve();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorAppGetInfo", (resolve, reject, args) => {
+  try {
+    const info = CapacitorApp.getInfo();
+    console.log(JSON.stringify(info));
+    resolve(info);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
+addEventListener("testCapacitorAppGetState", (resolve, reject, args) => {
+  try {
+    const state = CapacitorApp.getState();
+    console.log(JSON.stringify(state));
+    resolve(state);
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+});
+
 addEventListener("remoteNotification", (resolve, reject, args) => {
   console.log("received silent push notification");
 

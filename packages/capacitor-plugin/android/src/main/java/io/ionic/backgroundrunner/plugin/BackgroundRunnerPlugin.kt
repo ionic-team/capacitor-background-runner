@@ -9,6 +9,7 @@ import com.getcapacitor.PluginMethod
 import com.getcapacitor.annotation.CapacitorPlugin
 import com.getcapacitor.annotation.Permission
 import com.getcapacitor.annotation.PermissionCallback
+import io.ionic.backgroundrunner.plugin.api.AppState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -30,27 +31,36 @@ import kotlinx.coroutines.runBlocking
 )
 class BackgroundRunnerPlugin: Plugin() {
     private var impl: BackgroundRunner? = null
+    private var appState: AppState = AppState.getInstance()
 
     companion object {
         const val GEOLOCATION = "geolocation"
         const val NOTIFICATIONS = "notifications"
     }
 
+    override fun handleOnStart() {
+        super.handleOnStart()
+        appState.isActive = true
+    }
+
     override fun handleOnPause() {
         super.handleOnPause()
         Log.d("Background Runner", "registering runner workers")
+        appState.isActive = false
         impl?.scheduleBackgroundTask(this.context)
     }
 
     override fun handleOnStop() {
         super.handleOnStop()
         Log.d("Background Runner", "shutting down foreground runner")
+        appState.isActive = false
         impl?.shutdown()
     }
 
     override fun handleOnResume() {
         super.handleOnResume()
         Log.d("Background Runner", "starting foreground runner")
+        appState.isActive = true
         impl?.start()
     }
 

@@ -13,7 +13,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
-        
+
         initWatchConnectivity()
     }
 
@@ -64,7 +64,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             guard var config = impl.config else {
                 throw BackgroundRunnerPluginError.noRunnerConfig
             }
-            
+
             config.event = runnerEvent
 
             // swiftlint:disable:next unowned_variable_capture
@@ -116,7 +116,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             completionHandler(.failure(BackgroundRunnerPluginError.invalidArgument(reason: "event is missing or invalid")))
             return
         }
-        
+
         var args: [String: Any] = [:]
 
         eventArgs.forEach { (key: AnyHashable, value: Any) in

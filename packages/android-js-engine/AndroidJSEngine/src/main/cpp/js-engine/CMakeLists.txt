@@ -20,6 +20,7 @@ add_library(
     src/capacitor-api/api_geolocation.cpp
     src/capacitor-api/api_kv.cpp
     src/capacitor-api/api_notifications.cpp
+    src/capacitor-api/api_app.cpp
 
 )
 
