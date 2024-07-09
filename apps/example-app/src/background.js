@@ -169,7 +169,7 @@ addEventListener("testCapacitorAppSetBadge", (resolve, reject, args) => {
     CapacitorNotifications.setBadge({
       count: 55,
       notificationTitle: "You have new messages",
-      notificationSubtitle: "testing, testing, 1, 2, 3"
+      notificationSubtitle: "testing, testing, 1, 2, 3",
     });
     resolve();
   } catch (err) {
