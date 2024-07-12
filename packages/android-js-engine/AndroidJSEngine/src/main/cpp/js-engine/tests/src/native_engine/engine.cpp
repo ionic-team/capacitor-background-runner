@@ -11,7 +11,7 @@ Engine::Engine() {
 
 Engine::~Engine() { delete this->runner; }
 
-void Engine::create_context(const std::string& name) { this->runner->create_context(name); }
+void Engine::create_context(const std::string& name) { this->runner->create_context(name, nullptr); }
 
 void Engine::destroy_context(const std::string& name) { this->runner->destroy_context(name); }
 
@@ -45,10 +45,6 @@ Value* Engine::execute(const std::string& name, const std::string& code) {
   return new Value(json_string);
 }
 
-void Engine::start() { this->runner->start(); }
-
-void Engine::stop() { this->runner->stop(); }
-
 void Engine::register_function(const std::string& context_name, const std::string& func_name, std::function<nlohmann::json(nlohmann::json)> func) {
   auto context = this->runner->contexts[context_name];
   if (context == nullptr) {
@@ -81,4 +77,10 @@ Value* Engine::dispatch_event(const std::string& name, const std::string& event,
   JS_FreeValue(context->qjs_context, js_object);
 
   return nullptr;
+}
+
+void Engine::wait_for_jobs() {
+  while (this->runner->has_pending_jobs()) {
+    this->runner->execute_pending_jobs();
+  }
 }

@@ -20,8 +20,7 @@ class Engine {
   Value* execute(const std::string& name, const std::string& code);
   Value* dispatch_event(const std::string& name, const std::string& event, nlohmann::json args);
   void register_function(const std::string& context_name, const std::string& func_name, std::function<nlohmann::json(nlohmann::json)> func);
-  void start();
-  void stop();
+  void wait_for_jobs();
 };
 
 #endif  // ENGINE_H

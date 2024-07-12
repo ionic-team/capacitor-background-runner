@@ -81,7 +81,9 @@
     "source_location": "cpp",
     "strstream": "cpp",
     "unordered_set": "cpp",
-    "*.ipp": "cpp"
+    "*.ipp": "cpp",
+    "memory": "cpp",
+    "print": "cpp"
   },
   "cmake.configureSettings": {
     "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"

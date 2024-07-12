@@ -16,12 +16,8 @@ int get_random_number() {
 TEST_CASE("runner create and destroy", "[test]") {
   auto engine = new Engine();
 
-  auto stop_thread = std::thread([engine] {
-    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-    engine->stop();
-  });
+  auto stop_thread = std::thread([engine] { std::this_thread::sleep_for(std::chrono::milliseconds(1000)); });
 
-  engine->start();
   stop_thread.join();
 
   delete engine;
@@ -33,10 +29,8 @@ TEST_CASE("runner context create and destroy", "[runner]") {
   auto stop_thread = std::thread([engine] {
     std::string context_name = "io.ionic.android_js_engine";
     engine->create_context(context_name);
-    engine->stop();
   });
 
-  engine->start();
   stop_thread.join();
 
   delete engine;
@@ -54,10 +48,8 @@ TEST_CASE("runner create and destroy multiple contexts", "[runner]") {
     }
 
     fmt::println("Created {} contexts", rnd);
-    engine->stop();
   });
 
-  engine->start();
   spawn_thread.join();
 
   delete engine;

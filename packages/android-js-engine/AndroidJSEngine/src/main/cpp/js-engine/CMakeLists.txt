@@ -20,7 +20,6 @@ add_library(
     src/capacitor-api/api_geolocation.cpp
     src/capacitor-api/api_kv.cpp
     src/capacitor-api/api_notifications.cpp
-
 )
 
 add_subdirectory("src/quickjs")
@@ -29,5 +28,5 @@ target_link_libraries(${PROJECT_NAME} quickjs)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
 
-#enable_testing()
-#add_subdirectory("tests")
+enable_testing()
+add_subdirectory("tests")

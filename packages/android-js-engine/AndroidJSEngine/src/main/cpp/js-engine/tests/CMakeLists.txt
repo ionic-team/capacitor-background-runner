@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.22.1)
 
 set(UUID_USING_CXX20_SPAN off)
+set(CMAKE_CXX_STANDARD_REQUIRED true)
+set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lc++abi")
 
 Include(FetchContent)
 
@@ -37,25 +41,25 @@ add_executable(
   src/context_tests.cpp
 )
 
-target_compile_features(EngineTests PRIVATE cxx_std_20)
+target_compile_features(EngineTests PRIVATE cxx_std_17)
 target_link_libraries(EngineTests PRIVATE JSEngine)
 target_link_libraries(EngineTests PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(EngineTests PRIVATE unofficial-sodium::sodium unofficial-sodium::sodium_config_public)
 target_link_libraries(EngineTests PRIVATE fmt::fmt)
 target_link_libraries(EngineTests PRIVATE stduuid)
 target_link_libraries(EngineTests PRIVATE cpr::cpr)
-target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libcrypto.a)
-target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libssl.a)
+target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.3.1/lib/libcrypto.a)
+target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.3.1/lib/libssl.a)
 
-target_compile_features(ContextTests PRIVATE cxx_std_20)
+target_compile_features(ContextTests PRIVATE cxx_std_17)
 target_link_libraries(ContextTests PRIVATE JSEngine)
 target_link_libraries(ContextTests PRIVATE unofficial-sodium::sodium unofficial-sodium::sodium_config_public)
 target_link_libraries(ContextTests PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(ContextTests PRIVATE fmt::fmt)
 target_link_libraries(ContextTests PRIVATE stduuid)
 target_link_libraries(ContextTests PRIVATE cpr::cpr)
-target_link_libraries(ContextTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libcrypto.a)
-target_link_libraries(ContextTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libssl.a)
+target_link_libraries(ContextTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.3.1/lib/libcrypto.a)
+target_link_libraries(ContextTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.3.1/lib/libssl.a)
 
 add_test(NAME EngineTests COMMAND EngineTests)
 add_test(NAME ContextTests COMMAND ContextTests)
