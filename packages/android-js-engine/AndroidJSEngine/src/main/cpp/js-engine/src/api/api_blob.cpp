@@ -59,6 +59,12 @@ static const JSCFunctionListEntry js_blob_proto_funcs[] = {
 };
 
 static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int argc, JSValueConst *argv) {
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    return JS_Throw(ctx, js_error);
+  }
+
   auto proto = JS_GetClassProto(ctx, js_blob_class_id);
   auto new_object = JS_NewObjectProtoClass(ctx, proto, js_blob_class_id);
 
@@ -66,30 +72,54 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
 
   JSValue input_arr = argv[0];
 
-  // TODO: Revisit this later
-  //    if (!JS_IsArray(ctx, input_arr)) {
-  //        input_arr = JS_NewArray(ctx);
-  //    }
+  if (!JS_IsArray(ctx, input_arr)) {
+    JS_FreeValue(ctx, input_arr);
+    return create_js_error("Value is not a sequence", ctx);
+  }
+
+  JSValue arr_val;
+  uint32_t input_size, i;
+
+  JSValue length_val = JS_GetPropertyStr(ctx, input_arr, "length");
+  JS_ToUint32(ctx, &input_size, length_val);
+
+  for (i = 0; i < input_size; i++) {
+    JSValue val = JS_GetPropertyUint32(ctx, input_arr, i);
+    if (JS_IsString(val)) {
+      context->native_interface->logger(LoggerLevel::DEBUG, "Blob", "value is a string");
+    }
+  }
 
   uint8_t *data;
   size_t size, offset, bytes;
 
   auto typed_arr = JS_GetTypedArrayBuffer(ctx, input_arr, &offset, &size, &bytes);
+  if (JS_IsException(typed_arr)) {
+    auto exception = JS_DupValue(ctx, typed_arr);
+    JS_FreeValue(ctx, typed_arr);
 
-  data = JS_GetArrayBuffer(ctx, &size, typed_arr);
+    return exception;
+  }
 
-  auto *blob = new blob_data;
-  blob->data = data;
-  blob->size = size;
+  // JS_FreeValue(ctx, typed_arr);
+  // JS_FreeValue(ctx, input_arr);
 
-  JS_SetOpaque(new_object, blob);
+  return JS_NULL;
 
-  JS_SetPropertyStr(ctx, new_object, "size", JS_NewInt32(ctx, blob->size));
+  // data = JS_GetArrayBuffer(ctx, &size, typed_arr);
 
-  JS_FreeValue(ctx, typed_arr);
-  JS_FreeValue(ctx, input_arr);
+  // auto *blob = new blob_data;
+  // blob->data = data;
+  // blob->size = size;
 
-  return new_object;
+  // JS_SetOpaque(new_object, blob);
+
+  // JS_SetPropertyStr(ctx, new_object, "size", JS_NewInt32(ctx, blob->size));
+
+  // JS_FreeValue(ctx, typed_arr);
+  // JS_FreeValue(ctx, input_arr);
+
+  // return new_object;
 }
 
 JSValue new_blob(JSContext *ctx, uint8_t *data, size_t size) {
@@ -114,7 +144,7 @@ void init_blob_class(JSContext *ctx) {
   JS_SetPropertyFunctionList(ctx, blob_proto, js_blob_proto_funcs, countof(js_blob_proto_funcs));
   JS_SetClassProto(ctx, js_blob_class_id, blob_proto);
 
-  obj = JS_NewCFunction2(ctx, api_blob_constructor, "Blob", 1, JS_CFUNC_constructor, 1);
+  obj = JS_NewCFunction2(ctx, api_blob_constructor, "Blob", 2, JS_CFUNC_constructor, 2);
 
   JSValue global_obj = JS_GetGlobalObject(ctx);
   JS_SetPropertyStr(ctx, global_obj, "Blob", obj);

@@ -20,7 +20,7 @@ Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface 
   this->init_api_crypto();
   this->init_api_text();
   this->init_api_fetch();
-  //   this->init_api_blob();
+  this->init_api_blob();
 
   if (this->capacitor_interface != nullptr) {
     this->init_capacitor_api();
@@ -297,7 +297,7 @@ void Context::init_api_fetch() const {
   JS_FreeValue(this->qjs_context, global_obj);
 }
 
-// void Context::init_api_blob() const { init_blob_class(this->qjs_context); }
+void Context::init_api_blob() const { init_blob_class(this->qjs_context); }
 
 void Context::init_capacitor_api() {
   this->init_capacitor_device_api();

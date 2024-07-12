@@ -12,8 +12,8 @@
 #include "api/api_js_response.h"
 #include "api/api_text.h"
 #include "api/api_timeout.h"
-#include "native.hpp"
 #include "capacitor.hpp"
+#include "native.hpp"
 
 class Context {
  public:
@@ -48,7 +48,7 @@ class Context {
   void init_api_crypto() const;
   void init_api_text() const;
   void init_api_fetch() const;
-  // void init_api_blob() const;
+  void init_api_blob() const;
 
   void init_capacitor_api();
   void init_capacitor_device_api() const;
