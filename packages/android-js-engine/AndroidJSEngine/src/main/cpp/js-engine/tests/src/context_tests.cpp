@@ -482,10 +482,14 @@ TEST_CASE("blob tests", "[context]") {
 
   std::string basic_blob_example =
       "const testJSON = JSON.stringify({ hello: \"world\" }, null, 2);"
+      "const testTypedArr = new Int8Array(16);"
+      "const testArrayBuf = new ArrayBuffer(32);"
       "const blob = new Blob([testJSON]);"
-      "blob.text().then((text) => console.log(text))";
+      "blob.text().then((text) => {console.log(\"text: \" + text)})";
 
   engine->execute(context_name, basic_blob_example);
+
+  engine->wait_for_jobs();
 
   delete engine;
 }
