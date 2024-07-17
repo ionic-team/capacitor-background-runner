@@ -103,7 +103,7 @@ NativeResponse Native::fetch(NativeRequest native_request) {
     } else if (native_request.method == "POST") {
       res = cpr::Post(cpr::Url(native_request.url.c_str()), cpr::Body(std::string(native_request.body.begin(), native_request.body.end())), headers);
     } else {
-      throw new FetchException("invalid HTTP Method");
+      throw FetchException("invalid HTTP Method");
     }
 
     auto body_data = res.text.data();

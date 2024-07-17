@@ -72,7 +72,21 @@ Value* Engine::dispatch_event(const std::string& name, const std::string& event,
     js_object = JS_NewObject(context->qjs_context);
   }
 
-  context->dispatch_event(event, js_object);
+  auto ret_val = context->dispatch_event(event, js_object);
+  if (JS_IsException(ret_val)) {
+    JSValue const exception = JS_GetException(context->qjs_context);
+
+    JSValue const err_message = JS_GetPropertyStr(context->qjs_context, exception, "message");
+    const char* err_message_c_str = JS_ToCString(context->qjs_context, err_message);
+    std::string err_message_str = std::string(err_message_c_str);
+
+    JS_FreeValue(context->qjs_context, exception);
+    JS_FreeValue(context->qjs_context, err_message);
+    JS_FreeCString(context->qjs_context, err_message_c_str);
+    JS_FreeValue(context->qjs_context, js_object);
+
+    throw JavaScriptException(err_message_str.c_str());
+  }
 
   JS_FreeValue(context->qjs_context, js_object);
 
