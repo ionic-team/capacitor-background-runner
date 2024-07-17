@@ -83,7 +83,8 @@
     "unordered_set": "cpp",
     "*.ipp": "cpp",
     "memory": "cpp",
-    "print": "cpp"
+    "print": "cpp",
+    "iterator": "cpp"
   },
   "cmake.configureSettings": {
     "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"

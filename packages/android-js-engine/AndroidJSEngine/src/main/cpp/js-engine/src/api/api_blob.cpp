@@ -6,10 +6,36 @@
 #include "../errors.hpp"
 #include "../quickjs/cutils.h"
 
-struct blob_data {
-  uint8_t *data;
-  size_t size;
-};
+void BlobBackingStore::append(std::vector<uint8_t> vec) { this->storage.push_back(vec); }
+
+size_t BlobBackingStore::size() {
+  size_t size = 0;
+  for (auto vec : storage) {
+    size += vec.size();
+  }
+
+  return size;
+}
+
+uint8_t *BlobBackingStore::data() {
+  std::vector<uint8_t> merged;
+
+  for (auto vec : storage) {
+    merged.push_back(*vec.data());
+  }
+
+  return merged.data();
+}
+
+std::string BlobBackingStore::string() {
+  std::string str;
+
+  for (auto vec : storage) {
+    str += std::string((char *)vec.data(), vec.size());
+  }
+
+  return str;
+}
 
 static JSClassID js_blob_class_id;
 
@@ -20,7 +46,7 @@ JSValue blob_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
   reject = argv[1];
   blob_val = argv[2];
 
-  auto *blob = (blob_data *)JS_GetOpaque(blob_val, js_blob_class_id);
+  auto *blob = (BlobBackingStore *)JS_GetOpaque(blob_val, js_blob_class_id);
   if (blob == nullptr) {
     auto js_error = create_js_error("backing data is null", ctx);
     reject_promise(ctx, reject, js_error);
@@ -39,11 +65,11 @@ JSValue blob_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
   try {
     JSValue text_val;
 
-    if (blob->size == 0) {
+    if (blob->size() == 0) {
       text_val = JS_NewString(ctx, "");
     } else {
-      auto text_string = context->native_interface->byte_array_to_str(blob->data, 0, "utf-8").c_str();
-      text_val = JS_NewString(ctx, text_string);
+      auto text_string = blob->string();
+      text_val = JS_NewString(ctx, text_string.c_str());
     }
 
     JSValueConst resolve_args[1];
@@ -62,7 +88,7 @@ JSValue blob_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
 }
 
 static void js_blob_data_finalizer(JSRuntime *rt, JSValue val) {
-  auto *blob = (blob_data *)JS_GetOpaque(val, js_blob_class_id);
+  auto *blob = (BlobBackingStore *)JS_GetOpaque(val, js_blob_class_id);
   if (blob != nullptr) {
     delete blob;
   }
@@ -71,14 +97,14 @@ static void js_blob_data_finalizer(JSRuntime *rt, JSValue val) {
 static JSClassDef js_blob_class = {"Blob", .finalizer = js_blob_data_finalizer};
 
 static JSValue api_blob_get_array_buffer(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-  auto *blob = (blob_data *)JS_GetOpaque(this_val, js_blob_class_id);
+  auto *blob = (BlobBackingStore *)JS_GetOpaque(this_val, js_blob_class_id);
   if (blob == nullptr) {
     auto js_error = create_js_error("backing data is null", ctx);
     return JS_Throw(ctx, js_error);
   }
 
-  auto array_buffer = JS_NewArrayBuffer(ctx, blob->data, blob->size, nullptr, nullptr, 0);
-  auto buf = JS_NewUInt8Array(ctx, array_buffer, 0, blob->size);
+  auto array_buffer = JS_NewArrayBuffer(ctx, blob->data(), blob->size(), nullptr, nullptr, 0);
+  auto buf = JS_NewUInt8Array(ctx, array_buffer, 0, blob->size());
 
   JS_FreeValue(ctx, array_buffer);
 
@@ -130,7 +156,7 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
     return create_js_error("Value is not a sequence", ctx);
   }
 
-  std::vector<uint8_t> data_components(0);
+  auto backing_data = new BlobBackingStore();
 
   JSValue arr_val;
   uint32_t input_size, i;
@@ -140,48 +166,73 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
 
   for (i = 0; i < input_size; i++) {
     JSValue val = JS_GetPropertyUint32(ctx, input_arr, i);
+
     if (JS_IsString(val)) {
+      std::vector<uint8_t> data(0);
+
       auto str = JS_ToCString(ctx, val);
       while (*str != '\0') {
-        data_components.push_back(static_cast<uint8_t>(*str));
+        data.push_back(static_cast<uint8_t>(*str));
         ++str;
       }
 
+      backing_data->append(data);
+
       JS_FreeCString(ctx, str);
+      JS_FreeValue(ctx, val);
       continue;
     }
 
     if (JS_IsObject(val)) {
-      // Handling TypedArray
       size_t obj_size, obj_offset, obj_bytes;
-      auto arr = JS_GetTypedArrayBuffer(ctx, val, &obj_offset, &obj_size, &obj_bytes);
-
-      if (!JS_IsException(arr)) {
-        context->native_interface->logger(LoggerLevel::DEBUG, "Blob", "value is an array");
-        JS_FreeValue(ctx, arr);
-        continue;
-      }
-
-      // Handling ArrayBuffer
       auto arr_buf = JS_GetArrayBuffer(ctx, &obj_size, val);
-      if (arr_buf != nullptr) {
-        for (int x = 0; x < obj_size; x++) {
-          data_components.push_back(arr_buf[x]);
-        }
 
-        JS_FreeValue(ctx, arr);
+      if (arr_buf != nullptr) {
+        std::vector<uint8_t> data(0);
+        data.push_back(*arr_buf);
+        // for (int x = 0; x < obj_size; x++) {
+        //   data_components.push_back(arr_buf[x]);
+        // }
+
+        backing_data->append(data);
+
+        JS_DetachArrayBuffer(ctx, val);
+        JS_FreeValue(ctx, val);
         continue;
       }
+
+      // // Handling TypedArray
+      // size_t obj_size, obj_offset, obj_bytes;
+      // auto arr = JS_GetTypedArrayBuffer(ctx, val, &obj_offset, &obj_size, &obj_bytes);
+
+      // if (!JS_IsException(arr)) {
+      //   context->native_interface->logger(LoggerLevel::DEBUG, "Blob", "value is an array");
+      //   JS_FreeValue(ctx, arr);
+      //   JS_FreeValue(ctx, val);
+      //   continue;
+      // }
+
+      // // Handling ArrayBuffer
+      // auto arr_buf = JS_GetArrayBuffer(ctx, &obj_size, val);
+      // if (arr_buf != nullptr) {
+      //   for (int x = 0; x < obj_size; x++) {
+      //     data_components.push_back(arr_buf[x]);
+      //   }
+
+      //   JS_DetachArrayBuffer(ctx, arr);
+      //   JS_FreeValue(ctx, arr);
+      //   continue;
+      // }
+
+      // JS_DetachArrayBuffer(ctx, arr);
     }
+
+    JS_FreeValue(ctx, val);
   }
 
-  auto *blob = new blob_data;
-  blob->data = data_components.data();
-  blob->size = data_components.size();
+  JS_SetOpaque(new_object, backing_data);
 
-  JS_SetOpaque(new_object, blob);
-
-  JS_SetPropertyStr(ctx, new_object, "size", JS_NewInt32(ctx, blob->size));
+  JS_SetPropertyStr(ctx, new_object, "size", JS_NewInt32(ctx, backing_data->size()));
 
   return new_object;
 }
