@@ -31,7 +31,10 @@ std::string BlobBackingStore::string() {
   std::string str;
 
   for (auto vec : storage) {
-    str += std::string((char *)vec.data(), vec.size());
+    auto s = std::string((char *)vec.data(), vec.size());
+    if (s != "\0") {
+      str += s;
+    }
   }
 
   return str;
@@ -87,6 +90,42 @@ JSValue blob_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
   }
 }
 
+JSValue blob_array_buffer_job(JSContext *ctx, int argc, JSValueConst *argv) {
+  JSValue resolve, reject, blob_val;
+
+  resolve = argv[0];
+  reject = argv[1];
+  blob_val = argv[2];
+
+  auto *blob = (BlobBackingStore *)JS_GetOpaque(blob_val, js_blob_class_id);
+  if (blob == nullptr) {
+    auto js_error = create_js_error("backing data is null", ctx);
+    reject_promise(ctx, reject, js_error);
+    JS_FreeValue(ctx, js_error);
+    return JS_UNDEFINED;
+  }
+
+  auto *context = (Context *)JS_GetContextOpaque(ctx);
+  if (context == nullptr) {
+    auto js_error = create_js_error("context is null", ctx);
+    reject_promise(ctx, reject, js_error);
+    JS_FreeValue(ctx, js_error);
+    return JS_UNDEFINED;
+  }
+
+  auto array_buffer = JS_NewArrayBuffer(ctx, blob->data(), blob->size(), nullptr, nullptr, 0);
+  JSValueConst resolve_args[1];
+  resolve_args[0] = array_buffer;
+
+  auto global_obj = JS_GetGlobalObject(ctx);
+  JS_Call(ctx, resolve, global_obj, 1, resolve_args);
+
+  JS_FreeValue(ctx, array_buffer);
+  JS_FreeValue(ctx, global_obj);
+
+  return JS_UNDEFINED;
+}
+
 static void js_blob_data_finalizer(JSRuntime *rt, JSValue val) {
   auto *blob = (BlobBackingStore *)JS_GetOpaque(val, js_blob_class_id);
   if (blob != nullptr) {
@@ -97,18 +136,24 @@ static void js_blob_data_finalizer(JSRuntime *rt, JSValue val) {
 static JSClassDef js_blob_class = {"Blob", .finalizer = js_blob_data_finalizer};
 
 static JSValue api_blob_get_array_buffer(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
-  auto *blob = (BlobBackingStore *)JS_GetOpaque(this_val, js_blob_class_id);
-  if (blob == nullptr) {
-    auto js_error = create_js_error("backing data is null", ctx);
-    return JS_Throw(ctx, js_error);
+  JSValue promise, resolving_funcs[2];
+  JSValueConst args[3];
+
+  promise = JS_NewPromiseCapability(ctx, resolving_funcs);
+  if (JS_IsException(promise)) {
+    return promise;
   }
 
-  auto array_buffer = JS_NewArrayBuffer(ctx, blob->data(), blob->size(), nullptr, nullptr, 0);
-  auto buf = JS_NewUInt8Array(ctx, array_buffer, 0, blob->size());
+  args[0] = resolving_funcs[0];
+  args[1] = resolving_funcs[1];
+  args[2] = this_val;
 
-  JS_FreeValue(ctx, array_buffer);
+  JS_EnqueueJob(ctx, blob_array_buffer_job, 4, args);
 
-  return buf;
+  JS_FreeValue(ctx, resolving_funcs[0]);
+  JS_FreeValue(ctx, resolving_funcs[1]);
+
+  return promise;
 }
 
 static JSValue api_blob_get_text(JSContext *ctx, JSValueConst this_val, int argc, JSValueConst *argv) {
@@ -171,9 +216,10 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
       std::vector<uint8_t> data(0);
 
       auto str = JS_ToCString(ctx, val);
-      while (*str != '\0') {
-        data.push_back(static_cast<uint8_t>(*str));
-        ++str;
+      auto str_size = strlen(str);
+
+      for (int x = 0; x < str_size; x++) {
+        data.push_back(static_cast<uint8_t>(str[x]));
       }
 
       backing_data->append(data);
@@ -187,12 +233,19 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
       size_t obj_size, obj_offset, obj_bytes;
       auto arr_buf = JS_GetArrayBuffer(ctx, &obj_size, val);
 
+      if (arr_buf == nullptr) {
+        auto typedArr = JS_GetTypedArrayBuffer(ctx, val, &obj_offset, &obj_size, &obj_bytes);
+        if (!JS_IsException(typedArr)) {
+          arr_buf = JS_GetArrayBuffer(ctx, &obj_size, typedArr);
+          JS_FreeValue(ctx, typedArr);
+        }
+      }
+
       if (arr_buf != nullptr) {
         std::vector<uint8_t> data(0);
-        data.push_back(*arr_buf);
-        // for (int x = 0; x < obj_size; x++) {
-        //   data_components.push_back(arr_buf[x]);
-        // }
+        for (int x = 0; x < obj_size; x++) {
+          data.push_back(arr_buf[x]);
+        }
 
         backing_data->append(data);
 
