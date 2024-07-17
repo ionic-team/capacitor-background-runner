@@ -481,17 +481,52 @@ TEST_CASE("blob tests", "[context]") {
   std::string context_name = "io.ionic.android_js_engine";
   engine->create_context(context_name);
 
+  std::promise<int> array_buffer_promise;
+  std::promise<std::string> text_promise;
+
+  std::function<json(json)> callback_1 = [&array_buffer_promise](json args) {
+    auto size = args["size"].template get<int>();
+    array_buffer_promise.set_value(size);
+    return nullptr;
+  };
+
+  std::function<json(json)> callback_2 = [&text_promise](json args) {
+    auto text = args.template get<std::string>();
+    text_promise.set_value(text);
+    return nullptr;
+  };
+
+  engine->register_function(context_name, "arrayBufferCallback", callback_1);
+  engine->register_function(context_name, "textCallback", callback_2);
+
   std::string basic_blob_example =
       "const testString = \"testing\";"
       "const testArrayBuf = new ArrayBuffer(32);"
       "const testTypedArr = new Int8Array(16);"
-      "const blob = new Blob([testString, testArrayBuf, testTypedArr]);"
-      "blob.arrayBuffer().then((buffer) => {console.log(\"len: \" + buffer.byteLength)});"
-      "blob.text().then((text) => {console.log(\"text: \" + text)})";
+      "const blob = new Blob([testString, testArrayBuf, testTypedArr]);";
 
   engine->execute(context_name, basic_blob_example);
 
+  std::string get_blob_array_buffer_example = "blob.arrayBuffer().then((buffer) => { arrayBufferCallback({size: buffer.byteLength}); });";
+  engine->execute(context_name, get_blob_array_buffer_example);
   engine->wait_for_jobs();
+
+  auto array_buffer_future = array_buffer_promise.get_future();
+  array_buffer_future.wait();
+
+  auto array_buffer_data = array_buffer_future.get();
+  REQUIRE(array_buffer_data == 55);
+
+  std::string get_blob_text_example = "blob.text().then((text) => { textCallback(text); });";
+
+  engine->execute(context_name, get_blob_text_example);
+  engine->wait_for_jobs();
+
+  auto text_future = text_promise.get_future();
+  text_future.wait();
+
+  auto text = text_future.get();
+  REQUIRE(text == "testing");
 
   delete engine;
 }
