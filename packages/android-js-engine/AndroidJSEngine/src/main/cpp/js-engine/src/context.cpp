@@ -21,6 +21,7 @@ Context::Context(const std::string &name, JSRuntime *parent_rt, NativeInterface 
   this->init_api_text();
   this->init_api_fetch();
   this->init_api_blob();
+  this->init_api_headers();
 
   if (this->capacitor_interface != nullptr) {
     this->init_capacitor_api();
@@ -298,6 +299,8 @@ void Context::init_api_fetch() const {
 }
 
 void Context::init_api_blob() const { init_blob_class(this->qjs_context); }
+
+void Context::init_api_headers() const { init_headers_class(this->qjs_context); }
 
 void Context::init_capacitor_api() {
   this->init_capacitor_device_api();
