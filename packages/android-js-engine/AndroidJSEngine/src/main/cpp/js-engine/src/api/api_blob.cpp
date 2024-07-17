@@ -201,7 +201,7 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
     return create_js_error("Value is not a sequence", ctx);
   }
 
-  auto backing_data = new BlobBackingStore();
+  auto *backing_data = new BlobBackingStore();
 
   JSValue arr_val;
   uint32_t input_size, i;
@@ -253,31 +253,6 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
         JS_FreeValue(ctx, val);
         continue;
       }
-
-      // // Handling TypedArray
-      // size_t obj_size, obj_offset, obj_bytes;
-      // auto arr = JS_GetTypedArrayBuffer(ctx, val, &obj_offset, &obj_size, &obj_bytes);
-
-      // if (!JS_IsException(arr)) {
-      //   context->native_interface->logger(LoggerLevel::DEBUG, "Blob", "value is an array");
-      //   JS_FreeValue(ctx, arr);
-      //   JS_FreeValue(ctx, val);
-      //   continue;
-      // }
-
-      // // Handling ArrayBuffer
-      // auto arr_buf = JS_GetArrayBuffer(ctx, &obj_size, val);
-      // if (arr_buf != nullptr) {
-      //   for (int x = 0; x < obj_size; x++) {
-      //     data_components.push_back(arr_buf[x]);
-      //   }
-
-      //   JS_DetachArrayBuffer(ctx, arr);
-      //   JS_FreeValue(ctx, arr);
-      //   continue;
-      // }
-
-      // JS_DetachArrayBuffer(ctx, arr);
     }
 
     JS_FreeValue(ctx, val);
