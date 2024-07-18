@@ -10,6 +10,11 @@ class HeaderBackingStore {
  public:
   void set(std::string name, std::string value);
   std::string get(std::string name);
+  void remove(std::string name);
+  bool exists(std::string name);
+  void append(std::string name, std::string value);
+  std::vector<std::string> keys();
+  std::vector<std::string> values();
 
  private:
   std::unordered_map<std::string, std::string> storage;

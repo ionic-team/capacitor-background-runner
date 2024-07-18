@@ -549,5 +549,41 @@ TEST_CASE("headers tests", "[context]") {
 
   REQUIRE(header_value->get_string_value() == "\"application/json\"");
 
+  std::string headers_has_example = "h.has(\"Content-Type\");";
+  auto has_value = engine->execute(context_name, headers_has_example);
+
+  REQUIRE(has_value->get_bool_value());
+
+  std::string headers_delete_example = "h.delete(\"Content-Type\");";
+  engine->execute(context_name, headers_delete_example);
+
+  auto deleted_value = engine->execute(context_name, headers_get_example);
+
+  REQUIRE(deleted_value->is_null_or_undefined());
+
+  has_value = engine->execute(context_name, headers_has_example);
+
+  REQUIRE(has_value->get_bool_value() == false);
+
+  std::string headers_append_example =
+      "h.set(\"Accept\", \"text/html\");"
+      "h.append(\"Accept\", \"application/xhtml+xml\");";
+
+  engine->execute(context_name, headers_append_example);
+
+  auto appended_value = engine->execute(context_name, "h.get(\"Accept\");");
+  REQUIRE(appended_value->get_string_value() == "\"text/html, application/xhtml+xml\"");
+
+  engine->execute(context_name, headers_set_example);
+
+  std::string headers_all_keys = "for(const key of h.keys()) { console.log(key); }";
+  engine->execute(context_name, headers_all_keys);
+
+  std::string headers_all_values = "for(const value of h.values()) { console.log(value); }";
+  engine->execute(context_name, headers_all_values);
+
+  std::string headers_all_entries = "for(const pair of h.entries()) { console.log(`${pair[0]}: ${pair[1]}`); }";
+  engine->execute(context_name, headers_all_entries);
+
   delete engine;
 }
