@@ -91,10 +91,13 @@ JSValue js_fetch_job(JSContext *ctx, int argc, JSValueConst *argv) {
     body = JS_GetPropertyStr(ctx, options, "body");
     headers = JS_GetPropertyStr(ctx, options, "headers");
 
-    native_request.method = std::string(JS_ToCString(ctx, method));
+    auto method_c_str = JS_ToCString(ctx, method);
+
+    native_request.method = method_c_str;
     native_request.headers = js_header_to_map(ctx, headers);
     native_request.body = js_body_to_data(ctx, body);
 
+    JS_FreeCString(ctx, method_c_str);
     JS_FreeValue(ctx, method);
     JS_FreeValue(ctx, body);
     JS_FreeValue(ctx, headers);

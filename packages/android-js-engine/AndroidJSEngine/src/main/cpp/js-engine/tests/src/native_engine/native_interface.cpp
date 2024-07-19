@@ -106,6 +106,11 @@ NativeResponse Native::fetch(NativeRequest native_request) {
       throw FetchException("invalid HTTP Method");
     }
 
+    for (auto kv : res.header) {
+      auto value = res.header[kv.first];
+      native_response.headers[kv.first] = value;
+    }
+
     auto body_data = res.text.data();
 
     if (res.status_code == 0) {

@@ -4,6 +4,8 @@
 #include "../errors.hpp"
 #include "../quickjs/cutils.h"
 
+HeaderBackingStore::HeaderBackingStore() {}
+HeaderBackingStore::HeaderBackingStore(std::unordered_map<std::string, std::string> init_headers) { this->storage = init_headers; }
 void HeaderBackingStore::set(std::string name, std::string value) { this->storage[name] = value; }
 void HeaderBackingStore::append(std::string name, std::string value) {
   auto current_value = this->get(name);
@@ -313,7 +315,51 @@ static JSValue api_headers_constructor(JSContext *ctx, JSValueConst new_target, 
 
   JS_FreeValue(ctx, proto);
 
-  auto *store = new HeaderBackingStore();
+  HeaderBackingStore *store;
+
+  if (argc == 1) {
+    std::unordered_map<std::string, std::string> init_storage;
+
+    JSValueConst init_headers = argv[0];
+
+    if (JS_IsObject(init_headers)) {
+      JSPropertyEnum *keys;
+      uint32_t len = 0;
+
+      if (JS_GetOwnPropertyNames(ctx, &keys, &len, init_headers, JS_GPN_STRING_MASK | JS_GPN_ENUM_ONLY | JS_GPN_SYMBOL_MASK) == 0) {
+        for (uint32_t i = 0; i < len; i++) {
+          JSAtom key_atom = keys[i].atom;
+          auto key_c_str = JS_AtomToCString(ctx, key_atom);
+
+          if (key_c_str) {
+            JSValue value = JS_GetProperty(ctx, init_headers, key_atom);
+            auto value_c_str = JS_ToCString(ctx, value);
+
+            init_storage[key_c_str] = value_c_str;
+
+            JS_FreeCString(ctx, value_c_str);
+            JS_FreeCString(ctx, key_c_str);
+            JS_FreeValue(ctx, value);
+          }
+
+          JS_FreeAtom(ctx, key_atom);
+        }
+
+        for (int i = 0; i < len; i++) {
+          JS_FreeAtom(ctx, keys[i].atom);
+        }
+
+        js_free(ctx, keys);
+      }
+    }
+
+    JS_FreeValue(ctx, init_headers);
+
+    store = new HeaderBackingStore(init_storage);
+  } else {
+    store = new HeaderBackingStore();
+  }
+
   JS_SetOpaque(new_object, store);
 
   return new_object;
@@ -335,4 +381,22 @@ void init_headers_class(JSContext *ctx) {
   JSValue global_obj = JS_GetGlobalObject(ctx);
   JS_SetPropertyStr(ctx, global_obj, "Headers", obj);
   JS_FreeValue(ctx, global_obj);
+}
+
+JSValue new_headers(JSContext *ctx, std::unordered_map<std::string, std::string> init_headers) {
+  JSValue init_object = JS_NewObject(ctx);
+
+  for (auto kv : init_headers) {
+    JSAtom key_str = JS_NewAtom(ctx, kv.first.c_str());
+    JSValue value_str = JS_NewString(ctx, kv.second.c_str());
+
+    JS_DefinePropertyValue(ctx, init_object, key_str, value_str, JS_PROP_C_W_E);
+  }
+
+  JSValueConst args[1];
+  args[0] = init_object;
+
+  // JS_FreeValue(ctx, init_object);
+
+  return api_headers_constructor(ctx, JS_UNDEFINED, 1, args);
 }

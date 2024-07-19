@@ -264,12 +264,9 @@ static JSValue api_response_constructor(JSContext *ctx, JSValueConst new_target,
 }
 
 JSValue new_js_response(JSContext *ctx, NativeResponse native_response) {
-  // auto *context = (Context *)JS_GetContextOpaque(ctx);
-
-  // auto *j_data = static_cast<jbyteArray>(env->GetObjectField(j_response, context->java->js_response_data_field));
-
   auto response = api_response_constructor(ctx, JS_UNDEFINED, 0, nullptr);
 
+  JS_DefinePropertyValueStr(ctx, response, "headers", new_headers(ctx, native_response.headers), JS_PROP_C_W_E);
   JS_DefinePropertyValueStr(ctx, response, "ok", JS_NewBool(ctx, native_response.ok), JS_PROP_C_W_E);
   JS_DefinePropertyValueStr(ctx, response, "status", JS_NewInt32(ctx, native_response.status), JS_PROP_C_W_E);
   JS_DefinePropertyValueStr(ctx, response, "url", JS_NewString(ctx, native_response.url.c_str()), JS_PROP_C_W_E);

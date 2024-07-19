@@ -8,6 +8,9 @@
 
 class HeaderBackingStore {
  public:
+  HeaderBackingStore();
+  HeaderBackingStore(std::unordered_map<std::string, std::string> init_headers);
+
   void set(std::string name, std::string value);
   std::string get(std::string name);
   void remove(std::string name);
@@ -21,5 +24,6 @@ class HeaderBackingStore {
 };
 
 void init_headers_class(JSContext *ctx);
+JSValue new_headers(JSContext *ctx, std::unordered_map<std::string, std::string> init_headers);
 
 #endif  // CAPACITOR_BACKGROUND_RUNNER_API_HEADERS_H
