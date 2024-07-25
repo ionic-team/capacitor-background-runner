@@ -268,12 +268,19 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
 JSValue new_blob(JSContext *ctx, uint8_t *data, size_t size) {
   JSValueConst args[1];
 
+  JSValue arr = JS_NewArray(ctx);
+
   auto array_buffer = JS_NewArrayBuffer(ctx, data, size, nullptr, nullptr, 0);
-  args[0] = JS_NewUInt8Array(ctx, array_buffer, 0, size);
+  JS_SetPropertyUint32(ctx, arr, 0, JS_NewUInt8Array(ctx, array_buffer, 0, size));
+
+  args[0] = arr;
 
   JS_FreeValue(ctx, array_buffer);
 
-  return api_blob_constructor(ctx, JS_UNDEFINED, 1, args);
+  auto blob = api_blob_constructor(ctx, JS_UNDEFINED, 1, args);
+  JS_FreeValue(ctx, arr);
+
+  return blob;
 }
 
 void init_blob_class(JSContext *ctx) {
