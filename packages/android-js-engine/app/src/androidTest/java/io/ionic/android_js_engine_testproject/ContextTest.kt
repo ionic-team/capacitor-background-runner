@@ -383,11 +383,19 @@ class ContextTest {
         val future1 = CompletableFuture<JSONObject?>()
         val future2 = CompletableFuture<Int>()
         val future3 = CompletableFuture<JSONObject?>()
+        val future4 = CompletableFuture<Int>()
 
         class SuccessCallback : NativeJSFunction(jsFunctionName = "successCallback") {
             override fun run() {
                 super.run()
                 future1.complete(this.jsFunctionArgs)
+            }
+        }
+
+        class ImageSuccessCallback: NativeJSFunction(jsFunctionName = "successCallback3") {
+            override fun run() {
+                super.run()
+                future4.complete(this.jsFunctionArgs?.getInt("size"))
             }
         }
 
@@ -410,36 +418,17 @@ class ContextTest {
         val callback1 = SuccessCallback()
         val callback2 = FailureCallback()
         val callback3 = OptionsSuccessCallback();
+        val callback4 = ImageSuccessCallback();
 
         context.registerFunction("successCallback", callback1)
         context.registerFunction("failureCallback", callback2)
         context.registerFunction("successCallback2", callback3)
+        context.registerFunction("successCallback3", callback4)
 
         val basicFetchExample = """
             fetch('https://jsonplaceholder.typicode.com/todos/1')
                 .then(response => response.json())
                 .then(json => { successCallback(json); })
-                .catch(err => { console.error(err); });
-        """.trimIndent()
-
-        val basicFetchWithTextResponseExample = """
-            fetch('https://jsonplaceholder.typicode.com/todos/1')
-                .then(response => response.text())
-                .then(text => { console.log(text); })
-                .catch(err => { console.error(err); });
-        """.trimIndent()
-
-        val basicFetchWithArrayBufferResponseExample = """
-            fetch('https://jsonplaceholder.typicode.com/todos/1')
-                .then(response => response.arrayBuffer())
-                .then(buf => { console.log(buf.byteLength); })
-                .catch(err => { console.error(err); });
-        """.trimIndent()
-
-        val basicFetchWithBlobResponseExample = """
-            fetch('https://jsonplaceholder.typicode.com/todos/1')
-                .then(response => response.blob())
-                .then(blob => { console.log(blob.size); })
                 .catch(err => { console.error(err); });
         """.trimIndent()
 
@@ -465,16 +454,16 @@ class ContextTest {
             .then(json => { successCallback2(json); })
         """.trimIndent()
 
+        val fetchImageExample = """
+            fetch('https://placehold.co/600x400@3x.png')
+            .then((res) => { return res.blob() })
+            .then((blob) => { successCallback3({ size: blob.size }); });
+        """.trimIndent()
+
         context.execute(basicFetchExample)
         runner.waitForJobs()
         val jsonResponse1 = future1.get(5, TimeUnit.SECONDS);
         assertEquals("delectus aut autem", jsonResponse1?.getString("title"))
-
-//        context.execute(basicFetchWithTextResponseExample)
-
-//        context.execute(basicFetchWithArrayBufferResponseExample)
-
-//        context.execute(basicFetchWithBlobResponseExample)
 
         context.execute(fetchFailureExample)
         runner.waitForJobs()
@@ -507,32 +496,142 @@ class ContextTest {
                 .then(json => { console.log(JSON.stringify(json)); });
              
             Promise.all([p1, p2]).then(() => { console.log("done!"); });
-            
-            
         """.trimIndent()
 
         context.execute(fetchMultiple)
         runner.waitForJobs()
-        runner.destroy()
 
+        context.execute(fetchImageExample)
+        runner.waitForJobs()
+        val imageBlobSize = future4.get()
+        assertEquals(62404, imageBlobSize)
+
+        runner.destroy()
     }
 
-    //    @Test
-//    fun testAPI_Blob() {
-//        val runner = Runner()
-//        val context = runner.createContext("io.ionic.android_js_engine")
-//
-//        val basicBlobExample = """
-//            const obj = { hello: "world" };
-//            const blob = new Blob([JSON.stringify(obj, null, 2)], {
-//              type: "application/json",
-//            });
-//            blob.text().then((text) => console.log(text));
-//
-//        """.trimIndent()
-//
-//        context.execute(basicBlobExample)
-//
-//        runner.destroy()
-//    }
+    @Test
+    fun testAPI_Blob() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val future1 = CompletableFuture<Int>()
+        val future2 = CompletableFuture<String>()
+
+        class ArrayBufferCallback: NativeJSFunction(jsFunctionName = "arrayBufferCallback") {
+            override fun run() {
+                super.run()
+                future1.complete(this.jsFunctionArgs?.getInt("size"))
+            }
+        }
+
+        class TextCallback: NativeJSFunction(jsFunctionName = "textCallback") {
+            override fun run() {
+                super.run()
+                future2.complete(jsFunctionArgs?.getString("str"))
+            }
+        }
+
+        val callback1 = ArrayBufferCallback()
+        val callback2 = TextCallback()
+
+        context.registerFunction("arrayBufferCallback", callback1)
+        context.registerFunction("textCallback", callback2)
+
+        val basicBlobExample = """
+            const testString = "testing";
+            const testArrayBuf = new ArrayBuffer(32);
+            const testTypedArr = new Int8Array(16);
+            const blob = new Blob([testString, testArrayBuf, testTypedArr]);
+        """.trimIndent()
+
+        context.execute(basicBlobExample)
+
+        val getBlobArrayBufferExample = "blob.arrayBuffer().then((buffer) => { arrayBufferCallback({size: buffer.byteLength}); });"
+        context.execute(getBlobArrayBufferExample)
+        runner.waitForJobs()
+
+        val arrayBufferResponse = future1.get()
+        assertEquals(55, arrayBufferResponse)
+
+        val getBlobTextExample = "blob.text().then((text) => { textCallback({str: text}); });"
+        context.execute(getBlobTextExample)
+        runner.waitForJobs()
+
+        val textResponse = future2.get()
+        assertEquals("testing", textResponse)
+
+        runner.destroy()
+    }
+
+    @Test
+    fun testAPI_Headers() {
+        val runner = Runner()
+        val context = runner.createContext("io.ionic.android_js_engine")
+
+        val basicHeadersExample = "const h = new Headers();";
+        context.execute(basicHeadersExample)
+
+        val headersSetExample = """
+            h.set("Content-Type", "application/json");
+        """.trimIndent()
+
+        context.execute(headersSetExample)
+
+        val headersGetExample = """
+            h.get("Content-Type");
+        """.trimIndent()
+
+        var headerValue = context.execute(headersGetExample, true)
+        assertEquals(headerValue.getStringValue(), "application/json")
+
+        val headersHasExample = """
+            h.has("Content-Type");
+        """.trimIndent()
+
+        headerValue = context.execute(headersHasExample, true)
+        assertTrue(headerValue.getBoolValue() ?: false)
+
+        val headersDeleteExample = """
+            h.delete("Content-Type");
+        """.trimIndent()
+
+        context.execute(headersDeleteExample)
+
+        val deletedValue = context.execute(headersGetExample, true)
+        assertTrue(deletedValue.isNullOrUndefined())
+
+        headerValue = context.execute(headersHasExample, true)
+        assertFalse(headerValue.getBoolValue() ?: true)
+
+        val headersAppendExample = """
+            h.set("Accept", "text/html");
+            h.append("Accept", "application/xhtml+xml");
+        """.trimIndent()
+
+        context.execute(headersAppendExample)
+
+        headerValue = context.execute("h.get(\"Accept\")", true)
+        assertEquals(headerValue.getStringValue(), "text/html, application/xhtml+xml")
+
+        val headersAllKeysExample = """
+            h.keys();
+        """.trimIndent()
+
+        context.execute(headersSetExample, false)
+        val keysArrayValue = context.execute(headersAllKeysExample, true)
+
+        val keys = keysArrayValue.getJSONArray() ?: throw Error("keys array is null")
+        assertEquals(keys.length(), 2)
+
+        val headersAllValuesExample = """
+            h.values();
+        """.trimIndent()
+
+        val valuesArrayValue = context.execute(headersAllValuesExample, true)
+
+        val values = valuesArrayValue.getJSONArray() ?: throw Error("values array is null")
+        assertEquals(values.length(), 2)
+
+        runner.destroy()
+    }
 }

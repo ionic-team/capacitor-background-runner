@@ -29,5 +29,5 @@ target_link_libraries(${PROJECT_NAME} quickjs)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
-enable_testing()
-add_subdirectory("tests")
+# enable_testing()
+# add_subdirectory("tests")

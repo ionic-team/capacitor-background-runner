@@ -233,7 +233,11 @@ static JSValue api_blob_constructor(JSContext *ctx, JSValueConst new_target, int
       size_t obj_size, obj_offset, obj_bytes;
       auto arr_buf = JS_GetArrayBuffer(ctx, &obj_size, val);
 
-      if (arr_buf == nullptr) {
+      auto exception = JS_GetException(ctx);
+
+      if (arr_buf == nullptr && !JS_IsNull(exception)) {
+          JS_FreeValue(ctx, exception);
+
         auto typedArr = JS_GetTypedArrayBuffer(ctx, val, &obj_offset, &obj_size, &obj_bytes);
         if (!JS_IsException(typedArr)) {
           arr_buf = JS_GetArrayBuffer(ctx, &obj_size, typedArr);
