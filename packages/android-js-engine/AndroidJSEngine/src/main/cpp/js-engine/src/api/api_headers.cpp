@@ -396,7 +396,5 @@ JSValue new_headers(JSContext *ctx, std::unordered_map<std::string, std::string>
   JSValueConst args[1];
   args[0] = init_object;
 
-  // JS_FreeValue(ctx, init_object);
-
   return api_headers_constructor(ctx, JS_UNDEFINED, 1, args);
 }
