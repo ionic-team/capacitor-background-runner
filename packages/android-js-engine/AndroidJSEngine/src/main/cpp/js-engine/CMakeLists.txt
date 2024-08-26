@@ -17,6 +17,7 @@ add_library(
     src/api/api_fetch.cpp
     src/api/api_crypto.cpp
     src/api/api_text.cpp
+    src/api/api_filereader.cpp
     src/capacitor-api/api_device.cpp
     src/capacitor-api/api_geolocation.cpp
     src/capacitor-api/api_kv.cpp
@@ -29,5 +30,5 @@ target_link_libraries(${PROJECT_NAME} quickjs)
 
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
-# enable_testing()
-# add_subdirectory("tests")
+enable_testing()
+add_subdirectory("tests")

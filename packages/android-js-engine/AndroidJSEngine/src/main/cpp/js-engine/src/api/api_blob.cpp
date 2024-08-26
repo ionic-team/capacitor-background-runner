@@ -40,8 +40,6 @@ std::string BlobBackingStore::string() {
   return str;
 }
 
-static JSClassID js_blob_class_id;
-
 JSValue blob_text_job(JSContext *ctx, int argc, JSValueConst *argv) {
   JSValue resolve, reject, blob_val;
 

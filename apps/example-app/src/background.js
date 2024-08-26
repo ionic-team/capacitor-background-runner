@@ -60,6 +60,16 @@ addEventListener("fetchTest", async (resolve, reject, args) => {
   }
 });
 
+addEventListener("fetchBlobTest", async (resolve, reject, args) => {
+  try {
+    const res = await fetch("https://placehold.co/600x400@3x.png");
+    const blob = await res.blob();
+  } catch (err) {
+    console.error(err);
+    reject(err);
+  }
+})
+
 // capacitor APIs
 addEventListener("testCapKVSet", async (resolve, reject, args) => {
   try {

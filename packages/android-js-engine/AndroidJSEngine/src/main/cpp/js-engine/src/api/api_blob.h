@@ -16,6 +16,8 @@ class BlobBackingStore {
   std::vector<std::vector<uint8_t>> storage;
 };
 
+static JSClassID js_blob_class_id;
+
 void init_blob_class(JSContext *ctx);
 JSValue new_blob(JSContext *ctx, uint8_t *data, size_t size);
 
