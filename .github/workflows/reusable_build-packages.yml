@@ -1,6 +1,6 @@
 name: "Build Packages"
 
-on: 
+on:
   workflow_call:
     secrets:
       CAP_GH_RELEASE_TOKEN:
@@ -8,27 +8,27 @@ on:
 
 jobs:
   build:
-    runs-on: 'ubuntu-22.04'
+    runs-on: "ubuntu-22.04"
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
+          token: ${{ secrets.CAP_GH_RELEASE_TOKEN || github.token }}
 
-      - name: 'Setup Tools'
+      - name: "Setup Tools"
         uses: ./.github/actions/setup-tools
 
       - uses: nrwl/nx-set-shas@v3
         with:
-          main-branch-name: 'main'
+          main-branch-name: "main"
 
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
-      - name: 'Build Packages'
+      - name: "Build Packages"
         shell: bash
         run: |
           pnpm nx affected --target=build
