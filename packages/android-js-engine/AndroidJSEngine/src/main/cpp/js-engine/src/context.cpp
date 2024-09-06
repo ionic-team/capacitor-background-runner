@@ -1,5 +1,6 @@
 #include "context.hpp"
 
+#include "capacitor-api/api_app.h"
 #include "capacitor-api/api_device.h"
 #include "capacitor-api/api_geolocation.h"
 #include "capacitor-api/api_kv.h"
@@ -304,6 +305,7 @@ void Context::init_capacitor_api() {
   this->init_capacitor_geolocation_api();
   this->init_capacitor_kv_api();
   this->init_capacitor_notifications_api();
+  this->init_capacitor_app_api();
 }
 
 void Context::init_capacitor_device_api() const {
@@ -342,7 +344,8 @@ void Context::init_capacitor_notifications_api() const {
 
   notifications = JS_NewObject(this->qjs_context);
   JS_SetPropertyStr(this->qjs_context, notifications, "schedule", JS_NewCFunction(this->qjs_context, api_notifications_schedule, "schedule", 1));
-
+  JS_SetPropertyStr(this->qjs_context, notifications, "setBadge", JS_NewCFunction(this->qjs_context, api_notifications_set_badge, "setBadge", 1));
+  JS_SetPropertyStr(this->qjs_context, notifications, "clearBadge", JS_NewCFunction(this->qjs_context, api_notifications_clear_badge, "clearBadge", 0));
   JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorNotifications", notifications);
 
   JS_FreeValue(this->qjs_context, global_obj);
@@ -357,6 +360,20 @@ void Context::init_capacitor_geolocation_api() const {
   JS_SetPropertyStr(this->qjs_context, geolocation, "getCurrentPosition", JS_NewCFunction(this->qjs_context, api_geolocation_current_location, "getCurrentPosition", 0));
 
   JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorGeolocation", geolocation);
+
+  JS_FreeValue(this->qjs_context, global_obj);
+}
+
+void Context::init_capacitor_app_api() const {
+  JSValue global_obj, app;
+
+  global_obj = JS_GetGlobalObject(this->qjs_context);
+  app = JS_NewObject(this->qjs_context);
+
+  JS_SetPropertyStr(this->qjs_context, app, "getState", JS_NewCFunction(this->qjs_context, api_app_get_state, "getState", 0));
+  JS_SetPropertyStr(this->qjs_context, app, "getInfo", JS_NewCFunction(this->qjs_context, api_app_get_info, "getInfo", 0));
+
+  JS_SetPropertyStr(this->qjs_context, global_obj, "CapacitorApp", app);
 
   JS_FreeValue(this->qjs_context, global_obj);
 }

@@ -16,6 +16,7 @@ public:
     jclass capacitor_notification_api_class;
     jclass capacitor_device_api_class;
     jclass capacitor_geolocation_api_class;
+    jclass capacitor_app_api_class;
 
     jmethodID web_api_fetch_method;
     jmethodID web_api_byteArrayToString_method;
@@ -32,6 +33,10 @@ public:
     jmethodID capacitor_api_device_getNetworkStatus_method;
     jmethodID capacitor_api_geolocation_getCurrentPosition_method;
     jmethodID capacitor_api_notifications_schedule_method;
+    jmethodID capacitor_api_notifications_setBadge_method;
+    jmethodID capacitor_api_notifications_clearBadge_method;
+    jmethodID capacitor_api_app_getInfo_method;
+    jmethodID capacitor_api_app_getState_method;
 
     jfieldID native_js_response_ok_field;
     jfieldID native_js_response_status_field;
@@ -43,6 +48,7 @@ public:
     jfieldID capacitor_api_device_field;
     jfieldID capacitor_api_notification_field;
     jfieldID capacitor_api_geolocation_field;
+    jfieldID capacitor_api_app_field;
 
     Java(JNIEnv *env);
     JNIEnv *getEnv();

@@ -11,7 +11,6 @@ import {
 import { BackgroundRunner } from "@capacitor/background-runner";
 import "./Tab1.css";
 
-
 const Tab1: React.FC = () => {
   const [commandOutput, setCommandOutput] = useState<string>("");
 
@@ -44,12 +43,10 @@ const Tab1: React.FC = () => {
         label: "com.example.background.task",
         event: "testCapKVSet",
         details: {
-          value: "Hello World"
+          value: "Hello World",
         },
       });
-      setCommandOutput(
-        `success: stored value 'Hello World'`
-      );
+      setCommandOutput(`success: stored value 'Hello World'`);
     } catch (err) {
       setCommandOutput(`ERROR: ${err}`);
     }
@@ -63,9 +60,7 @@ const Tab1: React.FC = () => {
         event: "testCapKVGet",
         details: {},
       });
-      setCommandOutput(
-        `success: retrieved ${JSON.stringify(response)}`
-      );
+      setCommandOutput(`success: retrieved ${JSON.stringify(response)}`);
     } catch (err) {
       setCommandOutput(`ERROR: ${err}`);
     }
@@ -77,18 +72,13 @@ const Tab1: React.FC = () => {
       await BackgroundRunner.dispatchEvent({
         label: "com.example.background.task",
         event: "testCapKVRemove",
-        details: {
-          
-        },
+        details: {},
       });
-      setCommandOutput(
-        `success: value removed`
-      );
+      setCommandOutput(`success: value removed`);
     } catch (err) {
       setCommandOutput(`ERROR: ${err}`);
     }
   };
-  
 
   const onTestCapNotification = async () => {
     setCommandOutput("");
@@ -146,6 +136,62 @@ const Tab1: React.FC = () => {
     }
   };
 
+  const onTestCapAppSetBadge = async () => {
+    setCommandOutput("");
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testCapacitorAppSetBadge",
+        details: {},
+      });
+      setCommandOutput(`success`);
+    } catch (err) {
+      setCommandOutput(`ERROR: ${err}`);
+    }
+  };
+
+  const onTestCapAppClearBadge = async () => {
+    setCommandOutput("");
+    try {
+      await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testCapacitorAppClearBadge",
+        details: {},
+      });
+      setCommandOutput(`success`);
+    } catch (err) {
+      setCommandOutput(`ERROR: ${err}`);
+    }
+  };
+
+  const onTestCapAppGetInfo = async () => {
+    setCommandOutput("");
+    try {
+      const response = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testCapacitorAppGetInfo",
+        details: {},
+      });
+      setCommandOutput(`success: ${JSON.stringify(response)}`);
+    } catch (err) {
+      setCommandOutput(`ERROR: ${err}`);
+    }
+  };
+
+  const onTestCapAppGetState = async () => {
+    setCommandOutput("");
+    try {
+      const response = await BackgroundRunner.dispatchEvent({
+        label: "com.example.background.task",
+        event: "testCapacitorAppGetState",
+        details: {},
+      });
+      setCommandOutput(`success: ${JSON.stringify(response)}`);
+    } catch (err) {
+      setCommandOutput(`ERROR: ${err}`);
+    }
+  };
+
   return (
     <IonPage>
       <IonHeader>
@@ -166,17 +212,37 @@ const Tab1: React.FC = () => {
             autoGrow={true}
           ></IonTextarea>
         </div>
-        <IonButton expand="block" color={"success"} onClick={onCheckPermissions}>
+        <IonButton
+          expand="block"
+          color={"success"}
+          onClick={onCheckPermissions}
+        >
           Check API Permissions
         </IonButton>
-        <IonButton expand="block" color={"success"} onClick={onRequestPermissions}>
+        <IonButton
+          expand="block"
+          color={"success"}
+          onClick={onRequestPermissions}
+        >
           Request API Permissions
         </IonButton>
-        <IonButton expand="block" onClick={onTestCapKVSet}>Capacitor KV - Set</IonButton>
-        <IonButton expand="block" onClick={onTestCapKVGet}>Capacitor KV - Get</IonButton>
-        <IonButton expand="block" onClick={onTestCapKVRemove}>Capacitor KV - Delete</IonButton>
+        <IonButton expand="block" onClick={onTestCapKVSet}>
+          Capacitor KV - Set
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapKVGet}>
+          Capacitor KV - Get
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapKVRemove}>
+          Capacitor KV - Delete
+        </IonButton>
         <IonButton expand="block" onClick={onTestCapNotification}>
-          Test Capacitor Notification
+          Test Capacitor Notif.- Schedule Notification
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapAppSetBadge}>
+          Test Capacitor Notif. - Set Badge
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapAppClearBadge}>
+          Test Capacitor Notif. - Clear Badge
         </IonButton>
         <IonButton expand="block" onClick={onTestCapLocation}>
           Test Capacitor Geolocation
@@ -186,6 +252,12 @@ const Tab1: React.FC = () => {
         </IonButton>
         <IonButton expand="block" onClick={onTestCapDeviceNetwork}>
           Test Capacitor Device - Network
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapAppGetInfo}>
+          Test Capacitor App - Get App Info
+        </IonButton>
+        <IonButton expand="block" onClick={onTestCapAppGetState}>
+          Test Capacitor App - Get App State
         </IonButton>
       </IonContent>
     </IonPage>

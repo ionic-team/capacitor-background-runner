@@ -7,5 +7,6 @@ extension Context {
         jsContext.setObject(CapacitorWatch(), forKeyedSubscript: "CapacitorWatch" as NSString)
         jsContext.setObject(CapacitorNotifications.self, forKeyedSubscript: "CapacitorNotifications" as NSString)
         jsContext.setObject(CapacitorDevice(), forKeyedSubscript: "CapacitorDevice" as NSString)
+        jsContext.setObject(CapacitorApp.self, forKeyedSubscript: "CapacitorApp" as NSString)
     }
 }
