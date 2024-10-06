@@ -6,7 +6,7 @@ public struct RunnerConfig {
     let src: String
     var autoSchedule: Bool
     var event: String
-    let repeats: Bool?
+    let repeats: Bool
     let enableWatchConnectivity: Bool
 
     let interval: Int?
@@ -28,7 +28,7 @@ public struct RunnerConfig {
         self.label = label
         self.src = src
         self.event = event
-        self.repeats = repeats
+        self.repeats = repeats ?? false
         self.interval = interval
         self.autoSchedule = autoStart ?? false
         self.enableWatchConnectivity = jsObject["enableWatchConnectivity"] as? Bool ?? false
