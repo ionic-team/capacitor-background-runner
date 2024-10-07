@@ -1,5 +1,18 @@
 # Change Log
 
+## 2.0.0
+
+### Major Changes
+
+- 4cc44dd: Adding a new App API, as well as app badge manipulation methods to the Notifications API
+- 36d9a61: Fixing typo in CapacitorWatch interface name
+- 3194a7d: Updates to support Capacitor 6
+
+### Minor Changes
+
+- 7adb608: (Android) Adding support for Content-Length in fetch requests
+- 4957271: (iOS) Fixing task repeat functionality
+
 ## 1.1.0
 
 ### Minor Changes
