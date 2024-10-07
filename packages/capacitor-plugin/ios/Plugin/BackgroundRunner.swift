@@ -52,6 +52,10 @@ public class BackgroundRunner {
                 _ = try BackgroundRunner.shared.execute(config: config)
 
                 task.setTaskCompleted(success: true)
+
+                if config.repeats {
+                    try self.scheduleBackgroundTasks()
+                }
             } catch {
                 print("background task error: \(error)")
                 task.setTaskCompleted(success: false)
