@@ -8,7 +8,7 @@ on:
 
 jobs:
   unit-test-ios:
-    runs-on: macos-13
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
@@ -18,12 +18,12 @@ jobs:
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
       - name: Select Xcode
-        run: sudo xcode-select -switch /Applications/Xcode_14.3.1.app && /usr/bin/xcodebuild -version
+        run: sudo xcode-select -switch /Applications/Xcode_16.2.0.app && /usr/bin/xcodebuild -version
       - name: Run ios-engine unit tests
         run: cd ./packages/ios-engine && swift package clean && swift test
 
   unit-test-android:
-    runs-on: macos-13
+    runs-on: macos-15
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +33,7 @@ jobs:
       - name: "Running Android Unit Tests"
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: 31
           working-directory: ./packages/android-js-engine
           emulator-options: -no-window -no-audio -no-boot-anim -accel on -no-snapshot-save
           profile: pixel_6
