@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.1.0
+
+### Minor Changes
+
+- 0e13e79: Adding support to Capacitor 7
+
 ## 2.0.0
 
 ### Major Changes
