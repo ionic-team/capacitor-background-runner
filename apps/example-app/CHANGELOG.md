@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.0.8
+
+### Patch Changes
+
+- Updated dependencies [0e13e79]
+  - @capacitor/background-runner@2.1.0
+
 ## 1.0.7
 
 ### Patch Changes
