@@ -92,6 +92,44 @@ class Notifications(context: Context) : NotificationsAPI {
             builder.setGroupSummary(it.groupSummary != null)
             builder.setSmallIcon(it.smallIcon(this.context, getDefaultSmallIcon()))
 
+            // Add action intent handling
+            val actionIntent = if (it.actionTypeId != null) {
+                try {
+                    Intent(it.actionTypeId).apply {
+                        `package` = context.packageName 
+                    }
+                } catch (e: Exception) {
+                    context.packageManager.getLaunchIntentForPackage(context.packageName)
+                        ?: Intent().apply {
+                            setPackage(context.packageName)
+                            action = Intent.ACTION_MAIN
+                            addCategory(Intent.CATEGORY_LAUNCHER)
+                        }
+                }
+            } else {
+                context.packageManager.getLaunchIntentForPackage(context.packageName)
+                    ?: Intent().apply {
+                        setPackage(context.packageName)
+                        action = Intent.ACTION_MAIN
+                        addCategory(Intent.CATEGORY_LAUNCHER)
+                    }
+            }
+            actionIntent.addCategory(Intent.CATEGORY_DEFAULT)
+            
+            val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+            
+            val pendingActionIntent = PendingIntent.getActivity(
+                context,
+                it.id,
+                actionIntent,
+                flags
+            )
+            builder.setContentIntent(pendingActionIntent)
+
             val largeBody = it.largeBody
             if (largeBody != null) {
                 val style = NotificationCompat.BigTextStyle()
