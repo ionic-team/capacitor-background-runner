@@ -14,6 +14,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import android.content.Intent
+import com.getcapacitor.Bridge
 
 
 @CapacitorPlugin(
@@ -123,6 +125,48 @@ class BackgroundRunnerPlugin: Plugin() {
 
     @PluginMethod
     fun registerBackgroundTask(call: PluginCall) {
+        call.resolve()
+    }
+
+    override fun handleOnNewIntent(intent: Intent) {
+        super.handleOnNewIntent(intent)
+        
+        Log.d("BackgroundRunner", "handleOnNewIntent with action: ${intent.action}")
+        
+        if (intent.action == ".NOTIFICATION_CLICKED") {
+            val actionTypeId = intent.getStringExtra("actionTypeId")
+            val notificationId = intent.getIntExtra("notificationId", -1)
+            
+            // Create notification action data
+            val notificationAction = if (actionTypeId != null) {
+                JSObject().apply {
+                    put("actionTypeId", actionTypeId)
+                    put("notificationId", notificationId)
+                }
+            } else null
+            
+            // Launch the app using proper intent flags
+            val packageName = context.packageName
+            val launchIntent = context.packageManager.getLaunchIntentForPackage(packageName)?.apply {
+                action = Intent.ACTION_MAIN
+                addCategory(Intent.CATEGORY_LAUNCHER)
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            
+            if (launchIntent != null) {
+                context.startActivity(launchIntent)
+                
+                // Notify listeners about the action with retention
+                notificationAction?.let {
+                    notifyListeners("backgroundRunnerNotificationReceived", it, true)
+                }
+            }
+        }
+    }
+
+    @PluginMethod
+    fun removeNotificationListeners(call: PluginCall) {
+        notifyListeners("backgroundRunnerNotificationReceived", null)
         call.resolve()
     }
 }

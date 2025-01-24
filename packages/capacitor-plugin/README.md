@@ -269,7 +269,7 @@ Visit [Don't kill my app!](https://dontkillmyapp.com) for more information on th
 
 ## Limitations of Background Tasks
 
-It’s not possible to run persistent, always running background services on mobile operating systems. Due to the limitations imposed by iOS and Android designed to reduce battery and data consumption, background tasks are constrained with various limitations that you must keep in mind while designing and implementing your background task.
+It's not possible to run persistent, always running background services on mobile operating systems. Due to the limitations imposed by iOS and Android designed to reduce battery and data consumption, background tasks are constrained with various limitations that you must keep in mind while designing and implementing your background task.
 
 ### iOS
 
@@ -289,6 +289,8 @@ It’s not possible to run persistent, always running background services on mob
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions(...)`](#requestpermissions)
 * [`dispatchEvent(...)`](#dispatchevent)
+* [`addListener('backgroundRunnerNotificationReceived', ...)`](#addlistenerbackgroundrunnernotificationreceived-)
+* [`removeNotificationListeners()`](#removenotificationlisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -350,6 +352,41 @@ Dispatches an event to the configured runner.
 --------------------
 
 
+### addListener('backgroundRunnerNotificationReceived', ...)
+
+```typescript
+addListener(eventName: 'backgroundRunnerNotificationReceived', listenerFunc: (event: NotificationActionEvent) => void) => any
+```
+
+Add a listener for notification actions.
+
+| Param              | Type                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'backgroundRunnerNotificationReceived'</code>                                             |
+| **`listenerFunc`** | <code>(event: <a href="#notificationactionevent">NotificationActionEvent</a>) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+**Since:** 2.1.1
+
+--------------------
+
+
+### removeNotificationListeners()
+
+```typescript
+removeNotificationListeners() => any
+```
+
+Remove notification action listeners for this plugin.
+
+**Returns:** <code>any</code>
+
+**Since:** 2.1.1
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -375,6 +412,21 @@ Dispatches an event to the configured runner.
 | **`label`**   | <code>string</code>                  | The runner label to dispatch the event to  | 1.0.0 |
 | **`event`**   | <code>string</code>                  | The name of the registered event listener. | 1.0.0 |
 | **`details`** | <code>{ [key: string]: any; }</code> |                                            |       |
+
+
+#### NotificationActionEvent
+
+| Prop                 | Type                |
+| -------------------- | ------------------- |
+| **`actionTypeId`**   | <code>string</code> |
+| **`notificationId`** | <code>number</code> |
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                      |
+| ------------ | ------------------------- |
+| **`remove`** | <code>() =&gt; any</code> |
 
 
 ### Type Aliases
