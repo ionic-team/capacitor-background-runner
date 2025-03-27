@@ -1,0 +1,8 @@
+{
+  "languages": {
+    "Make": {
+      "hard_tabs": true,
+      "tab_size": 4
+    }
+  }
+}

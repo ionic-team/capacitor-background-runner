@@ -1,0 +1,10 @@
+[
+  {
+    "label": "Configure JS Engine",
+    "command": "make cmake-configure"
+  },
+  {
+    "label": "Build JS Engine",
+    "command": "make cmake-build"
+  }
+]

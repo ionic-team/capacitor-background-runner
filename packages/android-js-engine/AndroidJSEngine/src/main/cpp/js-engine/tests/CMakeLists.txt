@@ -44,8 +44,8 @@ target_link_libraries(EngineTests PRIVATE unofficial-sodium::sodium unofficial-s
 target_link_libraries(EngineTests PRIVATE fmt::fmt)
 target_link_libraries(EngineTests PRIVATE stduuid)
 target_link_libraries(EngineTests PRIVATE cpr::cpr)
-target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libcrypto.a)
-target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.1.4/lib/libssl.a)
+target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.4.1/lib/libcrypto.a)
+target_link_libraries(EngineTests PRIVATE /opt/homebrew/Cellar/openssl@3/3.4.1/lib/libssl.a)
 
 target_compile_features(ContextTests PRIVATE cxx_std_20)
 target_link_libraries(ContextTests PRIVATE JSEngine)

@@ -2,6 +2,8 @@
 #define CAPACITOR_BACKGROUND_RUNNER_RUNNER_H
 
 #include <string>
+#include <thread>
+#include <queue>
 #include <unordered_map>
 
 #include "./quickjs/quickjs.h"

@@ -8,7 +8,6 @@ add_library(
         native_runner.cpp
         native_context.cpp
         native_android_interface.cpp
-        native_capacitor_interface.cpp
         java.cpp
         java_errors.cpp
 )

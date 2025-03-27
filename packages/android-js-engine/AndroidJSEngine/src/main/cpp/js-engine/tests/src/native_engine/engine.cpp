@@ -45,9 +45,9 @@ Value* Engine::execute(const std::string& name, const std::string& code) {
   return new Value(json_string);
 }
 
-void Engine::start() { this->runner->start(); }
+void Engine::start() {  }
 
-void Engine::stop() { this->runner->stop(); }
+void Engine::stop() {  }
 
 void Engine::register_function(const std::string& context_name, const std::string& func_name, std::function<nlohmann::json(nlohmann::json)> func) {
   auto context = this->runner->contexts[context_name];
