@@ -1,7 +1,5 @@
 /// <reference types="@capacitor/cli" />
 
-import type { PermissionState } from '@capacitor/core';
-
 export interface BackgroundRunnerConfig {
   /**
    * The name of the runner, used in logs.
@@ -99,13 +97,6 @@ declare module '@capacitor/cli' {
   }
 }
 
-export type API = 'geolocation' | 'notifications';
-
-export interface PermissionStatus {
-  geolocation: PermissionState;
-  notifications: PermissionState;
-}
-
 export interface DispatchEventOptions {
   /**
    * The runner label to dispatch the event to
@@ -119,11 +110,8 @@ export interface DispatchEventOptions {
    * @since 1.0.0
    */
   event: string;
-  details: { [key: string]: any };
-}
 
-export interface RequestPermissionOptions {
-  apis: API[];
+  details: { [key: string]: any };
 }
 
 export interface RegisterBackgroundTaskOptions {
@@ -131,20 +119,6 @@ export interface RegisterBackgroundTaskOptions {
 }
 
 export interface BackgroundRunnerPlugin {
-  /**
-   * Check permissions for the various Capacitor device APIs.
-   *
-   * @since 1.0.0
-   */
-  checkPermissions(): Promise<PermissionStatus>;
-  /**
-   * Request permission to display local notifications.
-   *
-   * @since 1.0.0
-   */
-  requestPermissions(
-    options: RequestPermissionOptions,
-  ): Promise<PermissionStatus>;
   /**
    * Dispatches an event to the configured runner.
    * @param options

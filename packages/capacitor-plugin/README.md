@@ -286,55 +286,18 @@ It’s not possible to run persistent, always running background services on mob
 
 <docgen-index>
 
-* [`checkPermissions()`](#checkpermissions)
-* [`requestPermissions(...)`](#requestpermissions)
 * [`dispatchEvent(...)`](#dispatchevent)
 * [Interfaces](#interfaces)
-* [Type Aliases](#type-aliases)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### checkPermissions()
-
-```typescript
-checkPermissions() => any
-```
-
-Check permissions for the various Capacitor device APIs.
-
-**Returns:** <code>any</code>
-
-**Since:** 1.0.0
-
---------------------
-
-
-### requestPermissions(...)
-
-```typescript
-requestPermissions(options: RequestPermissionOptions) => any
-```
-
-Request permission to display local notifications.
-
-| Param         | Type                                                                          |
-| ------------- | ----------------------------------------------------------------------------- |
-| **`options`** | <code><a href="#requestpermissionoptions">RequestPermissionOptions</a></code> |
-
-**Returns:** <code>any</code>
-
-**Since:** 1.0.0
-
---------------------
-
-
 ### dispatchEvent(...)
 
 ```typescript
-dispatchEvent<T = void>(options: DispatchEventOptions) => any
+dispatchEvent<T = void>(options: DispatchEventOptions) => Promise<T>
 ```
 
 Dispatches an event to the configured runner.
@@ -343,7 +306,7 @@ Dispatches an event to the configured runner.
 | ------------- | --------------------------------------------------------------------- |
 | **`options`** | <code><a href="#dispatcheventoptions">DispatchEventOptions</a></code> |
 
-**Returns:** <code>any</code>
+**Returns:** <code>Promise&lt;T&gt;</code>
 
 **Since:** 1.0.0
 
@@ -353,21 +316,6 @@ Dispatches an event to the configured runner.
 ### Interfaces
 
 
-#### PermissionStatus
-
-| Prop                | Type                                                        |
-| ------------------- | ----------------------------------------------------------- |
-| **`geolocation`**   | <code><a href="#permissionstate">PermissionState</a></code> |
-| **`notifications`** | <code><a href="#permissionstate">PermissionState</a></code> |
-
-
-#### RequestPermissionOptions
-
-| Prop       | Type            |
-| ---------- | --------------- |
-| **`apis`** | <code>{}</code> |
-
-
 #### DispatchEventOptions
 
 | Prop          | Type                                 | Description                                | Since |
@@ -375,19 +323,6 @@ Dispatches an event to the configured runner.
 | **`label`**   | <code>string</code>                  | The runner label to dispatch the event to  | 1.0.0 |
 | **`event`**   | <code>string</code>                  | The name of the registered event listener. | 1.0.0 |
 | **`details`** | <code>{ [key: string]: any; }</code> |                                            |       |
-
-
-### Type Aliases
-
-
-#### PermissionState
-
-<code>'prompt' | 'prompt-with-rationale' | 'granted' | 'denied'</code>
-
-
-#### API
-
-<code>'geolocation' | 'notifications'</code>
 
 </docgen-api>
 
