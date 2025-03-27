@@ -7,8 +7,8 @@
     "swiftlint": "node-swiftlint"
   },
   "dependencies": {
-    "@ionic/swiftlint-config": "^1.1.2",
-    "swiftlint": "^1.0.2"
+    "@ionic/swiftlint-config": "^2.0.0",
+    "swiftlint": "^2.0.0"
   },
   "version": "1.1.0"
 }

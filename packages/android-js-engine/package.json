@@ -2,13 +2,13 @@
   "name": "android-js-engine",
   "private": true,
   "dependencies": {
-    "@naturalcycles/ktlint": "1.9.0",
+    "@naturalcycles/ktlint": "1.13.0",
     "clang-format": "^1.8.0",
-    "prettier": "~2.3.2",
-    "prettier-plugin-java": "~1.0.2"
+    "prettier": "~3.5.3",
+    "prettier-plugin-java": "~2.6.7"
   },
   "devDependencies": {
-    "@ionic/prettier-config": "^1.0.1"
+    "@ionic/prettier-config": "^4.0.0"
   },
   "prettier": "@ionic/prettier-config",
   "scripts": {
