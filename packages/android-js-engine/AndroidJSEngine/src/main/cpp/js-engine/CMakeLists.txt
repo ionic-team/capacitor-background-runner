@@ -16,12 +16,6 @@ add_library(
     src/api/api_fetch.cpp
     src/api/api_crypto.cpp
     src/api/api_text.cpp
-    src/capacitor-api/api_device.cpp
-    src/capacitor-api/api_geolocation.cpp
-    src/capacitor-api/api_kv.cpp
-    src/capacitor-api/api_notifications.cpp
-    src/capacitor-api/api_app.cpp
-
 )
 
 add_subdirectory("src/quickjs")

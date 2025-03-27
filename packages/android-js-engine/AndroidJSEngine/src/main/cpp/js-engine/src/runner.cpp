@@ -2,11 +2,7 @@
 
 #include <string>
 
-#include "capacitor.hpp"
-
-Runner::Runner(NativeInterface *native) {
-  this->native = native;
-  this->rt = JS_NewRuntime();
+Runner::Runner(NativeInterface *native) : rt(JS_NewRuntime()), native(native) {
   JS_SetCanBlock(rt, 0);
   JS_SetMaxStackSize(rt, 0);
 
@@ -78,8 +74,8 @@ void Runner::execute_pending_jobs() {
   }
 }
 
-Context *Runner::create_context(std::string name, CapacitorInterface *cap_api) {
-  auto *context = new Context(name, this->rt, this->native, cap_api);
+Context *Runner::create_context(std::string name) {
+  auto *context = new Context(name, this->rt, this->native);
   this->contexts.insert_or_assign(name, context);
 
   return context;

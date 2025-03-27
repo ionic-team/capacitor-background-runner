@@ -13,7 +13,6 @@
 #include "api/api_text.h"
 #include "api/api_timeout.h"
 #include "native.hpp"
-#include "capacitor.hpp"
 
 class Context {
  public:
@@ -22,12 +21,11 @@ class Context {
   JSContext *qjs_context;
 
   NativeInterface *native_interface;
-  CapacitorInterface *capacitor_interface;
 
   std::unordered_map<std::string, JSValue> event_listeners;
   std::unordered_map<int, Timer> timers;
 
-  Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native, CapacitorInterface *cap);
+  Context(const std::string &name, JSRuntime *parent_rt, NativeInterface *native);
   ~Context();
 
   void run_timers();
@@ -49,13 +47,6 @@ class Context {
   void init_api_text() const;
   void init_api_fetch() const;
   // void init_api_blob() const;
-
-  void init_capacitor_api();
-  void init_capacitor_device_api() const;
-  void init_capacitor_geolocation_api() const;
-  void init_capacitor_kv_api() const;
-  void init_capacitor_notifications_api() const;
-  void init_capacitor_app_api() const;
 };
 
 #endif  // CAPACITOR_BACKGROUND_RUNNER_CONTEXT_H

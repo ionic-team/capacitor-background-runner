@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "quickjs/quickjs.h"
 #include "errors.hpp"
+#include "quickjs/quickjs.h"
 
 enum LoggerLevel { INFO, WARN, ERROR, DEBUG };
 
