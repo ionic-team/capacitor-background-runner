@@ -1,6 +1,7 @@
 /// <reference types="@capacitor/cli" />
 
 import type { PermissionState } from '@capacitor/core';
+import type { PluginListenerHandle } from '@capacitor/core';
 
 export interface BackgroundRunnerConfig {
   /**
@@ -130,6 +131,11 @@ export interface RegisterBackgroundTaskOptions {
   runner: BackgroundRunnerConfig;
 }
 
+export interface NotificationActionEvent {
+  actionTypeId: string;
+  notificationId: number;
+}
+
 export interface BackgroundRunnerPlugin {
   /**
    * Check permissions for the various Capacitor device APIs.
@@ -151,6 +157,21 @@ export interface BackgroundRunnerPlugin {
    * @since 1.0.0
    */
   dispatchEvent<T = void>(options: DispatchEventOptions): Promise<T>;
+  /**
+   * Add a listener for notification actions.
+   * 
+   * @since 2.1.1
+   */
+  addListener(
+    eventName: 'backgroundRunnerNotificationReceived',
+    listenerFunc: (event: NotificationActionEvent) => void,
+  ): Promise<PluginListenerHandle>;
+  /**
+   * Remove notification action listeners for this plugin.
+   * 
+   * @since 2.1.1
+   */
+  removeNotificationListeners(): Promise<void>;
 }
 
 declare module '@capacitor/cli' {
