@@ -195,7 +195,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
 
             let badgeOptions = SetBadgeOption(from: jsonDict)
 
-            DispatchQueue.main.sync {
+            DispatchQueue.main.async {
                 if #available(iOS 16.0, *) {
                     UNUserNotificationCenter.current().setBadgeCount(badgeOptions.count)
                 } else {
@@ -213,7 +213,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
                 throw CapacitorNotificationsErrors.permissionDenied
             }
 
-            DispatchQueue.main.sync {
+            DispatchQueue.main.async {
                 if #available(iOS 16.0, *) {
                     UNUserNotificationCenter.current().setBadgeCount(0)
                 } else {
