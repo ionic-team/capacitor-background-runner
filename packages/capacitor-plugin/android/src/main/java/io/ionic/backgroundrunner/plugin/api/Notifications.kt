@@ -92,6 +92,27 @@ class Notifications(context: Context) : NotificationsAPI {
             builder.setGroupSummary(it.groupSummary != null)
             builder.setSmallIcon(it.smallIcon(this.context, getDefaultSmallIcon()))
 
+            // Add action intent handling
+            val actionIntent = Intent(".NOTIFICATION_CLICKED").apply {
+                `package` = context.packageName
+                putExtra("actionTypeId", it.actionTypeId)
+                putExtra("notificationId", it.id)
+            }
+            
+            val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            } else {
+                PendingIntent.FLAG_UPDATE_CURRENT
+            }
+            
+            val pendingActionIntent = PendingIntent.getActivity(
+                context,
+                it.id,
+                actionIntent,
+                flags
+            )
+            builder.setContentIntent(pendingActionIntent)
+
             val largeBody = it.largeBody
             if (largeBody != null) {
                 val style = NotificationCompat.BigTextStyle()

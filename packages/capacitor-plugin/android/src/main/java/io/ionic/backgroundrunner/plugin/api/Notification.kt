@@ -20,7 +20,7 @@ class Notification(jsonObject: JSONObject) {
     var sound: String? = null
     var smallIcon: String? = null
     var largeIcon: String? = null
-    var actionTypeID: String? = null
+    var actionTypeId: String? = null
     var extra: HashMap<String, Any>? = null
     var group: String? = null
     var groupSummary: String? = null
@@ -35,6 +35,7 @@ class Notification(jsonObject: JSONObject) {
         smallIcon = jsonObject.optString("smallIcon", "")
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
+        actionTypeId = jsonObject.optString("actionTypeId", null)
 
         val scheduleDateString = jsonObject.optString("scheduleAt", "")
         if (scheduleDateString.isNotEmpty()) {

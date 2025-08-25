@@ -1,9 +1,11 @@
+import type { PluginListenerHandle } from '@capacitor/core';
 import { WebPlugin } from '@capacitor/core';
 
 import type {
   BackgroundRunnerPlugin,
   DispatchEventOptions,
   PermissionStatus,
+  NotificationActionEvent,
 } from './definitions';
 
 export class BackgroundRunnerWeb
@@ -23,6 +25,17 @@ export class BackgroundRunnerWeb
   }
 
   dispatchEvent<T = void>(_options: DispatchEventOptions): Promise<T> {
+    throw new Error('not available on web');
+  }
+
+  async addListener(
+    _eventName: 'backgroundRunnerNotificationReceived',
+    _listenerFunc: (event: NotificationActionEvent) => void,
+  ): Promise<PluginListenerHandle> {
+    throw new Error('not available on web');
+  }
+
+  async removeNotificationListeners(): Promise<void> {
     throw new Error('not available on web');
   }
 }

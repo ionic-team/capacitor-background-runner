@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 import WatchConnectivity
+import UserNotifications
 
 @objc(BackgroundRunnerPlugin)
 public class BackgroundRunnerPlugin: CAPPlugin {
@@ -13,6 +14,9 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
+
+        // Register as notification delegate
+        registerNotificationCategories()
 
         initWatchConnectivity()
     }
@@ -95,6 +99,11 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         call.resolve()
     }
 
+    @objc func removeNotificationListeners(_ call: CAPPluginCall) {
+        notifyListeners("backgroundRunnerNotificationReceived", data: nil)
+        call.resolve()
+    }
+
     @objc private func didEnterBackground() {
         do {
             try impl.scheduleBackgroundTasks()
@@ -174,5 +183,46 @@ public class BackgroundRunnerPlugin: CAPPlugin {
         WCSession.default.activate()
 
         print("Watch Connectivity Enabled")
+    }
+
+    @objc func registerNotificationCategories() {
+        let notificationCenter = UNUserNotificationCenter.current()
+
+        // Set the plugin as the notification delegate
+        notificationCenter.delegate = self
+    }
+}
+
+// MARK: - UNUserNotificationCenterDelegate
+extension BackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
+    // This method will be called when a notification is tapped
+    public func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                       didReceive response: UNNotificationResponse,
+                                       withCompletionHandler completionHandler: @escaping () -> Void) {
+        let actionTypeId = response.notification.request.content.categoryIdentifier
+        let notificationId = Int(response.notification.request.identifier) ?? -1
+
+        // Create event data
+        let eventData: [String: Any] = [
+            "actionTypeId": actionTypeId,
+            "notificationId": notificationId
+        ]
+
+        // Notify listeners with the action data - the 'true' parameter is for retaining the event
+        notifyListeners("backgroundRunnerNotificationReceived", data: eventData, retainUntilConsumed: true)
+
+        completionHandler()
+    }
+
+    // This is needed to present notifications when the app is in the foreground
+    public func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                       willPresent notification: UNNotification,
+                                       withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        // Show the notification even when the app is in foreground
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .sound, .badge])
+        } else {
+            completionHandler([.alert, .sound, .badge])
+        }
     }
 }
