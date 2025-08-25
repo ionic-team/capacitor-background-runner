@@ -32,6 +32,7 @@ class Notification(jsonObject: JSONObject) {
         id = jsonObject.optInt("id", -1)
         title = jsonObject.optString("title", "")
         body = jsonObject.optString("body", "")
+        smallIcon = jsonObject.optString("smallIcon", "")
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
         actionTypeId = jsonObject.optString("actionTypeId", null)

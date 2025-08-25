@@ -26,6 +26,7 @@ apply plugin: 'kotlin-android'
 android {
     namespace 'com.capacitorjs.android_js_engine'
     compileSdk 34
+    ndkVersion "28.2.13676358"
 
     defaultConfig {
         minSdkVersion project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 22
