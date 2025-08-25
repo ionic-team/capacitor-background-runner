@@ -1,4 +1,5 @@
-import { WebPlugin, PluginListenerHandle } from '@capacitor/core';
+import type { PluginListenerHandle } from '@capacitor/core';
+import { WebPlugin } from '@capacitor/core';
 
 import type {
   BackgroundRunnerPlugin,
@@ -9,7 +10,8 @@ import type {
 
 export class BackgroundRunnerWeb
   extends WebPlugin
-  implements BackgroundRunnerPlugin {
+  implements BackgroundRunnerPlugin
+{
   checkPermissions(): Promise<PermissionStatus> {
     throw new Error('not available on web');
   }

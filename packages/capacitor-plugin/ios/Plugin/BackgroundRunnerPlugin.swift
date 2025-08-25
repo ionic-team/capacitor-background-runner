@@ -17,7 +17,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
         // Register as notification delegate
         registerNotificationCategories()
-        
+
         initWatchConnectivity()
     }
 
@@ -187,7 +187,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
     @objc func registerNotificationCategories() {
         let notificationCenter = UNUserNotificationCenter.current()
-        
+
         // Set the plugin as the notification delegate
         notificationCenter.delegate = self
     }
@@ -196,28 +196,28 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 // MARK: - UNUserNotificationCenterDelegate
 extension BackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
     // This method will be called when a notification is tapped
-    public func userNotificationCenter(_ center: UNUserNotificationCenter, 
-                                     didReceive response: UNNotificationResponse, 
-                                     withCompletionHandler completionHandler: @escaping () -> Void) {
+    public func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                       didReceive response: UNNotificationResponse,
+                                       withCompletionHandler completionHandler: @escaping () -> Void) {
         let actionTypeId = response.notification.request.content.categoryIdentifier
         let notificationId = Int(response.notification.request.identifier) ?? -1
-        
+
         // Create event data
         let eventData: [String: Any] = [
             "actionTypeId": actionTypeId,
             "notificationId": notificationId
         ]
-        
+
         // Notify listeners with the action data - the 'true' parameter is for retaining the event
         notifyListeners("backgroundRunnerNotificationReceived", data: eventData, retainUntilConsumed: true)
-        
+
         completionHandler()
     }
-    
+
     // This is needed to present notifications when the app is in the foreground
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
-                                     willPresent notification: UNNotification,
-                                     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+                                       willPresent notification: UNNotification,
+                                       withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         // Show the notification even when the app is in foreground
         if #available(iOS 14.0, *) {
             completionHandler([.banner, .sound, .badge])

@@ -1,7 +1,6 @@
 /// <reference types="@capacitor/cli" />
 
-import type { PermissionState } from '@capacitor/core';
-import type { PluginListenerHandle } from '@capacitor/core';
+import type { PermissionState, PluginListenerHandle } from '@capacitor/core';
 
 export interface BackgroundRunnerConfig {
   /**
@@ -159,7 +158,7 @@ export interface BackgroundRunnerPlugin {
   dispatchEvent<T = void>(options: DispatchEventOptions): Promise<T>;
   /**
    * Add a listener for notification actions.
-   * 
+   *
    * @since 2.1.1
    */
   addListener(
@@ -168,7 +167,7 @@ export interface BackgroundRunnerPlugin {
   ): Promise<PluginListenerHandle>;
   /**
    * Remove notification action listeners for this plugin.
-   * 
+   *
    * @since 2.1.1
    */
   removeNotificationListeners(): Promise<void>;
