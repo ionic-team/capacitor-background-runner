@@ -1,5 +1,15 @@
 # Change Log
 
+## 2.2.0
+
+### Minor Changes
+
+- 2eda1d1: Fixes an issue where Android Notification small icons were always using the default icon
+- b76dbd4: (Android): Updating QuickJS to latest (2025-04-26)
+- a484f9f: Adding handling for Android notifications
+- ef998c1: Adding support for 16kb page sizes on Android
+- 8ef1ca0: Fixes a crash when setting badge on iOS
+
 ## 2.1.0
 
 ### Minor Changes
