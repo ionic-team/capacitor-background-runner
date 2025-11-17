@@ -4,33 +4,38 @@
 import PackageDescription
 
 let package = Package(
-    name: "CapacitorBackgroundRunner",
-    platforms: [.iOS(.v15), .macOS(.v13)],
-    products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
-        .library(
-            name: "CapacitorBackgroundRunner",
-            targets: ["CapacitorBackgroundRunner"]
-        ),
-    ],
-    dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0-beta"),
-        .package(name: "BackgroundRunnerEngine", path: "../../ios-engine")
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package, defining a module or a test suite.
-        // Targets can depend on other targets in this package and products from dependencies.
-        .target(
-            name: "CapacitorBackgroundRunner",
-            dependencies: [
-                .product(name: "Capacitor", package: "capacitor-swift-pm"),
-                .product(name: "Cordova", package: "capacitor-swift-pm"),
-                "BackgroundRunnerEngine"
-            ]
-        ),
-        .testTarget(
-            name: "CapacitorBackgroundRunnerTests",
-            dependencies: ["CapacitorBackgroundRunner"]
-        ),
-    ]
+  name: "CapacitorBackgroundRunner",
+  platforms: [.iOS(.v15), .macOS(.v13)],
+  products: [
+    // Products define the executables and libraries a package produces, making them visible to other packages.
+    .library(
+      name: "CapacitorBackgroundRunner",
+      targets: ["CapacitorBackgroundRunner"]
+    )
+  ],
+  dependencies: [
+    .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "8.0.0-beta")
+  ],
+  targets: [
+    // Targets are the basic building blocks of a package, defining a module or a test suite.
+    // Targets can depend on other targets in this package and products from dependencies.
+    .target(
+      name: "CapacitorBackgroundRunner",
+      dependencies: [
+        .product(name: "Capacitor", package: "capacitor-swift-pm"),
+        .product(name: "Cordova", package: "capacitor-swift-pm"),
+        "RunnerEngine",
+      ]
+    ),
+    .target(
+      name: "RunnerEngine",
+      dependencies: []),
+    .testTarget(
+      name: "RunnerEngineTests",
+      dependencies: ["RunnerEngine"]),
+    .testTarget(
+      name: "CapacitorBackgroundRunnerTests",
+      dependencies: ["CapacitorBackgroundRunner"]
+    ),
+  ]
 )
