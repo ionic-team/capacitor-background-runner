@@ -3,10 +3,19 @@ import Capacitor
 import WatchConnectivity
 import UserNotifications
 
-@objc(BackgroundRunnerPlugin)
-public class BackgroundRunnerPlugin: CAPPlugin {
+@objc(CapacitorBackgroundRunnerPlugin)
+public class CapacitorBackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
+    public let identifier = "CapacitorBackgroundRunnerPlugin"
+    public let jsName = "CapacitorBackgroundRunner"
+    public let pluginMethods: [CAPPluginMethod] = [
+        CAPPluginMethod(name: "checkPermissions", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "requestPermissions", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "dispatchEvent", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "registerBackgroundTask", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "removeNotificationListeners", returnType: CAPPluginReturnPromise)
+    ]
     private let impl = BackgroundRunner()
-
+    
     override public func load() {
         NotificationCenter.default.addObserver(
             self,
@@ -20,7 +29,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 
         initWatchConnectivity()
     }
-
+    
     @objc override public func checkPermissions(_ call: CAPPluginCall) {
         // check geolocation permissions
         let geolocationState = CapacitorGeolocation.checkPermission()
@@ -56,7 +65,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
             }
         }
     }
-
+    
     @objc func dispatchEvent(_ call: CAPPluginCall) {
         do {
             guard let runnerEvent = call.getString("event"), !runnerEvent.isEmpty else {
@@ -194,7 +203,7 @@ public class BackgroundRunnerPlugin: CAPPlugin {
 }
 
 // MARK: - UNUserNotificationCenterDelegate
-extension BackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
+extension CapacitorBackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
     // This method will be called when a notification is tapped
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        didReceive response: UNNotificationResponse,

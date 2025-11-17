@@ -12,7 +12,7 @@ public class Runner {
         runLoop = RunLoop.current
     }
 
-    func createContext(name: String) throws -> Context {
+    public func createContext(name: String) throws -> Context {
         return try Context(vm: machine, contextName: name, runLoop: runLoop)
     }
 }

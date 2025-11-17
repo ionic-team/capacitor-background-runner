@@ -1,4 +1,5 @@
 import Foundation
+import RunnerEngine
 
 extension Context {
     public func setupCapacitorAPI() {

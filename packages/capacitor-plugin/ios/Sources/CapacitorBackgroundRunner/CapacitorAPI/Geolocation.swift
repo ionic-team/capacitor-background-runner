@@ -1,6 +1,7 @@
 import Foundation
 import JavaScriptCore
 import CoreLocation
+import RunnerEngine
 
 @objc protocol CapacitorGeolocationExports: JSExport {
     var isWatchingPosition: Bool { get }

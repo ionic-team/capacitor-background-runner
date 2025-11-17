@@ -27,7 +27,7 @@ import JavaScriptCore
         self.cause = nil
     }
 
-    func toString() -> String {
+    public func toString() -> String {
         return message
     }
 }

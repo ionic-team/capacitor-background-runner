@@ -1,7 +1,7 @@
 import Foundation
 import WatchConnectivity
 
-extension BackgroundRunnerPlugin: WCSessionDelegate {
+extension CapacitorBackgroundRunnerPlugin: WCSessionDelegate {
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         var args: [String: Any] = [:]
         args["activationState"] = activationState.rawValue
@@ -41,3 +41,4 @@ extension BackgroundRunnerPlugin: WCSessionDelegate {
         try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveApplicationContext", inputArgs: args)
     }
 }
+

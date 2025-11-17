@@ -1,6 +1,7 @@
 import Foundation
 import Capacitor
 import BackgroundTasks
+import RunnerEngine
 import JavaScriptCore
 
 public class BackgroundRunner {
@@ -136,7 +137,7 @@ public class BackgroundRunner {
             waitGroup.wait()
 
             if let rejection = rejectionErr {
-                throw EngineError.jsException(details: rejection.message)
+                throw EngineError.jsException(details: rejection.toString())
             }
 
             return result

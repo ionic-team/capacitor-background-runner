@@ -3,7 +3,7 @@ import JavaScriptCore
 
 public class Context {
     let name: String
-    let jsContext: JSContext
+    public let jsContext: JSContext
 
     private var eventListeners = [String: JSValue]()
     private var timers = [Int: Timer]()
