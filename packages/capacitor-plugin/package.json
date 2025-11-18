@@ -11,7 +11,9 @@
     "android/src/main/",
     "android/build.gradle",
     "dist/",
-    "ios/Plugin/",
+    "ios/Sources",
+    "ios/Tests",
+    "Package.swift",
     "scripts/install_libs.js",
     "CapacitorBackgroundRunner.podspec"
   ],

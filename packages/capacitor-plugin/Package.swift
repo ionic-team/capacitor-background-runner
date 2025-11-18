@@ -25,17 +25,21 @@ let package = Package(
         .product(name: "Capacitor", package: "capacitor-swift-pm"),
         .product(name: "Cordova", package: "capacitor-swift-pm"),
         "RunnerEngine",
-      ]
+      ],
+      path: "ios/Sources/CapacitorBackgroundRunner"
     ),
     .target(
       name: "RunnerEngine",
-      dependencies: []),
+      dependencies: [],
+      path: "ios/Sources/RunnerEngine"),
     .testTarget(
       name: "RunnerEngineTests",
-      dependencies: ["RunnerEngine"]),
+      dependencies: ["RunnerEngine"],
+      path: "ios/Tests/RunnerEngineTests"),
     .testTarget(
       name: "CapacitorBackgroundRunnerTests",
-      dependencies: ["CapacitorBackgroundRunner"]
+      dependencies: ["CapacitorBackgroundRunner"],
+      path: "ios/Tests/CapacitorBackgroundRunnerTests"
     ),
   ]
 )

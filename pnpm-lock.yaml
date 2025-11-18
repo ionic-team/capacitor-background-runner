@@ -28,29 +28,29 @@ importers:
         specifier: ^7.25.9
         version: 7.25.9(@babel/core@7.26.0)
       '@capacitor/android':
-        specifier: ^7.0.0
-        version: 7.0.1(@capacitor/core@7.0.1)
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20251117T150817.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)
       '@capacitor/app':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20251117T150727.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)
       '@capacitor/background-runner':
         specifier: workspace:^
         version: link:../../packages/capacitor-plugin
       '@capacitor/core':
-        specifier: ^7.0.0
-        version: 7.0.1
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20251117T150817.0
       '@capacitor/haptics':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20250926T150605.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)
       '@capacitor/ios':
-        specifier: ^7.0.0
-        version: 7.0.1(@capacitor/core@7.0.1)
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20251117T150817.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)
       '@capacitor/keyboard':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20250926T150605.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)
       '@capacitor/status-bar':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20251117T150727.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)
       '@ionic/react':
         specifier: ^6.7.5
         version: 6.7.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -149,8 +149,8 @@ importers:
         version: 5.1.4
     devDependencies:
       '@capacitor/cli':
-        specifier: next
-        version: 7.0.0-rc.0
+        specifier: ^8.0.0-beta.0
+        version: 8.0.0-nightly-20251117T150817.0
 
   packages/android-js-engine:
     dependencies:
@@ -218,15 +218,6 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.7.3
-
-  packages/ios-engine:
-    dependencies:
-      '@ionic/swiftlint-config':
-        specifier: ^1.1.2
-        version: 1.1.2
-      swiftlint:
-        specifier: ^1.0.2
-        version: 1.0.2
 
 packages:
 
@@ -963,61 +954,61 @@ packages:
     peerDependencies:
       '@capacitor/core': ^6.2.0
 
-  '@capacitor/android@7.0.1':
-    resolution: {integrity: sha512-jukJJHfkcyEBOkFBJRD3EwXMIIQo7lSv0ExPWgsIliPdGXLAj6ElvK2JaYEzec3vKyLc4RTNFVv0PMEU0vnImg==}
+  '@capacitor/android@8.0.0-nightly-20251117T150817.0':
+    resolution: {integrity: sha512-yO62HiNf5lZSs1RPVJNT5R3izgq2ZHqPnh16FfDqV+ltGrlP/cirf7ZWgXvpQUqrMkJ+qRPdYQm/fzvTtpDyHg==}
     peerDependencies:
-      '@capacitor/core': ^7.0.0
+      '@capacitor/core': ^8.0.0-nightly-20251117T150817.0
 
-  '@capacitor/app@7.0.0':
-    resolution: {integrity: sha512-/UFwfPFsw/Jen6vjrV0lfTBOQWSaDDdmrYXKpYg4Xn8hwj0xrrRPXxC43j7VmPoj9AFMVPA+hx94ygqjChPASQ==}
+  '@capacitor/app@8.0.0-nightly-20251117T150727.0':
+    resolution: {integrity: sha512-BpHo33u92HjwO81G3OFL5xRCmPZEUci4n9nMSGKrxh0/3hOj5GJ37bHNY3HEckNBEA3YDWsXs81vT1eFhMc4Eg==}
     peerDependencies:
-      '@capacitor/core': '>=7.0.0'
+      '@capacitor/core': next
 
   '@capacitor/cli@6.2.0':
     resolution: {integrity: sha512-EWcXG39mZh35zrHhOqzN1ILeSyMRyEqWVtQDXqMGjCXYRH6b6p5TvyvLDN8ZNy26tbhI3i79gfrgirt+mNwuuw==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  '@capacitor/cli@7.0.0-rc.0':
-    resolution: {integrity: sha512-gmcgxRle0lrPJuz9K2qPqx45vFP1Vr8pPvYG5nIn6KyUMFaO2ZMYgngUD1kffdsRIDp25P0/oPY6iYzYPNcYFw==}
-    engines: {node: '>=20.0.0'}
+  '@capacitor/cli@8.0.0-nightly-20251117T150817.0':
+    resolution: {integrity: sha512-AICMpJfvPPLudtCGV2Ch9OmrgfhW5fjhYQ9eiXdfC2TOgEEeQJu67SJaq6MaoiWPzgFhtwxtB20YKrOuzpg3wQ==}
+    engines: {node: '>=22.0.0'}
     hasBin: true
 
   '@capacitor/core@6.2.0':
     resolution: {integrity: sha512-B9IlJtDpUqhhYb+T8+cp2Db/3RETX36STgjeU2kQZBs/SLAcFiMama227o+msRjLeo3DO+7HJjWVA1+XlyyPEg==}
 
-  '@capacitor/core@7.0.1':
-    resolution: {integrity: sha512-1Ob9bvA/p8g8aNwK6VesxEekGXowLVf6APjkW4LRnr05H+7z/bke+Q5pn9zqh/GgTbIxAQ/rwZrAZvvxkdm1UA==}
+  '@capacitor/core@8.0.0-nightly-20251117T150817.0':
+    resolution: {integrity: sha512-ptnBxqn+dVcYFcvS2e256Ce7RkdKr9WN1ro5bFlzE8TmbhaGiDWAzlqxd7ijFqJBCdg5SESka0Tck2zCztGtew==}
 
   '@capacitor/docgen@0.2.2':
     resolution: {integrity: sha512-617jB5DlKjUljxfoANORWeqffsHqHekckH48oslKWFGzfCHYIAEPfJfMa5M4mVSzn2ifSvWB5C3st4augwhl5w==}
     engines: {node: '>=14.5.0'}
     hasBin: true
 
-  '@capacitor/haptics@7.0.0':
-    resolution: {integrity: sha512-8uI8rWyAbq8EzkjS+sHZSncyzujHzVbuLKgj8J5H0yUL6+r26F16gVA2iuQuIBvzbSMy7Y0/pUuWlwZr/H8AKg==}
+  '@capacitor/haptics@8.0.0-nightly-20250926T150605.0':
+    resolution: {integrity: sha512-u4u7xUvHZHwlJrmgd6oDVkW+sXoTKBOwsM8Qfyjp0VxLyYEOsQLGeoQvd0zlMyNoNR1sKhRqVOBVBhI/2ZJDvA==}
     peerDependencies:
-      '@capacitor/core': '>=7.0.0'
+      '@capacitor/core': next
 
   '@capacitor/ios@6.2.0':
     resolution: {integrity: sha512-gisvZBIrKT1siiumgpLPY63HmJe69Ed/dOmfQQ+U1MIJmOR5gWGWvfO7QSj/FMatVZS4Xt/8jCoUgzDD1U6kSw==}
     peerDependencies:
       '@capacitor/core': ^6.2.0
 
-  '@capacitor/ios@7.0.1':
-    resolution: {integrity: sha512-RN6S1C1k7ue57DFmJM4EizzsYBrahTTiMhcnlHspFLaojgHbFWZbYq1VriuRKysPU1ka/P+klsdtRFsB5K9jyw==}
+  '@capacitor/ios@8.0.0-nightly-20251117T150817.0':
+    resolution: {integrity: sha512-TqOxF7z8GHsbx9dbzSJUgmBo7iF5o5epRmVxyDWxZS7HYvCyANPQZur56MTgIFINDeOMT35AK+MecLjf6qTxjw==}
     peerDependencies:
-      '@capacitor/core': ^7.0.0
+      '@capacitor/core': ^8.0.0-nightly-20251117T150817.0
 
-  '@capacitor/keyboard@7.0.0':
-    resolution: {integrity: sha512-Tqwy8wG+sx4UqiFCX4Q+bFw6uKgG7BiHKAPpeefoIgoEB8H8Jf3xZNZoVPnJIMuPsCdSvuyHXZbJXH9IEEirGA==}
+  '@capacitor/keyboard@8.0.0-nightly-20250926T150605.0':
+    resolution: {integrity: sha512-Yd02w/YNJa+iPnP7B0mZdRoTDHW+xmhhhlEJ3v1zAEvYaxnRMW9lH0rhCcZ6Lbs4EV6DfHffL8SXe6BdY96UKg==}
     peerDependencies:
-      '@capacitor/core': '>=7.0.0'
+      '@capacitor/core': next
 
-  '@capacitor/status-bar@7.0.0':
-    resolution: {integrity: sha512-wsvPkWkoSOXMIgVHu4c6P1sOuDSZ1ClUo5OpLRwj7u8DYzlV4jlmNzztQn2Lvsiqx1z4kfukSaqe40k1Lo4c9g==}
+  '@capacitor/status-bar@8.0.0-nightly-20251117T150727.0':
+    resolution: {integrity: sha512-FHX0j9dqx6AfRDxoEIDZnP/NjNLXCqmzc9jRz9ISxq97dtSi9BGehrjT1ZaHL/s6zNtaXtHxdA8D7H5Dc+J6IQ==}
     peerDependencies:
-      '@capacitor/core': '>=7.0.0'
+      '@capacitor/core': next
 
   '@changesets/apply-release-plan@7.0.7':
     resolution: {integrity: sha512-qnPOcmmmnD0MfMg9DjU1/onORFyRpDXkMMl2IJg9mECY6RnxL3wN0TCCc92b2sXt1jt8DgjAUUsZYGUGTdYIXA==}
@@ -8714,13 +8705,13 @@ snapshots:
     dependencies:
       '@capacitor/core': 6.2.0
 
-  '@capacitor/android@7.0.1(@capacitor/core@7.0.1)':
+  '@capacitor/android@8.0.0-nightly-20251117T150817.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 8.0.0-nightly-20251117T150817.0
 
-  '@capacitor/app@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/app@8.0.0-nightly-20251117T150727.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 8.0.0-nightly-20251117T150817.0
 
   '@capacitor/cli@6.2.0':
     dependencies:
@@ -8744,7 +8735,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@capacitor/cli@7.0.0-rc.0':
+  '@capacitor/cli@8.0.0-nightly-20251117T150817.0':
     dependencies:
       '@ionic/cli-framework-output': 2.2.8
       '@ionic/utils-subprocess': 3.0.1
@@ -8770,7 +8761,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@capacitor/core@7.0.1':
+  '@capacitor/core@8.0.0-nightly-20251117T150817.0':
     dependencies:
       tslib: 2.8.1
 
@@ -8782,25 +8773,25 @@ snapshots:
       minimist: 1.2.8
       typescript: 4.2.4
 
-  '@capacitor/haptics@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/haptics@8.0.0-nightly-20250926T150605.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 8.0.0-nightly-20251117T150817.0
 
   '@capacitor/ios@6.2.0(@capacitor/core@6.2.0)':
     dependencies:
       '@capacitor/core': 6.2.0
 
-  '@capacitor/ios@7.0.1(@capacitor/core@7.0.1)':
+  '@capacitor/ios@8.0.0-nightly-20251117T150817.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 8.0.0-nightly-20251117T150817.0
 
-  '@capacitor/keyboard@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/keyboard@8.0.0-nightly-20250926T150605.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 8.0.0-nightly-20251117T150817.0
 
-  '@capacitor/status-bar@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/status-bar@8.0.0-nightly-20251117T150727.0(@capacitor/core@8.0.0-nightly-20251117T150817.0)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 8.0.0-nightly-20251117T150817.0
 
   '@changesets/apply-release-plan@7.0.7':
     dependencies:
@@ -11004,7 +10995,7 @@ snapshots:
       promise-inflight: 1.0.1
       rimraf: 3.0.2
       ssri: 9.0.1
-      tar: 6.1.11
+      tar: 6.2.1
       unique-filename: 2.0.1
     transitivePeerDependencies:
       - bluebird
@@ -11021,7 +11012,7 @@ snapshots:
       minipass-pipeline: 1.2.4
       p-map: 4.0.0
       ssri: 10.0.6
-      tar: 6.1.11
+      tar: 6.2.1
       unique-filename: 3.0.0
 
   call-bind-apply-helpers@1.0.1:
@@ -14347,7 +14338,7 @@ snapshots:
       npmlog: 6.0.2
       rimraf: 3.0.2
       semver: 7.6.3
-      tar: 6.1.11
+      tar: 6.2.1
       which: 2.0.2
     transitivePeerDependencies:
       - bluebird

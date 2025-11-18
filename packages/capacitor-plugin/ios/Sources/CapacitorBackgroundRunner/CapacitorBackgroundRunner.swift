@@ -3,8 +3,8 @@ import Capacitor
 import WatchConnectivity
 import UserNotifications
 
-@objc(CapacitorBackgroundRunnerPlugin)
-public class CapacitorBackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
+@objc(BackgroundRunnerPlugin)
+public class BackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "CapacitorBackgroundRunnerPlugin"
     public let jsName = "CapacitorBackgroundRunner"
     public let pluginMethods: [CAPPluginMethod] = [
@@ -203,7 +203,7 @@ public class CapacitorBackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
 }
 
 // MARK: - UNUserNotificationCenterDelegate
-extension CapacitorBackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
+extension BackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
     // This method will be called when a notification is tapped
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        didReceive response: UNNotificationResponse,

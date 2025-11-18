@@ -1,7 +1,7 @@
 import Foundation
 import WatchConnectivity
 
-extension CapacitorBackgroundRunnerPlugin: WCSessionDelegate {
+extension BackgroundRunnerPlugin: WCSessionDelegate {
     public func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         var args: [String: Any] = [:]
         args["activationState"] = activationState.rawValue
