@@ -41,12 +41,12 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: 358dd1c3fdd71d969547b17e159fd8a7736cb45f
   CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
-  CapacitorBackgroundRunner: 81d4bf9534095a97a849e0daa94c99e2e9c9b539
+  CapacitorBackgroundRunner: de9f99ef9c6c9ed0373e879ea48acb93bd9eda15
   CapacitorCordova: bf648a636f3c153f652d312ae145fb508b6ffced
   CapacitorHaptics: b3fb2869e72c4466e18ce9ccbeb60a3d8723b3d4
   CapacitorKeyboard: 62f36104f26d53d8b3a2a43f2a69fe714f1777d5
   CapacitorStatusBar: 0659ddc7b1713764a05831463d215b177a15d054
 
-PODFILE CHECKSUM: 5843e0b7e2c2d9fe4619ec4cb1385aa4a7b8ed13
+PODFILE CHECKSUM: 465e517c9e30d2bab8c1788597dcef6141ee6edf
 
 COCOAPODS: 1.16.2

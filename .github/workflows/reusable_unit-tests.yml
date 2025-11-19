@@ -17,8 +17,6 @@ jobs:
           token: ${{ secrets.CAP_GH_RELEASE_TOKEN || github.token }}
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
-      - name: Select Xcode
-        run: sudo xcode-select -switch /Applications/Xcode_16.2.0.app && /usr/bin/xcodebuild -version
       - name: Run ios-engine unit tests
         run: |
           cd ./packages/capacitor-plugin
