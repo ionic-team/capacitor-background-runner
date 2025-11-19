@@ -8,3 +8,4 @@ dist/
 !.ionic/wdio.config.ts
 xcuserdata
 .turbo
+.nx

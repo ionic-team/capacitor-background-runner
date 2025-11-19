@@ -8,10 +8,7 @@ import type {
   NotificationActionEvent,
 } from './definitions';
 
-export class BackgroundRunnerWeb
-  extends WebPlugin
-  implements BackgroundRunnerPlugin
-{
+export class BackgroundRunnerWeb extends WebPlugin implements BackgroundRunnerPlugin {
   checkPermissions(): Promise<PermissionStatus> {
     throw new Error('not available on web');
   }

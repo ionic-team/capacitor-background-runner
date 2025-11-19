@@ -147,9 +147,7 @@ export interface BackgroundRunnerPlugin {
    *
    * @since 1.0.0
    */
-  requestPermissions(
-    options: RequestPermissionOptions,
-  ): Promise<PermissionStatus>;
+  requestPermissions(options: RequestPermissionOptions): Promise<PermissionStatus>;
   /**
    * Dispatches an event to the configured runner.
    * @param options

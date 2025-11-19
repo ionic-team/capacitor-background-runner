@@ -4,17 +4,17 @@
   "dependencies": {
     "@naturalcycles/ktlint": "1.9.0",
     "clang-format": "^1.8.0",
-    "prettier": "~2.3.2",
-    "prettier-plugin-java": "~1.0.2"
+    "prettier": "^3.6.2",
+    "prettier-plugin-java": "^2.7.7"
   },
   "devDependencies": {
-    "@ionic/prettier-config": "^1.0.1"
+    "@ionic/prettier-config": "^4.0.0"
   },
   "prettier": "@ionic/prettier-config",
   "scripts": {
     "lint": "pnpm run-clang-format --dry-run && ktlint 'AndroidJSEngine/src/**/*.kt'",
     "fmt": "pnpm run-clang-format -i && ktlint --format 'AndroidJSEngine/src/**/*.kt'",
-    "prettier": "prettier --plugin-search-dir=. \"**/*.{css,html,ts,js,java}\"",
+    "prettier": "prettier \"**/*.{css,html,ts,js,java}\" --plugin=prettier-plugin-java",
     "run-clang-format": "pnpm clang-format --glob=AndroidJSEngine/src/main/cpp/**/*.{cpp,h}"
   },
   "version": "1.1.0"
