@@ -11,11 +11,11 @@ import Testing
 
     let value = try context.execute(code: "CapacitorKV.get('test');")
 
-    #expect(value?.toString() == "hello world")
+    #expect(value?.toDictionary()?["value"] as? String == "hello world")
 
     _ = try context.execute(code: "CapacitorKV.remove('test');")
 
     let nullValue = try context.execute(code: "CapacitorKV.get('test');")
     
-    #expect(nullValue?.isUndefined ?? false)
+    #expect(nullValue?.isNull ?? false)
 }

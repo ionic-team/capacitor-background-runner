@@ -35,10 +35,14 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
 
     self.context = context
     self.locationManager.delegate = self
+    
+      if CLLocationManager.authorizationStatus() == .authorizedAlways {
+          self.locationManager.allowsBackgroundLocationUpdates = true
+          self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
+          self.locationManager.pausesLocationUpdatesAutomatically = false
+      }
 
-    self.locationManager.allowsBackgroundLocationUpdates = true
-    self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
-    self.locationManager.pausesLocationUpdatesAutomatically = false
+    
   }
 
   static func getCurrentKnownLocation() -> CLLocation? {

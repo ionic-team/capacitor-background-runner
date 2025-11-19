@@ -20,7 +20,10 @@ jobs:
       - name: Select Xcode
         run: sudo xcode-select -switch /Applications/Xcode_16.2.0.app && /usr/bin/xcodebuild -version
       - name: Run ios-engine unit tests
-        run: cd ./packages/ios-engine && swift package clean && swift test
+        run: |
+          cd ./packages/capacitor-plugin
+          xcodebuild -scheme CapacitorBackgroundRunner -destination 'platform=iOS Simulator,OS=18.0,name=iPhone 16 Pro'
+          xcodebuild test -scheme CapacitorBackgroundRunner -destination 'platform=iOS Simulator,OS=18.0,name=iPhone 16 Pro'
 
   unit-test-android:
     runs-on: macos-13
