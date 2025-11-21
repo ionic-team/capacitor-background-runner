@@ -5,7 +5,6 @@
   "dependencies": {
     "@babel/plugin-syntax-flow": "^7.26.0",
     "@babel/plugin-transform-react-jsx": "^7.25.9",
-    "@capacitor/android": "^7.4.4",
     "@capacitor/app": "^7.1.0",
     "@capacitor/background-runner": "workspace:^",
     "@capacitor/core": "^7.4.4",
