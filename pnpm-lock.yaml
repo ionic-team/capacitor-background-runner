@@ -160,9 +160,6 @@ importers:
       '@babel/plugin-transform-react-jsx':
         specifier: ^7.25.9
         version: 7.25.9(@babel/core@7.26.0)
-      '@capacitor/android':
-        specifier: ^7.4.4
-        version: 7.4.4(@capacitor/core@7.4.4)
       '@capacitor/app':
         specifier: ^7.1.0
         version: 7.1.0(@capacitor/core@7.4.4)
