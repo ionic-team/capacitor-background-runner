@@ -23,6 +23,18 @@ If you will be making use of Geolocation or Push Notifications, enable `Location
 
 ![Configure Background Modes in Xcode](https://github.com/ionic-team/capacitor-background-runner/raw/main/docs/configure_background_modes.png)
 
+You will also need to add the following entry into your `Info.plist` file:
+```
+<key>BGTaskSchedulerPermittedIdentifiers</key>
+<array>
+  <string>com.example.background.task</string>
+</array>
+```
+
+Read about [Configuring `Info.plist`](https://capacitorjs.com/docs/ios/configuration#configuring-infoplist) in the [iOS Guide](https://capacitorjs.com/docs/ios) for more information on setting iOS permissions in Xcode.
+
+Make sure you use the same id that you use for `BGTaskSchedulerPermittedIdentifiers` (for example "com.example.background.task") in the `label` field in the plugin configuration.
+
 After enabling the Background Modes capability, add the following to your app's `AppDelegate.swift`:
 
 At the top of the file, under `import Capacitor` add:
@@ -64,8 +76,6 @@ Apple requires privacy descriptions to be specified in `Info.plist` for location
 
 - `NSLocationAlwaysUsageDescription` (`Privacy - Location Always Usage Description`)
 - `NSLocationWhenInUseUsageDescription` (`Privacy - Location When In Use Usage Description`)
-
-Read about [Configuring `Info.plist`](https://capacitorjs.com/docs/ios/configuration#configuring-infoplist) in the [iOS Guide](https://capacitorjs.com/docs/ios) for more information on setting iOS permissions in Xcode
 
 ## Android
 
