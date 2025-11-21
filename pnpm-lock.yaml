@@ -28,29 +28,29 @@ importers:
         specifier: ^7.25.9
         version: 7.25.9(@babel/core@7.26.0)
       '@capacitor/android':
-        specifier: ^7.0.0
-        version: 7.0.1(@capacitor/core@7.0.1)
+        specifier: ^7.4.4
+        version: 7.4.4(@capacitor/core@7.4.4)
       '@capacitor/app':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^7.1.0
+        version: 7.1.0(@capacitor/core@7.4.4)
       '@capacitor/background-runner':
         specifier: workspace:^
         version: link:../../packages/capacitor-plugin
       '@capacitor/core':
-        specifier: ^7.0.0
-        version: 7.0.1
+        specifier: ^7.4.4
+        version: 7.4.4
       '@capacitor/haptics':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^7.0.2
+        version: 7.0.2(@capacitor/core@7.4.4)
       '@capacitor/ios':
-        specifier: ^7.0.0
-        version: 7.0.1(@capacitor/core@7.0.1)
+        specifier: ^7.4.4
+        version: 7.4.4(@capacitor/core@7.4.4)
       '@capacitor/keyboard':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^7.0.3
+        version: 7.0.3(@capacitor/core@7.4.4)
       '@capacitor/status-bar':
-        specifier: ^7.0.0
-        version: 7.0.0(@capacitor/core@7.0.1)
+        specifier: ^7.0.3
+        version: 7.0.3(@capacitor/core@7.4.4)
       '@ionic/react':
         specifier: ^6.7.5
         version: 6.7.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
@@ -149,8 +149,138 @@ importers:
         version: 5.1.4
     devDependencies:
       '@capacitor/cli':
-        specifier: next
-        version: 7.0.0-rc.0
+        specifier: ^7.4.4
+        version: 7.4.4
+
+  apps/example-app-spm:
+    dependencies:
+      '@babel/plugin-syntax-flow':
+        specifier: ^7.26.0
+        version: 7.26.0(@babel/core@7.26.0)
+      '@babel/plugin-transform-react-jsx':
+        specifier: ^7.25.9
+        version: 7.25.9(@babel/core@7.26.0)
+      '@capacitor/app':
+        specifier: ^7.1.0
+        version: 7.1.0(@capacitor/core@7.4.4)
+      '@capacitor/background-runner':
+        specifier: workspace:^
+        version: link:../../packages/capacitor-plugin
+      '@capacitor/core':
+        specifier: ^7.4.4
+        version: 7.4.4
+      '@capacitor/haptics':
+        specifier: ^7.0.2
+        version: 7.0.2(@capacitor/core@7.4.4)
+      '@capacitor/ios':
+        specifier: ^7.4.4
+        version: 7.4.4(@capacitor/core@7.4.4)
+      '@capacitor/keyboard':
+        specifier: ^7.0.3
+        version: 7.0.3(@capacitor/core@7.4.4)
+      '@capacitor/status-bar':
+        specifier: ^7.0.3
+        version: 7.0.3(@capacitor/core@7.4.4)
+      '@ionic/react':
+        specifier: ^6.7.5
+        version: 6.7.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      '@ionic/react-router':
+        specifier: ^6.7.5
+        version: 6.7.5(react-dom@17.0.2(react@17.0.2))(react-router-dom@5.3.4(react@17.0.2))(react-router@5.3.4(react@17.0.2))(react@17.0.2)
+      '@testing-library/dom':
+        specifier: ^9.3.4
+        version: 9.3.4
+      '@testing-library/jest-dom':
+        specifier: ^5.17.0
+        version: 5.17.0
+      '@testing-library/react':
+        specifier: ^11.2.7
+        version: 11.2.7(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      '@testing-library/user-event':
+        specifier: ^12.8.3
+        version: 12.8.3(@testing-library/dom@9.3.4)
+      '@types/jest':
+        specifier: ^26.0.24
+        version: 26.0.24
+      '@types/node':
+        specifier: ^12.20.55
+        version: 12.20.55
+      '@types/react':
+        specifier: ^16.14.62
+        version: 16.14.62
+      '@types/react-dom':
+        specifier: ^16.9.25
+        version: 16.9.25(@types/react@16.14.62)
+      '@types/react-router':
+        specifier: ^5.1.20
+        version: 5.1.20
+      '@types/react-router-dom':
+        specifier: ^5.3.3
+        version: 5.3.3
+      ionicons:
+        specifier: ^5.5.4
+        version: 5.5.4
+      react:
+        specifier: ^17.0.2
+        version: 17.0.2
+      react-dom:
+        specifier: ^17.0.2
+        version: 17.0.2(react@17.0.2)
+      react-router:
+        specifier: ^5.3.4
+        version: 5.3.4(react@17.0.2)
+      react-router-dom:
+        specifier: ^5.3.4
+        version: 5.3.4(react@17.0.2)
+      react-scripts:
+        specifier: ^5.0.1
+        version: 5.0.1(@babel/plugin-syntax-flow@7.26.0(@babel/core@7.26.0))(@babel/plugin-transform-react-jsx@7.25.9(@babel/core@7.26.0))(@types/babel__core@7.20.5)(eslint@7.32.0)(react@17.0.2)(type-fest@0.21.3)(typescript@4.9.5)
+      typescript:
+        specifier: ^4.9.5
+        version: 4.9.5
+      web-vitals:
+        specifier: ^0.2.4
+        version: 0.2.4
+      workbox-background-sync:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-broadcast-update:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-cacheable-response:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-core:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-expiration:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-google-analytics:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-navigation-preload:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-precaching:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-range-requests:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-routing:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-strategies:
+        specifier: ^5.1.4
+        version: 5.1.4
+      workbox-streams:
+        specifier: ^5.1.4
+        version: 5.1.4
+    devDependencies:
+      '@capacitor/cli':
+        specifier: ^7.4.4
+        version: 7.4.4
 
   packages/android-js-engine:
     dependencies:
@@ -218,15 +348,6 @@ importers:
       typescript:
         specifier: ^5.1.6
         version: 5.7.3
-
-  packages/ios-engine:
-    dependencies:
-      '@ionic/swiftlint-config':
-        specifier: ^1.1.2
-        version: 1.1.2
-      swiftlint:
-        specifier: ^1.0.2
-        version: 1.0.2
 
 packages:
 
@@ -963,13 +1084,13 @@ packages:
     peerDependencies:
       '@capacitor/core': ^6.2.0
 
-  '@capacitor/android@7.0.1':
-    resolution: {integrity: sha512-jukJJHfkcyEBOkFBJRD3EwXMIIQo7lSv0ExPWgsIliPdGXLAj6ElvK2JaYEzec3vKyLc4RTNFVv0PMEU0vnImg==}
+  '@capacitor/android@7.4.4':
+    resolution: {integrity: sha512-y8knfV1JXNrd6XZZLZireGT+EBCN0lvOo+HZ/s7L8LkrPBu4nY5UZn0Wxz4yOezItEII9rqYJSHsS5fMJG9gdw==}
     peerDependencies:
-      '@capacitor/core': ^7.0.0
+      '@capacitor/core': ^7.4.0
 
-  '@capacitor/app@7.0.0':
-    resolution: {integrity: sha512-/UFwfPFsw/Jen6vjrV0lfTBOQWSaDDdmrYXKpYg4Xn8hwj0xrrRPXxC43j7VmPoj9AFMVPA+hx94ygqjChPASQ==}
+  '@capacitor/app@7.1.0':
+    resolution: {integrity: sha512-W7m09IWrUjZbo7AKeq+rc/KyucxrJekTBg0l4QCm/yDtCejE3hebxp/W2esU26KKCzMc7H3ClkUw32E9lZkwRA==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -978,24 +1099,24 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  '@capacitor/cli@7.0.0-rc.0':
-    resolution: {integrity: sha512-gmcgxRle0lrPJuz9K2qPqx45vFP1Vr8pPvYG5nIn6KyUMFaO2ZMYgngUD1kffdsRIDp25P0/oPY6iYzYPNcYFw==}
+  '@capacitor/cli@7.4.4':
+    resolution: {integrity: sha512-J7ciBE7GlJ70sr2s8oz1+H4ZdNk4MGG41fsakUlDHWva5UWgFIZYMiEdDvGbYazAYTaxN3lVZpH9zil9FfZj+Q==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
   '@capacitor/core@6.2.0':
     resolution: {integrity: sha512-B9IlJtDpUqhhYb+T8+cp2Db/3RETX36STgjeU2kQZBs/SLAcFiMama227o+msRjLeo3DO+7HJjWVA1+XlyyPEg==}
 
-  '@capacitor/core@7.0.1':
-    resolution: {integrity: sha512-1Ob9bvA/p8g8aNwK6VesxEekGXowLVf6APjkW4LRnr05H+7z/bke+Q5pn9zqh/GgTbIxAQ/rwZrAZvvxkdm1UA==}
+  '@capacitor/core@7.4.4':
+    resolution: {integrity: sha512-xzjxpr+d2zwTpCaN0k+C6wKSZzWFAb9OVEUtmO72ihjr/NEDoLvsGl4WLfjWPcCO2zOy0b2X52tfRWjECFUjtw==}
 
   '@capacitor/docgen@0.2.2':
     resolution: {integrity: sha512-617jB5DlKjUljxfoANORWeqffsHqHekckH48oslKWFGzfCHYIAEPfJfMa5M4mVSzn2ifSvWB5C3st4augwhl5w==}
     engines: {node: '>=14.5.0'}
     hasBin: true
 
-  '@capacitor/haptics@7.0.0':
-    resolution: {integrity: sha512-8uI8rWyAbq8EzkjS+sHZSncyzujHzVbuLKgj8J5H0yUL6+r26F16gVA2iuQuIBvzbSMy7Y0/pUuWlwZr/H8AKg==}
+  '@capacitor/haptics@7.0.2':
+    resolution: {integrity: sha512-vqfeEM6s2zMgLjpITCTUIy7P/hadq/Gr5E/RClFgMJPB41Y5FsqOKD+j85/uwh8N2cf/aWaPeXUmjnTzJbEB2g==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -1004,18 +1125,18 @@ packages:
     peerDependencies:
       '@capacitor/core': ^6.2.0
 
-  '@capacitor/ios@7.0.1':
-    resolution: {integrity: sha512-RN6S1C1k7ue57DFmJM4EizzsYBrahTTiMhcnlHspFLaojgHbFWZbYq1VriuRKysPU1ka/P+klsdtRFsB5K9jyw==}
+  '@capacitor/ios@7.4.4':
+    resolution: {integrity: sha512-Xp3bGWlSQAwsZGngRMWTdoD2agdMV12Whnm+/xsYPxfQSj+Tksbr7r/8Mso7VWkpnTKO4iMlx762g3PjW+wi4w==}
     peerDependencies:
-      '@capacitor/core': ^7.0.0
+      '@capacitor/core': ^7.4.0
 
-  '@capacitor/keyboard@7.0.0':
-    resolution: {integrity: sha512-Tqwy8wG+sx4UqiFCX4Q+bFw6uKgG7BiHKAPpeefoIgoEB8H8Jf3xZNZoVPnJIMuPsCdSvuyHXZbJXH9IEEirGA==}
+  '@capacitor/keyboard@7.0.3':
+    resolution: {integrity: sha512-BIBKjmky5rOYNhvYhNeDi0MMvjwYZ6YF9JoCYcGKvKY+XLJKtezsEL78XfOlgWZBkbfR8uq3tzktY6PqgoYLKA==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
-  '@capacitor/status-bar@7.0.0':
-    resolution: {integrity: sha512-wsvPkWkoSOXMIgVHu4c6P1sOuDSZ1ClUo5OpLRwj7u8DYzlV4jlmNzztQn2Lvsiqx1z4kfukSaqe40k1Lo4c9g==}
+  '@capacitor/status-bar@7.0.3':
+    resolution: {integrity: sha512-JyRpVnKwHij9hgPWolF6PK+HT3e2HSPjN11/h2OmKxq8GAdPGARFLv+97eZl0pvuvm0Kka/LpiLb5whXISBg7Q==}
     peerDependencies:
       '@capacitor/core': '>=7.0.0'
 
@@ -8714,13 +8835,13 @@ snapshots:
     dependencies:
       '@capacitor/core': 6.2.0
 
-  '@capacitor/android@7.0.1(@capacitor/core@7.0.1)':
+  '@capacitor/android@7.4.4(@capacitor/core@7.4.4)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 7.4.4
 
-  '@capacitor/app@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/app@7.1.0(@capacitor/core@7.4.4)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 7.4.4
 
   '@capacitor/cli@6.2.0':
     dependencies:
@@ -8744,7 +8865,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@capacitor/cli@7.0.0-rc.0':
+  '@capacitor/cli@7.4.4':
     dependencies:
       '@ionic/cli-framework-output': 2.2.8
       '@ionic/utils-subprocess': 3.0.1
@@ -8770,7 +8891,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@capacitor/core@7.0.1':
+  '@capacitor/core@7.4.4':
     dependencies:
       tslib: 2.8.1
 
@@ -8782,25 +8903,25 @@ snapshots:
       minimist: 1.2.8
       typescript: 4.2.4
 
-  '@capacitor/haptics@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/haptics@7.0.2(@capacitor/core@7.4.4)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 7.4.4
 
   '@capacitor/ios@6.2.0(@capacitor/core@6.2.0)':
     dependencies:
       '@capacitor/core': 6.2.0
 
-  '@capacitor/ios@7.0.1(@capacitor/core@7.0.1)':
+  '@capacitor/ios@7.4.4(@capacitor/core@7.4.4)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 7.4.4
 
-  '@capacitor/keyboard@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/keyboard@7.0.3(@capacitor/core@7.4.4)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 7.4.4
 
-  '@capacitor/status-bar@7.0.0(@capacitor/core@7.0.1)':
+  '@capacitor/status-bar@7.0.3(@capacitor/core@7.4.4)':
     dependencies:
-      '@capacitor/core': 7.0.1
+      '@capacitor/core': 7.4.4
 
   '@changesets/apply-release-plan@7.0.7':
     dependencies:
@@ -11004,7 +11125,7 @@ snapshots:
       promise-inflight: 1.0.1
       rimraf: 3.0.2
       ssri: 9.0.1
-      tar: 6.1.11
+      tar: 6.2.1
       unique-filename: 2.0.1
     transitivePeerDependencies:
       - bluebird
@@ -11021,7 +11142,7 @@ snapshots:
       minipass-pipeline: 1.2.4
       p-map: 4.0.0
       ssri: 10.0.6
-      tar: 6.1.11
+      tar: 6.2.1
       unique-filename: 3.0.0
 
   call-bind-apply-helpers@1.0.1:
@@ -14347,7 +14468,7 @@ snapshots:
       npmlog: 6.0.2
       rimraf: 3.0.2
       semver: 7.6.3
-      tar: 6.1.11
+      tar: 6.2.1
       which: 2.0.2
     transitivePeerDependencies:
       - bluebird

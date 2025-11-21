@@ -15,12 +15,18 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.CAP_GH_RELEASE_TOKEN || github.token }}
+      - name: Install PNPM
+        uses: pnpm/action-setup@v4
+        id: pnpm-install
+        with:
+          version: 10
+          run_install: false
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
-      - name: Select Xcode
-        run: sudo xcode-select -switch /Applications/Xcode_16.2.0.app && /usr/bin/xcodebuild -version
       - name: Run ios-engine unit tests
-        run: cd ./packages/ios-engine && swift package clean && swift test
+        run: |
+          cd ./packages/capacitor-plugin
+          pnpm run verify:ios
 
   unit-test-android:
     runs-on: macos-13
