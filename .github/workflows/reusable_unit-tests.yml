@@ -20,8 +20,7 @@ jobs:
       - name: Run ios-engine unit tests
         run: |
           cd ./packages/capacitor-plugin
-          xcodebuild -scheme CapacitorBackgroundRunner -destination 'platform=iOS Simulator,OS=18.6,name=iPhone 16 Pro'
-          xcodebuild test -scheme CapacitorBackgroundRunner -destination 'platform=iOS Simulator,OS=18.6,name=iPhone 16 Pro'
+          pnpm run verify:ios
 
   unit-test-android:
     runs-on: macos-13
