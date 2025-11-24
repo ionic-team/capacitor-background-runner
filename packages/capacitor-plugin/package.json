@@ -1,6 +1,6 @@
 {
   "name": "@capacitor/background-runner",
-  "version": "1.1.0",
+  "version": "2.2.0",
   "description": "Capacitor Background Runner",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -11,7 +11,9 @@
     "android/src/main/",
     "android/build.gradle",
     "dist/",
-    "ios/Plugin/",
+    "ios/Sources",
+    "ios/Tests",
+    "Package.swift",
     "scripts/install_libs.js",
     "CapacitorBackgroundRunner.podspec"
   ],
@@ -30,7 +32,7 @@
   ],
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
-    "verify:ios": "cd ios && pod install && xcodebuild -workspace Plugin.xcworkspace -scheme Plugin -destination generic/platform=iOS && cd ..",
+    "verify:ios": "xcodebuild -scheme CapacitorBackgroundRunner -destination generic/platform=iOS && xcodebuild test -scheme CapacitorBackgroundRunner -destination 'platform=iOS Simulator,OS=18.6,name=iPhone 16 Pro'",
     "verify:android": "cd android && ./gradlew clean build test && cd ..",
     "verify:web": "npm run build",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
@@ -49,11 +51,11 @@
     "postinstall": "node ./scripts/install_libs.js"
   },
   "devDependencies": {
-    "@capacitor/android": "^5.2.2",
-    "@capacitor/cli": "^5.2.2",
-    "@capacitor/core": "^5.2.2",
-    "@capacitor/docgen": "^0.0.18",
-    "@capacitor/ios": "^5.2.2",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/docgen": "^0.2.2",
+    "@capacitor/ios": "^6.0.0",
     "@ionic/eslint-config": "^0.3.0",
     "@ionic/prettier-config": "^1.0.1",
     "@ionic/swiftlint-config": "^1.1.2",
@@ -66,7 +68,7 @@
     "typescript": "^5.1.6"
   },
   "peerDependencies": {
-    "@capacitor/core": "^5.0.0"
+    "@capacitor/core": ">=6.0.0"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",

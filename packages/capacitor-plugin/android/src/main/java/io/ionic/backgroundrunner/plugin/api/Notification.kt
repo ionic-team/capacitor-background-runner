@@ -20,7 +20,7 @@ class Notification(jsonObject: JSONObject) {
     var sound: String? = null
     var smallIcon: String? = null
     var largeIcon: String? = null
-    var actionTypeID: String? = null
+    var actionTypeId: String? = null
     var extra: HashMap<String, Any>? = null
     var group: String? = null
     var groupSummary: String? = null
@@ -32,15 +32,20 @@ class Notification(jsonObject: JSONObject) {
         id = jsonObject.optInt("id", -1)
         title = jsonObject.optString("title", "")
         body = jsonObject.optString("body", "")
+        smallIcon = jsonObject.optString("smallIcon", "")
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
+        actionTypeId = jsonObject.optString("actionTypeId", null)
 
-        val scheduleDateString = jsonObject.getString("scheduleAt")
+        val scheduleDateString = jsonObject.optString("scheduleAt", "")
+        if (scheduleDateString.isNotEmpty()) {
+            val sdf = SimpleDateFormat(jsDateFormat)
+            val parsedDate = sdf.parse(scheduleDateString)
 
-        val sdf = SimpleDateFormat(jsDateFormat)
-        val parsedDate = sdf.parse(scheduleDateString)
-
-        scheduleAt = parsedDate ?: Date()
+            scheduleAt = parsedDate ?: Date()
+        } else {
+            scheduleAt = Date()
+        }
     }
 
     fun smallIcon(context: android.content.Context, defaultIcon: Int): Int {

@@ -13,6 +13,8 @@ import io.ionic.android_js_engine.Context
 import io.ionic.android_js_engine.NativeCapacitorAPI
 import io.ionic.android_js_engine.NativeJSFunction
 import io.ionic.android_js_engine.Runner
+import io.ionic.backgroundrunner.plugin.api.App
+import io.ionic.backgroundrunner.plugin.api.AppState
 import io.ionic.backgroundrunner.plugin.api.Device
 import io.ionic.backgroundrunner.plugin.api.Geolocation
 import io.ionic.backgroundrunner.plugin.api.KV
@@ -187,6 +189,7 @@ class BackgroundRunner(context: android.content.Context) {
         api.initKVAPI(KV(context, config.label))
         api.initGeolocationAPI(Geolocation(context))
         api.initNotificationsAPI(Notifications(context))
+        api.initAppAPI(App(context))
 
         val newContext  = runner.createContext(contextName, api)
         newContext.execute(srcFile, false)

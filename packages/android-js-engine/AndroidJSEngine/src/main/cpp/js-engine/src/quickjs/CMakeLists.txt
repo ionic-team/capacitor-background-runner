@@ -4,6 +4,7 @@ project(quickjs)
 
 # Define the target
 add_library(quickjs STATIC
+        dtoa.c
         cutils.c
         libbf.c
         libregexp.c

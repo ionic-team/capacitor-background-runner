@@ -80,12 +80,18 @@ class NativeWebAPI {
                         connection.setRequestProperty(it.key, it.value)
                     }
 
-                    if (options.body != null) {
+                    val requestBody = options.body
+                    if (requestBody != null) {
                         connection.doOutput = true
-                        connection.setChunkedStreamingMode(0)
+                        val contentEncoding = options.headers["Transfer-Encoding"]
+                        if (contentEncoding == "chunked") {
+                            connection.setChunkedStreamingMode(0)
+                        } else {
+                            connection.setFixedLengthStreamingMode(requestBody.size)
+                        }
 
                         val output = BufferedOutputStream(connection.outputStream)
-                        output.write(options.body)
+                        output.write(requestBody)
                         output.flush()
                     }
                 }

@@ -23,6 +23,18 @@ If you will be making use of Geolocation or Push Notifications, enable `Location
 
 ![Configure Background Modes in Xcode](https://github.com/ionic-team/capacitor-background-runner/raw/main/docs/configure_background_modes.png)
 
+You will also need to add the following entry into your `Info.plist` file:
+```
+<key>BGTaskSchedulerPermittedIdentifiers</key>
+<array>
+  <string>com.example.background.task</string>
+</array>
+```
+
+Read about [Configuring `Info.plist`](https://capacitorjs.com/docs/ios/configuration#configuring-infoplist) in the [iOS Guide](https://capacitorjs.com/docs/ios) for more information on setting iOS permissions in Xcode.
+
+Make sure you use the same id that you use for `BGTaskSchedulerPermittedIdentifiers` (for example "com.example.background.task") in the `label` field in the plugin configuration.
+
 After enabling the Background Modes capability, add the following to your app's `AppDelegate.swift`:
 
 At the top of the file, under `import Capacitor` add:
@@ -64,8 +76,6 @@ Apple requires privacy descriptions to be specified in `Info.plist` for location
 
 - `NSLocationAlwaysUsageDescription` (`Privacy - Location Always Usage Description`)
 - `NSLocationWhenInUseUsageDescription` (`Privacy - Location When In Use Usage Description`)
-
-Read about [Configuring `Info.plist`](https://capacitorjs.com/docs/ios/configuration#configuring-infoplist) in the [iOS Guide](https://capacitorjs.com/docs/ios) for more information on setting iOS permissions in Xcode
 
 ## Android
 
@@ -269,7 +279,7 @@ Visit [Don't kill my app!](https://dontkillmyapp.com) for more information on th
 
 ## Limitations of Background Tasks
 
-It’s not possible to run persistent, always running background services on mobile operating systems. Due to the limitations imposed by iOS and Android designed to reduce battery and data consumption, background tasks are constrained with various limitations that you must keep in mind while designing and implementing your background task.
+It's not possible to run persistent, always running background services on mobile operating systems. Due to the limitations imposed by iOS and Android designed to reduce battery and data consumption, background tasks are constrained with various limitations that you must keep in mind while designing and implementing your background task.
 
 ### iOS
 
@@ -289,6 +299,8 @@ It’s not possible to run persistent, always running background services on mob
 * [`checkPermissions()`](#checkpermissions)
 * [`requestPermissions(...)`](#requestpermissions)
 * [`dispatchEvent(...)`](#dispatchevent)
+* [`addListener('backgroundRunnerNotificationReceived', ...)`](#addlistenerbackgroundrunnernotificationreceived-)
+* [`removeNotificationListeners()`](#removenotificationlisteners)
 * [Interfaces](#interfaces)
 * [Type Aliases](#type-aliases)
 
@@ -350,6 +362,41 @@ Dispatches an event to the configured runner.
 --------------------
 
 
+### addListener('backgroundRunnerNotificationReceived', ...)
+
+```typescript
+addListener(eventName: 'backgroundRunnerNotificationReceived', listenerFunc: (event: NotificationActionEvent) => void) => any
+```
+
+Add a listener for notification actions.
+
+| Param              | Type                                                                                            |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'backgroundRunnerNotificationReceived'</code>                                             |
+| **`listenerFunc`** | <code>(event: <a href="#notificationactionevent">NotificationActionEvent</a>) =&gt; void</code> |
+
+**Returns:** <code>any</code>
+
+**Since:** 2.1.1
+
+--------------------
+
+
+### removeNotificationListeners()
+
+```typescript
+removeNotificationListeners() => any
+```
+
+Remove notification action listeners for this plugin.
+
+**Returns:** <code>any</code>
+
+**Since:** 2.1.1
+
+--------------------
+
+
 ### Interfaces
 
 
@@ -375,6 +422,21 @@ Dispatches an event to the configured runner.
 | **`label`**   | <code>string</code>                  | The runner label to dispatch the event to  | 1.0.0 |
 | **`event`**   | <code>string</code>                  | The name of the registered event listener. | 1.0.0 |
 | **`details`** | <code>{ [key: string]: any; }</code> |                                            |       |
+
+
+#### NotificationActionEvent
+
+| Prop                 | Type                |
+| -------------------- | ------------------- |
+| **`actionTypeId`**   | <code>string</code> |
+| **`notificationId`** | <code>number</code> |
+
+
+#### PluginListenerHandle
+
+| Prop         | Type                      |
+| ------------ | ------------------------- |
+| **`remove`** | <code>() =&gt; any</code> |
 
 
 ### Type Aliases
@@ -441,9 +503,11 @@ A simple string key / value store backed by UserDefaults on iOS and Shared Prefe
 
 Send basic local notifications.
 
-| Prop           | Type                                  | Description                   | Since |
-| -------------- | ------------------------------------- | ----------------------------- | ----- |
-| **`schedule`** | <code>(options: {}) =&gt; void</code> | Schedule a local notification | 1.0.0 |
+| Prop             | Type                                                                                                | Description                        | Since |
+| ---------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------- | ----- |
+| **`schedule`**   | <code>(options: {}) =&gt; void</code>                                                               | Schedule a local notification      | 1.0.0 |
+| **`setBadge`**   | <code>(options: <a href="#notificationbadgeoptions">NotificationBadgeOptions</a>) =&gt; void</code> | Set the application badge count    | 2.0.0 |
+| **`clearBadge`** | <code>() =&gt; void</code>                                                                          | Clears the application badge count | 2.0.0 |
 
 
 #### NotificationScheduleOptions
@@ -470,6 +534,15 @@ Send basic local notifications.
 | **`channelId`**        | <code>string</code>  | Specifies the channel the notification should be delivered on. If channel with the given name does not exist then the notification will not fire. If not provided, it will use the default channel. Calls `setChannelId()` on [`NotificationCompat.Builder`](https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder) with the provided value. Only available for Android 26+.                                                                                                                                                                                                                     | 1.0.0 |
 
 
+#### NotificationBadgeOptions
+
+| Prop                       | Type                | Description                                                                           | Since |
+| -------------------------- | ------------------- | ------------------------------------------------------------------------------------- | ----- |
+| **`count`**                | <code>number</code> | The number to set on the application badge count.                                     | 2.0.0 |
+| **`notificationTitle`**    | <code>string</code> | The **required** title for the associated badge count notification. Only for Android. | 2.0.0 |
+| **`notificationSubtitle`** | <code>string</code> | The subtitle for the associated badge count notification. Only for Android.           | 2.0.0 |
+
+
 #### CapacitorGeolocation
 
 Get access to device location information.
@@ -492,21 +565,46 @@ Get access to device location information.
 | **`heading`**          | <code>number \| null</code> | The heading the user is facing (if available)                                                                         | 1.0.0 |
 
 
-#### CapcacitorWatch
+#### CapacitorWatch
 
 Interact with a watch paired with this app
 
-sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapactiorWatch Watch application.
+sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a <a href="#capacitorwatch">CapacitorWatch</a> Watch application.
 They could be used if a native watch app is developed as a companion app to a Capacitor app
 
-| Prop                           | Type                                                                     | Description                                                                                                                                                 |
-| ------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **`sendMessage`**              | <code>(options: []) =&gt; void</code>                                    | Sends a message to the watch with the sendMessage() WCSession delegate method This has no effect on a CapacitorWatch watch app                              |
-| **`transferUserInfo`**         | <code>(options: []) =&gt; void</code>                                    | Sends information to the watch with the transferUserInfo() WCSession delegate method This has no effect on a CapacitorWatch watch app                       |
-| **`updateApplicationContext`** | <code>(options: []) =&gt; void</code>                                    | Updates the application context on the watch with the updateApplicationContext() WCSession delegate method This has no effect on a CapacitorWatch watch app |
-| **`isReachable`**              | <code>boolean</code>                                                     | Checks to see if the compaion watch is reachable                                                                                                            |
-| **`updateWatchUI`**            | <code>(options: { watchUI: string; }) =&gt; void</code>                  | Replaces the current UI on the watch with what is specified here.                                                                                           |
-| **`updateWatchData`**          | <code>(options: { data: { [key: string]: string; }; }) =&gt; void</code> | Updates the data the watch is using to display variables in text and button fields                                                                          |
+| Prop                           | Type                                                                     | Description                                                                                                                                                                               |
+| ------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`sendMessage`**              | <code>(options: []) =&gt; void</code>                                    | Sends a message to the watch with the sendMessage() WCSession delegate method This has no effect on a <a href="#capacitorwatch">CapacitorWatch</a> watch app                              |
+| **`transferUserInfo`**         | <code>(options: []) =&gt; void</code>                                    | Sends information to the watch with the transferUserInfo() WCSession delegate method This has no effect on a <a href="#capacitorwatch">CapacitorWatch</a> watch app                       |
+| **`updateApplicationContext`** | <code>(options: []) =&gt; void</code>                                    | Updates the application context on the watch with the updateApplicationContext() WCSession delegate method This has no effect on a <a href="#capacitorwatch">CapacitorWatch</a> watch app |
+| **`isReachable`**              | <code>boolean</code>                                                     | Checks to see if the compaion watch is reachable                                                                                                                                          |
+| **`updateWatchUI`**            | <code>(options: { watchUI: string; }) =&gt; void</code>                  | Replaces the current UI on the watch with what is specified here.                                                                                                                         |
+| **`updateWatchData`**          | <code>(options: { data: { [key: string]: string; }; }) =&gt; void</code> | Updates the data the watch is using to display variables in text and button fields                                                                                                        |
+
+
+#### CapacitorApp
+
+| Prop           | Type                                                   |
+| -------------- | ------------------------------------------------------ |
+| **`getState`** | <code>() =&gt; <a href="#appstate">AppState</a></code> |
+| **`getInfo`**  | <code>() =&gt; <a href="#appinfo">AppInfo</a></code>   |
+
+
+#### AppState
+
+| Prop           | Type                 | Description                       | Since |
+| -------------- | -------------------- | --------------------------------- | ----- |
+| **`isActive`** | <code>boolean</code> | Whether the app is active or not. | 1.0.0 |
+
+
+#### AppInfo
+
+| Prop          | Type                | Description                                                                                         | Since |
+| ------------- | ------------------- | --------------------------------------------------------------------------------------------------- | ----- |
+| **`name`**    | <code>string</code> | The name of the app.                                                                                | 1.0.0 |
+| **`id`**      | <code>string</code> | The identifier of the app. On iOS it's the Bundle Identifier. On Android it's the Application ID    | 1.0.0 |
+| **`build`**   | <code>string</code> | The build version. On iOS it's the CFBundleVersion. On Android it's the versionCode.                | 1.0.0 |
+| **`version`** | <code>string</code> | The app version. On iOS it's the CFBundleShortVersionString. On Android it's package's versionName. | 1.0.0 |
 
 
 </capacitor-api-docs>

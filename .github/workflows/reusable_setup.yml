@@ -1,6 +1,6 @@
 name: "Setup"
 
-on: 
+on:
   workflow_call:
     secrets:
       CAP_GH_RELEASE_TOKEN:
@@ -10,21 +10,21 @@ jobs:
   setup:
     strategy:
       matrix:
-        os: ['ubuntu-22.04', 'macos-12']
+        os: ["ubuntu-22.04", "macos-15"]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
+          token: ${{ secrets.CAP_GH_RELEASE_TOKEN || github.token }}
 
       - uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: "temurin"
+          java-version: "17"
 
-      - name: 'Setup Tools'
+      - name: "Setup Tools"
         uses: ./.github/actions/setup-tools
         with:
-          skip-install-on-cache-hit: 'true'
+          skip-install-on-cache-hit: "true"

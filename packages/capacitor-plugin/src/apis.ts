@@ -55,6 +55,31 @@ export interface NetworkStatus {
   connectionType: string;
 }
 
+export interface NotificationBadgeOptions {
+  /**
+   * The number to set on the application badge count.
+   *
+   * @since 2.0.0
+   */
+  count: number;
+  /**
+   * The **required** title for the associated badge count notification.
+   *
+   * Only for Android.
+   *
+   * @since 2.0.0
+   */
+  notificationTitle: string;
+  /**
+   * The subtitle for the associated badge count notification.
+   *
+   * Only for Android.
+   *
+   * @since 2.0.0
+   */
+  notificationSubtitle: string;
+}
+
 export interface NotificationScheduleOptions {
   /**
    * The notification identifier.
@@ -243,6 +268,51 @@ export interface NotificationScheduleOptions {
   channelId?: string;
 }
 
+export interface AppInfo {
+  /**
+   * The name of the app.
+   *
+   * @since 1.0.0
+   */
+  name: string;
+
+  /**
+   * The identifier of the app.
+   * On iOS it's the Bundle Identifier.
+   * On Android it's the Application ID
+   *
+   * @since 1.0.0
+   */
+  id: string;
+
+  /**
+   * The build version.
+   * On iOS it's the CFBundleVersion.
+   * On Android it's the versionCode.
+   *
+   * @since 1.0.0
+   */
+  build: string;
+
+  /**
+   * The app version.
+   * On iOS it's the CFBundleShortVersionString.
+   * On Android it's package's versionName.
+   *
+   * @since 1.0.0
+   */
+  version: string;
+}
+
+export interface AppState {
+  /**
+   * Whether the app is active or not.
+   *
+   * @since 1.0.0
+   */
+  isActive: boolean;
+}
+
 /**
  * Get access to device location information.
  *
@@ -315,15 +385,30 @@ export interface CapacitorNotifications {
    * @since 1.0.0
    */
   schedule: (options: NotificationScheduleOptions[]) => void;
+  /**
+   * Set the application badge count
+   * @example `CapacitorNotifications.setBadge({...})`
+   * @param options
+   * @returns void
+   * @since 2.0.0
+   */
+  setBadge: (options: NotificationBadgeOptions) => void;
+  /**
+   * Clears the application badge count
+   * @example `CapacitorNotifications.clearBadge()`
+   * @returns void
+   * @since 2.0.0
+   */
+  clearBadge: () => void;
 }
 
 /**
  * Interact with a watch paired with this app
  *
- * sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapactiorWatch Watch application.
+ * sendMessage, transferUserInfo and updateApplicationContext are raw routes to the WCSession delegate methods, but have no effects currently in a CapacitorWatch Watch application.
  * They could be used if a native watch app is developed as a companion app to a Capacitor app
  */
-export interface CapcacitorWatch {
+export interface CapacitorWatch {
   /**
    * Sends a message to the watch with the sendMessage() WCSession delegate method
    *
@@ -360,10 +445,16 @@ export interface CapcacitorWatch {
   updateWatchData: (options: { data: { [key: string]: string } }) => void;
 }
 
+export interface CapacitorApp {
+  getState: () => AppState;
+  getInfo: () => AppInfo;
+}
+
 export interface CapacitorAPI {
   CapacitorDevice: CapacitorDevice;
   CapacitorKV: CapacitorKV;
   CapacitorNotifications: CapacitorNotifications;
   CapacitorGeolocation: CapacitorGeolocation;
-  CapacitorWatch: CapcacitorWatch;
+  CapacitorWatch: CapacitorWatch;
+  CapacitorApp: CapacitorApp;
 }

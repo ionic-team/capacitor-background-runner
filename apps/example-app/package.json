@@ -1,28 +1,28 @@
 {
   "name": "example-app",
-  "version": "1.0.6",
+  "version": "1.0.9",
   "private": true,
   "dependencies": {
-    "@babel/plugin-syntax-flow": "^7.22.5",
-    "@babel/plugin-transform-react-jsx": "^7.22.5",
-    "@capacitor/android": "^5.2.2",
-    "@capacitor/app": "^5.0.6",
+    "@babel/plugin-syntax-flow": "^7.26.0",
+    "@babel/plugin-transform-react-jsx": "^7.25.9",
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/app": "^7.1.0",
     "@capacitor/background-runner": "workspace:^",
-    "@capacitor/core": "^5.2.2",
-    "@capacitor/haptics": "^5.0.6",
-    "@capacitor/ios": "^5.2.2",
-    "@capacitor/keyboard": "^5.0.6",
-    "@capacitor/status-bar": "^5.0.6",
+    "@capacitor/core": "^7.4.4",
+    "@capacitor/haptics": "^7.0.2",
+    "@capacitor/ios": "^7.4.4",
+    "@capacitor/keyboard": "^7.0.3",
+    "@capacitor/status-bar": "^7.0.3",
     "@ionic/react": "^6.7.5",
     "@ionic/react-router": "^6.7.5",
-    "@testing-library/dom": "^9.3.1",
+    "@testing-library/dom": "^9.3.4",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "@types/jest": "^26.0.24",
     "@types/node": "^12.20.55",
-    "@types/react": "^16.14.43",
-    "@types/react-dom": "^16.9.19",
+    "@types/react": "^16.14.62",
+    "@types/react-dom": "^16.9.25",
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
     "ionicons": "^5.5.4",
@@ -71,7 +71,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^5.2.2"
+    "@capacitor/cli": "^7.4.4"
   },
   "description": "An Ionic project"
 }

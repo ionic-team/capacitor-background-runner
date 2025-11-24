@@ -1,5 +1,34 @@
 # Change Log
 
+## 2.2.0
+
+### Minor Changes
+
+- 2eda1d1: Fixes an issue where Android Notification small icons were always using the default icon
+- b76dbd4: (Android): Updating QuickJS to latest (2025-04-26)
+- a484f9f: Adding handling for Android notifications
+- ef998c1: Adding support for 16kb page sizes on Android
+- 8ef1ca0: Fixes a crash when setting badge on iOS
+
+## 2.1.0
+
+### Minor Changes
+
+- 0e13e79: Adding support to Capacitor 7
+
+## 2.0.0
+
+### Major Changes
+
+- 4cc44dd: Adding a new App API, as well as app badge manipulation methods to the Notifications API
+- 36d9a61: Fixing typo in CapacitorWatch interface name
+- 3194a7d: Updates to support Capacitor 6
+
+### Minor Changes
+
+- 7adb608: (Android) Adding support for Content-Length in fetch requests
+- 4957271: (iOS) Fixing task repeat functionality
+
 ## 1.1.0
 
 ### Minor Changes
