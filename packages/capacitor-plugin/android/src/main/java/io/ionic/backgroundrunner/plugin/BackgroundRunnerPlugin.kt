@@ -19,7 +19,7 @@ import com.getcapacitor.Bridge
 
 
 @CapacitorPlugin(
-    name = "BackgroundRunner",
+    name = "CapacitorBackgroundRunner",
     permissions = [
         Permission(
             strings = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
