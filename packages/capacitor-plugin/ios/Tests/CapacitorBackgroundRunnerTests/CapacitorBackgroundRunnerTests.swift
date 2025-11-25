@@ -16,6 +16,6 @@ import Testing
     _ = try context.execute(code: "CapacitorKV.remove('test');")
 
     let nullValue = try context.execute(code: "CapacitorKV.get('test');")
-    
+
     #expect(nullValue?.isNull ?? false)
 }

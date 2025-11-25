@@ -2,7 +2,11 @@ package io.ionic.android_js_engine
 
 import org.json.JSONObject
 
-class Context(name: String, runnerPtr: Long, capAPI: NativeCapacitorAPI?) {
+class Context(
+    name: String,
+    runnerPtr: Long,
+    capAPI: NativeCapacitorAPI?,
+) {
     val name: String
     private val runnerPtr: Long
 

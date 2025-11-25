@@ -3,20 +3,18 @@ package io.ionic.android_js_engine
 import org.json.JSONArray
 import org.json.JSONObject
 
-class NativeJSValue(jsonString: String) {
+class NativeJSValue(
+    jsonString: String,
+) {
     private val json: String
 
     init {
         this.json = jsonString
     }
 
-    fun getIntValue(): Int? {
-        return this.getJSNumber()?.toInt()
-    }
+    fun getIntValue(): Int? = this.getJSNumber()?.toInt()
 
-    fun getFloatValue(): Float? {
-        return this.getJSNumber()?.toFloat()
-    }
+    fun getFloatValue(): Float? = this.getJSNumber()?.toFloat()
 
     fun getStringValue(): String? {
         if (checkIfNullOrUndefined()) return null
@@ -24,9 +22,7 @@ class NativeJSValue(jsonString: String) {
         return this.json.trim('"')
     }
 
-    fun isNullOrUndefined(): Boolean {
-        return checkIfNullOrUndefined()
-    }
+    fun isNullOrUndefined(): Boolean = checkIfNullOrUndefined()
 
     fun getBoolValue(): Boolean? {
         if (checkIfNullOrUndefined()) return null
@@ -56,7 +52,5 @@ class NativeJSValue(jsonString: String) {
         return json.toDoubleOrNull()
     }
 
-    private fun checkIfNullOrUndefined(): Boolean {
-        return this.json == "undefined" || this.json == "null"
-    }
+    private fun checkIfNullOrUndefined(): Boolean = this.json == "undefined" || this.json == "null"
 }
