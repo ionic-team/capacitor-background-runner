@@ -1,6 +1,10 @@
 package io.ionic.android_js_engine
 
-class NativeJSFetchOptions(method: String, requestHeaders: HashMap<String, String>, body: ByteArray?) {
+class NativeJSFetchOptions(
+    method: String,
+    requestHeaders: HashMap<String, String>,
+    body: ByteArray?,
+) {
     public val httpMethod: String
     public val headers: HashMap<String, String>
     public var body: ByteArray? = null

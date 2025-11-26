@@ -41,4 +41,3 @@ extension BackgroundRunnerPlugin: WCSessionDelegate {
         try? BackgroundRunner.shared.dispatchEvent(event: "WatchConnectivity_didReceiveApplicationContext", inputArgs: args)
     }
 }
-

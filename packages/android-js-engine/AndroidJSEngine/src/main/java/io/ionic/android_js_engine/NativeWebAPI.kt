@@ -29,14 +29,10 @@ class NativeWebAPI {
         }
 
         @JvmStatic
-        fun randomHashCode(): Int {
-            return abs(cryptoRandomUUID().hashCode())
-        }
+        fun randomHashCode(): Int = abs(cryptoRandomUUID().hashCode())
 
         @JvmStatic
-        fun stringToByteArray(str: String): ByteArray {
-            return str.toByteArray(Charset.forName("UTF-8"))
-        }
+        fun stringToByteArray(str: String): ByteArray = str.toByteArray(Charset.forName("UTF-8"))
 
         @JvmStatic
         fun byteArrayToString(

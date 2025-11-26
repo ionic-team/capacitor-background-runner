@@ -15,7 +15,7 @@ public class BackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "removeNotificationListeners", returnType: CAPPluginReturnPromise)
     ]
     private let impl = BackgroundRunner()
-    
+
     override public func load() {
         NotificationCenter.default.addObserver(
             self,
@@ -29,7 +29,7 @@ public class BackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
 
         initWatchConnectivity()
     }
-    
+
     @objc override public func checkPermissions(_ call: CAPPluginCall) {
         // check geolocation permissions
         let geolocationState = CapacitorGeolocation.checkPermission()
@@ -65,7 +65,7 @@ public class BackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
             }
         }
     }
-    
+
     @objc func dispatchEvent(_ call: CAPPluginCall) {
         do {
             guard let runnerEvent = call.getString("event"), !runnerEvent.isEmpty else {

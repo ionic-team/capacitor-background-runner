@@ -1,6 +1,11 @@
 package io.ionic.android_js_engine
 
-class NativeJSResponse(statusCode: Int, url: String, data: ByteArray?, error: String?) {
+class NativeJSResponse(
+    statusCode: Int,
+    url: String,
+    data: ByteArray?,
+    error: String?,
+) {
     public var ok: Boolean
     public var status: Int
     public var url: String

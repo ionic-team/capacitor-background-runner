@@ -35,9 +35,7 @@ class Runner {
         return context
     }
 
-    fun hasContext(name: String): Boolean {
-        return contexts.containsKey(name)
-    }
+    fun hasContext(name: String): Boolean = contexts.containsKey(name)
 
     fun getContext(name: String): Context? {
         if (!hasContext(name)) {

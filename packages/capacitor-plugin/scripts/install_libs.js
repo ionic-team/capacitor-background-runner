@@ -22,10 +22,8 @@ if (!fs.existsSync(androidGradlePath)) {
   return;
 }
 
-const searchText =
-  "dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'";
-const insertText =
-  "\n\t\tdirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'";
+const searchText = "dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'";
+const insertText = "\n\t\tdirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'";
 
 let gradleFile = fs.readFileSync(androidGradlePath).toString('utf-8');
 if (gradleFile.indexOf(insertText) != -1) {
@@ -33,18 +31,12 @@ if (gradleFile.indexOf(insertText) != -1) {
 }
 
 let insertIndex = gradleFile.indexOf(searchText) + searchText.length;
-gradleFile =
-  gradleFile.substring(0, insertIndex) +
-  insertText +
-  gradleFile.substring(insertIndex);
+gradleFile = gradleFile.substring(0, insertIndex) + insertText + gradleFile.substring(insertIndex);
 
 fs.writeFileSync(androidGradlePath, gradleFile);
 
 // remove old version of aar
-const oldReleaseAARPath = path.join(
-  workingDir,
-  'android/src/main/libs/android-js-engine-release.aar',
-);
+const oldReleaseAARPath = path.join(workingDir, 'android/src/main/libs/android-js-engine-release.aar');
 if (fs.existsSync(oldReleaseAARPath)) {
   fs.rmSync(oldReleaseAARPath);
 }
