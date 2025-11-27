@@ -11,12 +11,12 @@ let package = Package(
             targets: ["CapApp-SPM"])
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "7.4.4"),
-        .package(name: "CapacitorApp", path: "../../../../../node_modules/.pnpm/@capacitor+app@7.1.0_@capacitor+core@7.4.4/node_modules/@capacitor/app"),
+        .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", exact: "8.0.0-beta.0"),
+        .package(name: "CapacitorApp", path: "../../../../../node_modules/.pnpm/@capacitor+app@8.0.0-beta.0_@capacitor+core@8.0.0-beta.0/node_modules/@capacitor/app"),
         .package(name: "CapacitorBackgroundRunner", path: "../../../../../packages/capacitor-plugin"),
-        .package(name: "CapacitorHaptics", path: "../../../../../node_modules/.pnpm/@capacitor+haptics@7.0.2_@capacitor+core@7.4.4/node_modules/@capacitor/haptics"),
-        .package(name: "CapacitorKeyboard", path: "../../../../../node_modules/.pnpm/@capacitor+keyboard@7.0.3_@capacitor+core@7.4.4/node_modules/@capacitor/keyboard"),
-        .package(name: "CapacitorStatusBar", path: "../../../../../node_modules/.pnpm/@capacitor+status-bar@7.0.3_@capacitor+core@7.4.4/node_modules/@capacitor/status-bar")
+        .package(name: "CapacitorHaptics", path: "../../../../../node_modules/.pnpm/@capacitor+haptics@8.0.0-next.3_@capacitor+core@8.0.0-beta.0/node_modules/@capacitor/haptics"),
+        .package(name: "CapacitorKeyboard", path: "../../../../../node_modules/.pnpm/@capacitor+keyboard@8.0.0-next.4_@capacitor+core@8.0.0-beta.0/node_modules/@capacitor/keyboard"),
+        .package(name: "CapacitorStatusBar", path: "../../../../../node_modules/.pnpm/@capacitor+status-bar@8.0.0-beta.0_@capacitor+core@8.0.0-beta.0/node_modules/@capacitor/status-bar")
     ],
     targets: [
         .target(
