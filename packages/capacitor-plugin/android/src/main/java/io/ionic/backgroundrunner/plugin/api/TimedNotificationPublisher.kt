@@ -34,6 +34,7 @@ class TimedNotificationPublisher : BroadcastReceiver() {
         notificationManager.notify(id, notification)
     }
 
+    @Suppress("DEPRECATION")
     private fun getParcelableExtraLegacy(intent: Intent): android.app.Notification? {
         return intent.getParcelableExtra(NOTIFICATION_KEY)
     }

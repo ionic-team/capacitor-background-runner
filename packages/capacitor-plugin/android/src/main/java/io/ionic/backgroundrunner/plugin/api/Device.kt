@@ -80,7 +80,7 @@ class Device (context: android.content.Context) : DeviceAPI {
         return false
     }
 
-    @SuppressWarnings("deprecation")
+    @Suppress("DEPRECATION")
     private fun getAndParseNetworkInfo(): NetworkStatus {
         val networkStatus = NetworkStatus()
         val networkInfo = connectivityManager.activeNetworkInfo
