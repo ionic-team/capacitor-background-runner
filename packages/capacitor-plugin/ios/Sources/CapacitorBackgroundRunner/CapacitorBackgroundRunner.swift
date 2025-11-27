@@ -228,10 +228,6 @@ extension BackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
                                        willPresent notification: UNNotification,
                                        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         // Show the notification even when the app is in foreground
-        if #available(iOS 14.0, *) {
-            completionHandler([.banner, .sound, .badge])
-        } else {
-            completionHandler([.alert, .sound, .badge])
-        }
+        completionHandler([.banner, .sound, .badge])
     }
 }
