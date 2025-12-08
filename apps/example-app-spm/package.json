@@ -5,13 +5,13 @@
   "dependencies": {
     "@babel/plugin-syntax-flow": "^7.27.1",
     "@babel/plugin-transform-react-jsx": "^7.27.1",
-    "@capacitor/app": "next",
+    "@capacitor/app": "^8.0.0",
     "@capacitor/background-runner": "workspace:^",
-    "@capacitor/core": "next",
-    "@capacitor/haptics": "next",
-    "@capacitor/ios": "next",
-    "@capacitor/keyboard": "next",
-    "@capacitor/status-bar": "next",
+    "@capacitor/core": "^8.0.0",
+    "@capacitor/haptics": "^8.0.0",
+    "@capacitor/ios": "^8.0.0",
+    "@capacitor/keyboard": "^8.0.0",
+    "@capacitor/status-bar": "^8.0.0",
     "@ionic/react": "^8.7.10",
     "@ionic/react-router": "^8.7.10",
     "@testing-library/dom": "^10.4.1",
@@ -70,7 +70,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "next"
+    "@capacitor/cli": "^8.0.0"
   },
   "description": "An Ionic project"
 }
