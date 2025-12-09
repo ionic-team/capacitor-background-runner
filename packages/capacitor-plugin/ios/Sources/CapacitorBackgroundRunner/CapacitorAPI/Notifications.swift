@@ -137,7 +137,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
                     let content = UNMutableNotificationContent()
                     content.title = NSString.localizedUserNotificationString(forKey: notificationOption.title, arguments: nil)
                     content.body = NSString.localizedUserNotificationString(forKey: notificationOption.body, arguments: nil)
-                    content.userInfo = [:]
+                    content.userInfo = ["source": "capacitor-background-runner"]
 
                     if let extra = notificationOption.extra {
                         content.userInfo["cap_extra"] = extra

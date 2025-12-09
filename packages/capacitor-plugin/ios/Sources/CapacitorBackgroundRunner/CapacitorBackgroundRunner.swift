@@ -15,6 +15,7 @@ public class BackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
         CAPPluginMethod(name: "removeNotificationListeners", returnType: CAPPluginReturnPromise)
     ]
     private let impl = BackgroundRunner()
+    private weak var originalDelegate: UNUserNotificationCenterDelegate?
 
     override public func load() {
         NotificationCenter.default.addObserver(
@@ -197,6 +198,11 @@ public class BackgroundRunnerPlugin: CAPPlugin, CAPBridgedPlugin {
     @objc func registerNotificationCategories() {
         let notificationCenter = UNUserNotificationCenter.current()
 
+        // Capture the original delegate if it's not self
+        if notificationCenter.delegate !== self {
+            originalDelegate = notificationCenter.delegate
+        }
+
         // Set the plugin as the notification delegate
         notificationCenter.delegate = self
     }
@@ -208,26 +214,64 @@ extension BackgroundRunnerPlugin: UNUserNotificationCenterDelegate {
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        didReceive response: UNNotificationResponse,
                                        withCompletionHandler completionHandler: @escaping () -> Void) {
-        let actionTypeId = response.notification.request.content.categoryIdentifier
-        let notificationId = Int(response.notification.request.identifier) ?? -1
+        let userInfo = response.notification.request.content.userInfo
 
-        // Create event data
-        let eventData: [String: Any] = [
-            "actionTypeId": actionTypeId,
-            "notificationId": notificationId
-        ]
-
-        // Notify listeners with the action data - the 'true' parameter is for retaining the event
-        notifyListeners("backgroundRunnerNotificationReceived", data: eventData, retainUntilConsumed: true)
-
-        completionHandler()
+        if isBackgroundRunnerNotification(userInfo) {
+            handleBackgroundRunnerNotification(response, completionHandler: completionHandler)
+        } else {
+            forwardToOriginalDelegate(center, didReceive: response, withCompletionHandler: completionHandler)
+        }
     }
 
     // This is needed to present notifications when the app is in the foreground
     public func userNotificationCenter(_ center: UNUserNotificationCenter,
                                        willPresent notification: UNNotification,
                                        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        // Show the notification even when the app is in foreground
+        let userInfo = notification.request.content.userInfo
+
+        if isBackgroundRunnerNotification(userInfo) {
+            handleBackgroundRunnerPresentation(completionHandler: completionHandler)
+        } else {
+            forwardToOriginalDelegate(center, willPresent: notification, withCompletionHandler: completionHandler)
+        }
+    }
+
+    // MARK: - Helper Methods
+
+    private func isBackgroundRunnerNotification(_ userInfo: [AnyHashable: Any]) -> Bool {
+        return (userInfo["source"] as? String) == "capacitor-background-runner"
+    }
+
+    private func handleBackgroundRunnerNotification(_ response: UNNotificationResponse, completionHandler: @escaping () -> Void) {
+        let actionTypeId = response.notification.request.content.categoryIdentifier
+        let notificationId = Int(response.notification.request.identifier) ?? -1
+
+        let eventData: [String: Any] = [
+            "actionTypeId": actionTypeId,
+            "notificationId": notificationId
+        ]
+
+        notifyListeners("backgroundRunnerNotificationReceived", data: eventData, retainUntilConsumed: true)
+        completionHandler()
+    }
+
+    private func forwardToOriginalDelegate(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if let originalDelegate = originalDelegate, originalDelegate.responds(to: #selector(userNotificationCenter(_:didReceive:withCompletionHandler:))) {
+            originalDelegate.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completionHandler)
+        } else {
+            completionHandler()
+        }
+    }
+
+    private func handleBackgroundRunnerPresentation(completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.banner, .sound, .badge])
+    }
+
+    private func forwardToOriginalDelegate(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if let originalDelegate = originalDelegate, originalDelegate.responds(to: #selector(userNotificationCenter(_:willPresent:withCompletionHandler:))) {
+            originalDelegate.userNotificationCenter?(center, willPresent: notification, withCompletionHandler: completionHandler)
+        } else {
+            handleBackgroundRunnerPresentation(completionHandler: completionHandler)
+        }
     }
 }
