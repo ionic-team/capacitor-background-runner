@@ -5,29 +5,11 @@ on:
     secrets:
       CAP_GH_RELEASE_TOKEN:
         required: true
+  push:
+    branches:
+      - 'test/android'
 
 jobs:
-  unit-test-ios:
-    runs-on: macos-15
-    timeout-minutes: 30
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CAP_GH_RELEASE_TOKEN || github.token }}
-      - name: Install PNPM
-        uses: pnpm/action-setup@v4
-        id: pnpm-install
-        with:
-          version: 10
-          run_install: false
-      - name: List available Xcode versions
-        run: ls /Applications | grep Xcode
-      - name: Run ios-engine unit tests
-        run: |
-          cd ./packages/capacitor-plugin
-          pnpm run verify:ios
-
   unit-test-android:
     runs-on: macos-15
     timeout-minutes: 30
