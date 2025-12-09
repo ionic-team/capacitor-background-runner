@@ -3,7 +3,7 @@ PODS:
     - CapacitorCordova
   - CapacitorApp (8.0.0):
     - Capacitor
-  - CapacitorBackgroundRunner (2.2.0):
+  - CapacitorBackgroundRunner (2.3.0):
     - Capacitor
   - CapacitorCordova (8.0.0)
   - CapacitorHaptics (8.0.0):
@@ -39,13 +39,13 @@ EXTERNAL SOURCES:
     :path: "../../../../node_modules/.pnpm/@capacitor+status-bar@8.0.0_@capacitor+core@8.0.0/node_modules/@capacitor/status-bar"
 
 SPEC CHECKSUMS:
-  Capacitor: 79e40e5e76f852965dce30406c65253fa154e24a
-  CapacitorApp: cfa0120a1f3a6f69d4d37d3041782aa5c5167d0b
-  CapacitorBackgroundRunner: ffa4aa4ed47e5221be4576ef21af326a87b7af1c
+  Capacitor: 341ff7cf652ec695d1a8ebf604db448ac7b6d635
+  CapacitorApp: 3963a84197280757b84f126afd1520a85ae3b092
+  CapacitorBackgroundRunner: 8e1771a2b12b853d223d43c95b967953205ecc5b
   CapacitorCordova: 5dc3912d25ef770a3fe0f431bb65c9fbfa2e92f9
-  CapacitorHaptics: 7a77ce744c4b516b3ffd7f8c96d3de574d77b898
-  CapacitorKeyboard: 0a2e7c0635ccf3db60abed14bd6f35147ce25942
-  CapacitorStatusBar: c6fa2d404083e41d145ea56698707a6986d4428b
+  CapacitorHaptics: 2079d9fa04c5a71e18663b4722323c304c58245c
+  CapacitorKeyboard: d7868c079a4d5277a3deca27a10a488fcbbb8b69
+  CapacitorStatusBar: 312e2e67928dfe9514c4a8916a1fd610552f5f35
 
 PODFILE CHECKSUM: 246ffb621db05dcf99fdd53d13bed5d5d8737703
 
