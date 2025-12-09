@@ -1,5 +1,12 @@
 # Change Log
 
+## 2.3.0
+
+### Minor Changes
+
+- 2579bcc: iOS: Adding support for Swift Package Manager
+- 55d5b7e: Fixes an issue where CapacitorBackgroundRunner overwrites the UNUserNotificationCenter.current().delegate, causing conflicts with other plugins that rely on notification handling
+
 ## 2.2.0
 
 ### Minor Changes
@@ -36,7 +43,6 @@
 - 142e96d: (iOS) KV: calling `get` on an non-existent key returns null instead of empty object
   (iOS) Fixed an issue within Runner that could potentially cause EXC_BAD_ACCESS crashes
 - 18f72b6: More reliability fixes for the JS Engine used in the Background Runner:
-
   - (Android) Fixes in runtime during background execution
   - (Android) Improvements in native lib handling for testing
 
