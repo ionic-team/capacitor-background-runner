@@ -11,7 +11,7 @@ on:
 
 jobs:
   unit-test-android:
-    runs-on: macos-15
+    runs-on: macos-13
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v3
