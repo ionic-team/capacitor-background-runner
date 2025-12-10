@@ -211,17 +211,9 @@ class Notifications(context: Context) : NotificationsAPI {
             PendingIntent.getBroadcast(context, request.id, intent, flags)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !alarmManager.canScheduleExactAlarms()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, request.scheduleAt.time, pendingIntent);
-            } else {
-                alarmManager.set(AlarmManager.RTC, request.scheduleAt.time, pendingIntent);
-            }
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, request.scheduleAt.time, pendingIntent)
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, request.scheduleAt.time, pendingIntent);
-            } else {
-                alarmManager.setExact(AlarmManager.RTC, request.scheduleAt.time, pendingIntent);
-            }
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, request.scheduleAt.time, pendingIntent)
         }
     }
 }
