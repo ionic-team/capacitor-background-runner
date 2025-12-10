@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.0.0
+
+### Major Changes
+
+- f04d668: Support for Capacitor 8. The Android Min SDK is now 24 and iOS deployment target is 15.
+
 ## 2.3.0
 
 ### Minor Changes
