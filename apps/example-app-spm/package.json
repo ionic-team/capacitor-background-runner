@@ -1,6 +1,6 @@
 {
   "name": "example-app-spm",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": true,
   "dependencies": {
     "@babel/plugin-syntax-flow": "^7.27.1",
