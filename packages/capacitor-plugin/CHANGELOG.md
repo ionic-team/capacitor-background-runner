@@ -1,5 +1,11 @@
 # Change Log
 
+## 2.3.1
+
+### Patch Changes
+
+- c91c3ce: Set 2.x version to latest-7 tag
+
 ## 2.3.0
 
 ### Minor Changes
