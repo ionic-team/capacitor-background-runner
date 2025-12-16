@@ -11,7 +11,8 @@
         "feat/*",
         "fix/*",
         "chore/*",
-        "feat!/*"
+        "feat!/*",
+        "2.x"
       ],
       "conventionalCommits": true,
       "createRelease": "github",
