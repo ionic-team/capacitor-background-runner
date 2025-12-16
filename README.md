@@ -5,7 +5,7 @@ Background Runner provides an event-based standalone JavaScript environment for 
 ## Install
 
 ```bash
-npm install @capacitor/background-runner
+npm install @capacitor/background-runner@latest-7
 npx cap sync
 ```
 
