@@ -195,7 +195,7 @@ backgrounded.
 | **`src`**       | <code>string</code>  | The path to the runner JavaScript file, relative to the app bundle.                                                                                                                                  | 1.0.0 |
 | **`event`**     | <code>string</code>  | The name of the event that will be called when the OS executes the background task.                                                                                                                  | 1.0.0 |
 | **`repeat`**    | <code>boolean</code> | If background task should repeat based on the interval set in `interval`.                                                                                                                            | 1.0.0 |
-| **`interval`**  | <code>number</code>  | The number of minutes after the the app is put into the background in which the background task should begin. If `repeat` is true, this also specifies the number of minutes between each execution. | 1.0.0 |
+| **`interval`**  | <code>number</code>  | The number of minutes after the app is put into the background in which the background task should begin. If `repeat` is true, this also specifies the number of minutes between each execution. | 1.0.0 |
 | **`autoStart`** | <code>boolean</code> | Automatically register and schedule background task on app load.                                                                                                                                     | 1.0.0 |
 
 ### Examples
