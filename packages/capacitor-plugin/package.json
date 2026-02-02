@@ -32,7 +32,7 @@
   ],
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
-    "verify:ios": "xcodebuild -scheme CapacitorBackgroundRunner -destination generic/platform=iOS && xcodebuild test -scheme CapacitorBackgroundRunner -destination 'platform=iOS Simulator,OS=26.0.1,name=iPhone 16 Pro'",
+    "verify:ios": "xcodebuild -scheme CapacitorBackgroundRunner -destination generic/platform=iOS && xcodebuild test -scheme CapacitorBackgroundRunner -destination 'platform=iOS Simulator,OS=26.0.1,name=iPhone 17 Pro'",
     "verify:android": "cd android && ./gradlew clean build test && cd ..",
     "verify:web": "npm run build",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
