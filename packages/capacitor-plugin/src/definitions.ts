@@ -28,7 +28,7 @@ export interface BackgroundRunnerConfig {
    */
   repeat: boolean;
   /**
-   * The number of minutes after the the app is put into the background in which the background task should begin.
+   * The number of minutes after the app is put into the background in which the background task should begin.
    *
    * If `repeat` is true, this also specifies the number of minutes between each execution.
    *
@@ -80,7 +80,7 @@ declare module '@capacitor/cli' {
        */
       repeat: boolean;
       /**
-       * The number of minutes after the the app is put into the background in which the background task should begin.
+       * The number of minutes after the app is put into the background in which the background task should begin.
        *
        * If `repeat` is true, this also specifies the number of minutes between each execution.
        *
