@@ -28,29 +28,29 @@ importers:
         specifier: ^7.27.1
         version: 7.28.6(@babel/core@7.28.6)
       '@capacitor/android':
-        specifier: ^8.0.0
-        version: 8.0.1(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.6(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/app':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.2(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/background-runner':
         specifier: workspace:^
         version: link:../../packages/capacitor-plugin
       '@capacitor/core':
-        specifier: ^8.0.0
-        version: 8.0.1
+        specifier: next
+        version: 9.0.0-alpha.6
       '@capacitor/haptics':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 8.0.0-next.3(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/ios':
-        specifier: ^8.0.0
-        version: 8.0.1(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.6(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/keyboard':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 8.0.0-next.4(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/status-bar':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.2(@capacitor/core@9.0.0-alpha.6)
       '@ionic/react':
         specifier: ^8.7.10
         version: 8.7.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -149,8 +149,8 @@ importers:
         version: 7.4.0
     devDependencies:
       '@capacitor/cli':
-        specifier: ^8.0.0
-        version: 8.0.1
+        specifier: next
+        version: 9.0.0-alpha.6
 
   apps/example-app-spm:
     dependencies:
@@ -161,26 +161,26 @@ importers:
         specifier: ^7.27.1
         version: 7.28.6(@babel/core@7.28.6)
       '@capacitor/app':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.2(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/background-runner':
         specifier: workspace:^
         version: link:../../packages/capacitor-plugin
       '@capacitor/core':
-        specifier: ^8.0.0
-        version: 8.0.1
+        specifier: next
+        version: 9.0.0-alpha.6
       '@capacitor/haptics':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 8.0.0-next.3(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/ios':
-        specifier: ^8.0.0
-        version: 8.0.1(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.6(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/keyboard':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 8.0.0-next.4(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/status-bar':
-        specifier: ^8.0.0
-        version: 8.0.0(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.2(@capacitor/core@9.0.0-alpha.6)
       '@ionic/react':
         specifier: ^8.7.10
         version: 8.7.16(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -279,8 +279,8 @@ importers:
         version: 7.4.0
     devDependencies:
       '@capacitor/cli':
-        specifier: ^8.0.0
-        version: 8.0.1
+        specifier: next
+        version: 9.0.0-alpha.6
 
   packages/android-js-engine:
     dependencies:
@@ -304,20 +304,20 @@ importers:
   packages/capacitor-plugin:
     devDependencies:
       '@capacitor/android':
-        specifier: ^8.0.0
-        version: 8.0.1(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.6(@capacitor/core@9.0.0-alpha.6)
       '@capacitor/cli':
-        specifier: ^8.0.0
-        version: 8.0.1
+        specifier: next
+        version: 9.0.0-alpha.6
       '@capacitor/core':
-        specifier: ^8.0.0
-        version: 8.0.1
+        specifier: next
+        version: 9.0.0-alpha.6
       '@capacitor/docgen':
-        specifier: ^0.3.0
+        specifier: ^0.3.1
         version: 0.3.1
       '@capacitor/ios':
-        specifier: ^8.0.0
-        version: 8.0.1(@capacitor/core@8.0.1)
+        specifier: next
+        version: 9.0.0-alpha.6(@capacitor/core@9.0.0-alpha.6)
       '@ionic/eslint-config':
         specifier: ^0.4.0
         version: 0.4.0(eslint@8.57.1)(typescript@5.9.3)
@@ -337,10 +337,10 @@ importers:
         specifier: ^2.7.7
         version: 2.8.1(prettier@3.7.4)
       rimraf:
-        specifier: ^6.1.2
+        specifier: ^6.1.0
         version: 6.1.2
       rollup:
-        specifier: ^4.53.3
+        specifier: ^4.53.2
         version: 4.55.1
       swiftlint:
         specifier: ^2.0.0
@@ -1074,48 +1074,48 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@capacitor/android@8.0.1':
-    resolution: {integrity: sha512-Mrk2MFKSg9YA4BPLKm03wwFnGKcvzNBERUTcxjW1NkLrF6YhJwygAT69f/YGopFvOhhqdnDPsuZuASUfmpkSpw==}
+  '@capacitor/android@9.0.0-alpha.6':
+    resolution: {integrity: sha512-/hVYtjrvaoLinn8fkcnm2prCo7OSgbwP6x+tzQa+IQChTMsyBTAp/eWEvKCxh0EVQeUUWmRtLXd2CzhPamjdFA==}
     peerDependencies:
-      '@capacitor/core': ^8.0.0
+      '@capacitor/core': ^9.0.0-alpha.6
 
-  '@capacitor/app@8.0.0':
-    resolution: {integrity: sha512-OwzIkUs4w433Bu9WWAEbEYngXEfJXZ9Wmdb8eoaqzYBgB0W9/3Ed/mh6sAYPNBAZlpyarmewgP7Nb+d3Vrh+xA==}
+  '@capacitor/app@9.0.0-alpha.2':
+    resolution: {integrity: sha512-UwbSAG67cGRzStTvHMG+CDxKw2F3vNkwMLvTkPE+eXRdjBNCtvBBRVy09BFbmLNqGAI3STf8iXg3i64ZqEr/gg==}
     peerDependencies:
-      '@capacitor/core': '>=8.0.0'
+      '@capacitor/core': '>=9.0.0-alpha.0'
 
-  '@capacitor/cli@8.0.1':
-    resolution: {integrity: sha512-okCNTsL8FNYrtPNeHWFjWb1S+PwBMhx5wFLhDC0MZOIrOLm+2ynMBtKu3BnR0Nv1hozoHcOCi6SuTF1TrRpb3w==}
+  '@capacitor/cli@9.0.0-alpha.6':
+    resolution: {integrity: sha512-PsPkbmK1SffBuv7kb6Htebyht2Y2tDJRPWvnxW/s8Y3BHv4LbCEhlIE3PeB+AnDgGNTAGp2e9BnTgWUHcmN7OQ==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@capacitor/core@8.0.1':
-    resolution: {integrity: sha512-5UqSWxGMp/B8KhYu7rAijqNtYslhcLh+TrbfU48PfdMDsPfaU/VY48sMNzC22xL8BmoFoql/3SKyP+pavTOvOA==}
+  '@capacitor/core@9.0.0-alpha.6':
+    resolution: {integrity: sha512-AqCxIP+84lNNh1E+Yv04FRF9Pg8MTm+ed8QEC8OGOI4epbMwCEDdS0W84+C9ZAs+6cFtQcIS5N2owhOy2KeOOQ==}
 
   '@capacitor/docgen@0.3.1':
     resolution: {integrity: sha512-WBdAUquQC4hiZOVk1YbY5Rs3vlDrNdCGt3KGnMa2dc2UBa91Q7PQ/jLW/oZyfVIfiXWu7t1KUhhM3MyiZepUrQ==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  '@capacitor/haptics@8.0.0':
-    resolution: {integrity: sha512-DY1IUOjke1T4ITl7mFHQIKCaJJyHYAYRYHG9bVApU7PDOZiMVGMp48Yjzdqjya+wv/AHS5mDabSTUmhJ5uDvBA==}
+  '@capacitor/haptics@8.0.0-next.3':
+    resolution: {integrity: sha512-chE6SUEegH9n7sGOyGH3XJAKfTi+ot3Z+TzecO/kXT0DJoZ4rtGXnpm9uElgqS50HYxFbZ2W/yCceA5jdWHOUg==}
     peerDependencies:
-      '@capacitor/core': '>=8.0.0'
+      '@capacitor/core': next
 
-  '@capacitor/ios@8.0.1':
-    resolution: {integrity: sha512-pDxwQtx3n07DBhRKFGvYh4g00ruIsT7HxPm6IIT+tJD8VuTNgwgWYmEOZzfHkG6mZuCe03KqCsuD+aVmg5Rctg==}
+  '@capacitor/ios@9.0.0-alpha.6':
+    resolution: {integrity: sha512-eFKuHmVdCnKMZ/+cMl24Up0yzLMFxS0vYXJLf62/556cHqTO9n7BBeXPCNIPpL5EV+wrVCw7Hq/xwXf7p2mGoQ==}
     peerDependencies:
-      '@capacitor/core': ^8.0.0
+      '@capacitor/core': ^9.0.0-alpha.6
 
-  '@capacitor/keyboard@8.0.0':
-    resolution: {integrity: sha512-ycPW6iQyFwzDK95jihesj5EGiyyGSfbBqNek11iNp9tBOB7zDeYkUA2S/vPpOETt3dhP6pWr7a9gNVGuEfj11g==}
+  '@capacitor/keyboard@8.0.0-next.4':
+    resolution: {integrity: sha512-JpGxILIah+FJcIyD3IkRhUEyHFIUXWXCDTK3NPNLv5r4MFK8pMtB6NrMMfRlM/DsNdrAzd0SaB+CG0/H0PSpVw==}
     peerDependencies:
-      '@capacitor/core': '>=8.0.0'
+      '@capacitor/core': next
 
-  '@capacitor/status-bar@8.0.0':
-    resolution: {integrity: sha512-aIj3bc7z8lfPgOen8HlrBrkfnxpFnh21OCx6jCUx4Mvv+B6eEkUQ49b32DOddgVfr+igRHLX2SYi7duqIsNDXg==}
+  '@capacitor/status-bar@9.0.0-alpha.2':
+    resolution: {integrity: sha512-UeOi+W/fRjXP2MDqX4RjvhcMcsSYJYdXqK/05/ZbCD2CLI8SBmcsryZm3YF69gK9chKj18+1xREPfkxyWJ0iBg==}
     peerDependencies:
-      '@capacitor/core': '>=8.0.0'
+      '@capacitor/core': '>=9.0.0-alpha.0'
 
   '@changesets/apply-release-plan@7.0.14':
     resolution: {integrity: sha512-ddBvf9PHdy2YY0OUiEl3TV78mH9sckndJR14QAt87KLEbIov81XO0q0QAmvooBxXlqRRP8I9B7XOzZwQG7JkWA==}
@@ -1813,21 +1813,25 @@ packages:
     resolution: {integrity: sha512-NmPeCexWIZHW9RM3lDdFENN9C3WtlQ5L4RSNFESIjreS921rgePhulsszYdGnHdcnKPYlBBJnX/NxVsfioBbnQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@nx/nx-linux-arm64-musl@22.3.3':
     resolution: {integrity: sha512-K02U88Q0dpvCfmSXXvY7KbYQSa1m+mkYeqDBRHp11yHk1GoIqaHp8oEWda7FV4gsriNExPSS5tX1/QGVoLZrCw==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@nx/nx-linux-x64-gnu@22.3.3':
     resolution: {integrity: sha512-04TEbvgwRaB9ifr39YwJmWh3RuXb4Ry4m84SOJyjNXAfPrepcWgfIQn1VL2ul1Ybq+P023dLO9ME8uqFh6j1YQ==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@nx/nx-linux-x64-musl@22.3.3':
     resolution: {integrity: sha512-uxBXx5q+S5OGatbYDxnamsKXRKlYn+Eq1nrCAHaf8rIfRoHlDiRV2PqtWuF+O2pxR5FWKpvr+/sZtt9rAf7KMw==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@nx/nx-win32-arm64-msvc@22.3.3':
     resolution: {integrity: sha512-aOwlfD6ZA1K6hjZtbhBSp7s1yi3sHbMpLCa4stXzfhCCpKUv46HU/EdiWdE1N8AsyNFemPZFq81k1VTowcACdg==}
@@ -1996,86 +2000,103 @@ packages:
     resolution: {integrity: sha512-Rn3n+FUk2J5VWx+ywrG/HGPTD9jXNbicRtTM11e/uorplArnXZYsVifnPPqNNP5BsO3roI4n8332ukpY/zN7rQ==}
     cpu: [arm]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm-musleabihf@4.55.1':
     resolution: {integrity: sha512-grPNWydeKtc1aEdrJDWk4opD7nFtQbMmV7769hiAaYyUKCT1faPRm2av8CX1YJsZ4TLAZcg9gTR1KvEzoLjXkg==}
     cpu: [arm]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-gnu@4.34.9':
     resolution: {integrity: sha512-6TZjPHjKZUQKmVKMUowF3ewHxctrRR09eYyvT5eFv8w/fXarEra83A2mHTVJLA5xU91aCNOUnM+DWFMSbQ0Nxw==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-gnu@4.55.1':
     resolution: {integrity: sha512-a59mwd1k6x8tXKcUxSyISiquLwB5pX+fJW9TkWU46lCqD/GRDe9uDN31jrMmVP3feI3mhAdvcCClhV8V5MhJFQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-arm64-musl@4.34.9':
     resolution: {integrity: sha512-LD2fytxZJZ6xzOKnMbIpgzFOuIKlxVOpiMAXawsAZ2mHBPEYOnLRK5TTEsID6z4eM23DuO88X0Tq1mErHMVq0A==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-arm64-musl@4.55.1':
     resolution: {integrity: sha512-puS1MEgWX5GsHSoiAsF0TYrpomdvkaXm0CofIMG5uVkP6IBV+ZO9xhC5YEN49nsgYo1DuuMquF9+7EDBVYu4uA==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-loong64-gnu@4.55.1':
     resolution: {integrity: sha512-r3Wv40in+lTsULSb6nnoudVbARdOwb2u5fpeoOAZjFLznp6tDU8kd+GTHmJoqZ9lt6/Sys33KdIHUaQihFcu7g==}
     cpu: [loong64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-loong64-musl@4.55.1':
     resolution: {integrity: sha512-MR8c0+UxAlB22Fq4R+aQSPBayvYa3+9DrwG/i1TKQXFYEaoW3B5b/rkSRIypcZDdWjWnpcvxbNaAJDcSbJU3Lw==}
     cpu: [loong64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-ppc64-gnu@4.55.1':
     resolution: {integrity: sha512-3KhoECe1BRlSYpMTeVrD4sh2Pw2xgt4jzNSZIIPLFEsnQn9gAnZagW9+VqDqAHgm1Xc77LzJOo2LdigS5qZ+gw==}
     cpu: [ppc64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-ppc64-musl@4.55.1':
     resolution: {integrity: sha512-ziR1OuZx0vdYZZ30vueNZTg73alF59DicYrPViG0NEgDVN8/Jl87zkAPu4u6VjZST2llgEUjaiNl9JM6HH1Vdw==}
     cpu: [ppc64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-riscv64-gnu@4.55.1':
     resolution: {integrity: sha512-uW0Y12ih2XJRERZ4jAfKamTyIHVMPQnTZcQjme2HMVDAHY4amf5u414OqNYC+x+LzRdRcnIG1YodLrrtA8xsxw==}
     cpu: [riscv64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-riscv64-musl@4.55.1':
     resolution: {integrity: sha512-u9yZ0jUkOED1BFrqu3BwMQoixvGHGZ+JhJNkNKY/hyoEgOwlqKb62qu+7UjbPSHYjiVy8kKJHvXKv5coH4wDeg==}
     cpu: [riscv64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-s390x-gnu@4.55.1':
     resolution: {integrity: sha512-/0PenBCmqM4ZUd0190j7J0UsQ/1nsi735iPRakO8iPciE7BQ495Y6msPzaOmvx0/pn+eJVVlZrNrSh4WSYLxNg==}
     cpu: [s390x]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.34.9':
     resolution: {integrity: sha512-FwBHNSOjUTQLP4MG7y6rR6qbGw4MFeQnIBrMe161QGaQoBQLqSUEKlHIiVgF3g/mb3lxlxzJOpIBhaP+C+KP2A==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-gnu@4.55.1':
     resolution: {integrity: sha512-a8G4wiQxQG2BAvo+gU6XrReRRqj+pLS2NGXKm8io19goR+K8lw269eTrPkSdDTALwMmJp4th2Uh0D8J9bEV1vg==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
   '@rollup/rollup-linux-x64-musl@4.34.9':
     resolution: {integrity: sha512-cYRpV4650z2I3/s6+5/LONkjIz8MBeqrk+vPXV10ORBnshpn8S32bPqQ2Utv39jCiDcO2eJTuSlPXpnvmaIgRA==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-linux-x64-musl@4.55.1':
     resolution: {integrity: sha512-bD+zjpFrMpP/hqkfEcnjXWHMw5BIghGisOKPj+2NaNDuVT+8Ds4mPf3XcPHuat1tz89WRL+1wbcxKY3WSbiT7w==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
   '@rollup/rollup-openbsd-x64@4.55.1':
     resolution: {integrity: sha512-eLXw0dOiqE4QmvikfQ6yjgkg/xDM+MdU9YJuP4ySTibXU0oAvnEWXt7UDJmD4UkYialMfOGFPJnIHSe/kdzPxg==}
@@ -2573,6 +2594,7 @@ packages:
   '@xmldom/xmldom@0.8.11':
     resolution: {integrity: sha512-cQzWCtO6C8TQiYl1ruKNn2U6Ao4o4WBBcbL61yJl84x+j5sOWWFU9X7DpND8XZG3daDppSsigMdfAIl2upQBRw==}
     engines: {node: '>=10.0.0'}
+    deprecated: this version has critical issues, please update to the latest version
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -4362,6 +4384,7 @@ packages:
 
   glob@10.5.0:
     resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.1.0:
@@ -7421,6 +7444,11 @@ packages:
   tar@7.5.2:
     resolution: {integrity: sha512-7NyxrTE4Anh8km8iEy7o0QYPs+0JKBTj5ZaqHg6B39erLg0qYXN3BijtShwbsNSvQ+LN75+KV+C4QR/f6Gwnpg==}
     engines: {node: '>=18'}
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+  tar@7.5.20:
+    resolution: {integrity: sha512-9FcyK4PA6+WbzlTM9WhQm6vB5W7cP7dUiPsv1g7YDwEQnQ1CGpK3MGlKk/ITVWMk05kHZuBhmVhiv8LZoy/PFQ==}
+    engines: {node: '>=18'}
 
   temp-dir@1.0.0:
     resolution: {integrity: sha512-xZFXEGbG7SNC3itwBzI3RYjq/cEhBkx2hJuKGIUOcEULmkQExXiHat2z/qkISYsuR+IKumhEfKKbV5qXmhICFQ==}
@@ -9079,15 +9107,15 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@capacitor/android@8.0.1(@capacitor/core@8.0.1)':
+  '@capacitor/android@9.0.0-alpha.6(@capacitor/core@9.0.0-alpha.6)':
     dependencies:
-      '@capacitor/core': 8.0.1
+      '@capacitor/core': 9.0.0-alpha.6
 
-  '@capacitor/app@8.0.0(@capacitor/core@8.0.1)':
+  '@capacitor/app@9.0.0-alpha.2(@capacitor/core@9.0.0-alpha.6)':
     dependencies:
-      '@capacitor/core': 8.0.1
+      '@capacitor/core': 9.0.0-alpha.6
 
-  '@capacitor/cli@8.0.1':
+  '@capacitor/cli@9.0.0-alpha.6':
     dependencies:
       '@ionic/cli-framework-output': 2.2.8
       '@ionic/utils-subprocess': 3.0.1
@@ -9103,13 +9131,13 @@ snapshots:
       prompts: 2.4.2
       rimraf: 6.1.2
       semver: 7.7.3
-      tar: 6.2.1
+      tar: 7.5.20
       tslib: 2.8.1
       xml2js: 0.6.2
     transitivePeerDependencies:
       - supports-color
 
-  '@capacitor/core@8.0.1':
+  '@capacitor/core@9.0.0-alpha.6':
     dependencies:
       tslib: 2.8.1
 
@@ -9120,21 +9148,21 @@ snapshots:
       minimist: 1.2.8
       typescript: 4.2.4
 
-  '@capacitor/haptics@8.0.0(@capacitor/core@8.0.1)':
+  '@capacitor/haptics@8.0.0-next.3(@capacitor/core@9.0.0-alpha.6)':
     dependencies:
-      '@capacitor/core': 8.0.1
+      '@capacitor/core': 9.0.0-alpha.6
 
-  '@capacitor/ios@8.0.1(@capacitor/core@8.0.1)':
+  '@capacitor/ios@9.0.0-alpha.6(@capacitor/core@9.0.0-alpha.6)':
     dependencies:
-      '@capacitor/core': 8.0.1
+      '@capacitor/core': 9.0.0-alpha.6
 
-  '@capacitor/keyboard@8.0.0(@capacitor/core@8.0.1)':
+  '@capacitor/keyboard@8.0.0-next.4(@capacitor/core@9.0.0-alpha.6)':
     dependencies:
-      '@capacitor/core': 8.0.1
+      '@capacitor/core': 9.0.0-alpha.6
 
-  '@capacitor/status-bar@8.0.0(@capacitor/core@8.0.1)':
+  '@capacitor/status-bar@9.0.0-alpha.2(@capacitor/core@9.0.0-alpha.6)':
     dependencies:
-      '@capacitor/core': 8.0.1
+      '@capacitor/core': 9.0.0-alpha.6
 
   '@changesets/apply-release-plan@7.0.14':
     dependencies:
@@ -10109,11 +10137,11 @@ snapshots:
 
   '@npmcli/fs@4.0.0':
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   '@npmcli/fs@5.0.0':
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   '@npmcli/git@6.0.3':
     dependencies:
@@ -10123,7 +10151,7 @@ snapshots:
       npm-pick-manifest: 10.0.0
       proc-log: 5.0.0
       promise-retry: 2.0.1
-      semver: 7.7.2
+      semver: 7.7.3
       which: 5.0.0
 
   '@npmcli/git@7.0.1':
@@ -10134,7 +10162,7 @@ snapshots:
       npm-pick-manifest: 11.0.3
       proc-log: 6.1.0
       promise-retry: 2.0.1
-      semver: 7.7.2
+      semver: 7.7.3
       which: 6.0.0
 
   '@npmcli/installed-package-contents@3.0.0':
@@ -10160,7 +10188,7 @@ snapshots:
       json-parse-even-better-errors: 5.0.0
       pacote: 21.0.4
       proc-log: 6.1.0
-      semver: 7.7.2
+      semver: 7.7.3
     transitivePeerDependencies:
       - supports-color
 
@@ -11855,7 +11883,7 @@ snapshots:
       handlebars: 4.7.8
       json-stringify-safe: 5.0.1
       meow: 8.1.2
-      semver: 7.7.2
+      semver: 7.7.3
       split: 1.0.1
 
   conventional-commits-filter@3.0.0:
@@ -13081,7 +13109,7 @@ snapshots:
   git-semver-tags@5.0.1:
     dependencies:
       meow: 8.1.2
-      semver: 7.7.2
+      semver: 7.7.3
 
   git-up@7.0.0:
     dependencies:
@@ -14831,7 +14859,7 @@ snapshots:
       make-fetch-happen: 14.0.3
       nopt: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.7.3
       tar: 7.5.2
       tinyglobby: 0.2.12
       which: 5.0.0
@@ -14859,7 +14887,7 @@ snapshots:
     dependencies:
       hosted-git-info: 4.1.0
       is-core-module: 2.16.1
-      semver: 7.7.2
+      semver: 7.7.3
       validate-npm-package-license: 3.0.4
 
   normalize-path@3.0.0: {}
@@ -14876,11 +14904,11 @@ snapshots:
 
   npm-install-checks@7.1.2:
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   npm-install-checks@8.0.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.7.3
 
   npm-normalize-package-bin@4.0.0: {}
 
@@ -14890,7 +14918,7 @@ snapshots:
     dependencies:
       hosted-git-info: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.7.3
       validate-npm-package-name: 6.0.2
 
   npm-package-arg@13.0.1:
@@ -14910,14 +14938,14 @@ snapshots:
       npm-install-checks: 7.1.2
       npm-normalize-package-bin: 4.0.0
       npm-package-arg: 12.0.2
-      semver: 7.7.2
+      semver: 7.7.3
 
   npm-pick-manifest@11.0.3:
     dependencies:
       npm-install-checks: 8.0.0
       npm-normalize-package-bin: 5.0.0
       npm-package-arg: 13.0.1
-      semver: 7.7.2
+      semver: 7.7.3
 
   npm-registry-fetch@19.1.0:
     dependencies:
@@ -16905,6 +16933,14 @@ snapshots:
       yallist: 4.0.0
 
   tar@7.5.2:
+    dependencies:
+      '@isaacs/fs-minipass': 4.0.1
+      chownr: 3.0.0
+      minipass: 7.1.2
+      minizlib: 3.1.0
+      yallist: 5.0.0
+
+  tar@7.5.20:
     dependencies:
       '@isaacs/fs-minipass': 4.0.1
       chownr: 3.0.0
