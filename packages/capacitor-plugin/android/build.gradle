@@ -57,7 +57,7 @@ repositories {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':capacitor-android')
-    implementation (name: "android-js-engine-release", ext: "aar")
+    implementation ":android-js-engine-release@aar"
     implementation "androidx.work:work-runtime-ktx:$workManagerVersion"
     implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
     implementation "androidx.core:core:$androidxCoreVersion"
