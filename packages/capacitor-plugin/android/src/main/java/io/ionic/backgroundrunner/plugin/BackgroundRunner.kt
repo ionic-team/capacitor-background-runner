@@ -5,7 +5,6 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
-import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
@@ -62,9 +61,7 @@ class BackgroundRunner(context: android.content.Context) {
             .putString("event", config.event)
             .build()
 
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
+        val constraints = Constraints.Builder().build()
 
         if (!config.repeats) {
             val work = OneTimeWorkRequest.Builder(RunnerWorker::class.java)
