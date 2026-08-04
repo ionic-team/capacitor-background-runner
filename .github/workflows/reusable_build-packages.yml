@@ -23,11 +23,6 @@ jobs:
         with:
           main-branch-name: "main"
 
-      - uses: actions/setup-java@v5
-        with:
-          distribution: "temurin"
-          java-version: "17"
-
       - name: "Build Packages"
         shell: bash
         run: |
