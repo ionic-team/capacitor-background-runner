@@ -147,12 +147,15 @@ export interface NotificationScheduleOptions {
   /**
    * The string this notification adds to the category's summary format string.
    *
-   * Sets `summaryArgument` on the
-   * [`UNMutableNotificationContent`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent).
-   *
    * Only available for iOS.
    *
+   * **This option has no effect.** `summaryArgument` on
+   * [`UNMutableNotificationContent`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent)
+   * is deprecated since iOS 15 and the value is ignored by the system, so it is
+   * no longer set on the notification content.
+   *
    * @since 1.0.0
+   * @deprecated This option has no effect, iOS ignores it since iOS 15.
    */
   summaryArgument?: string;
   /**
