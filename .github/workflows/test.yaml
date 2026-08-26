@@ -27,6 +27,9 @@ jobs:
       - run: xcodebuild -downloadPlatform iOS
       - name: List available Xcode versions
         run: ls /Applications | grep Xcode
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: "main"
       - name: "Build Packages"
         shell: bash
         run: |
@@ -46,6 +49,9 @@ jobs:
           token: ${{ secrets.CAP_GH_RELEASE_TOKEN || github.token }}
       - name: "Setup Tools"
         uses: ./.github/actions/setup-tools
+      - uses: nrwl/nx-set-shas@v5
+        with:
+          main-branch-name: "main"
       - name: "Build Packages"
         shell: bash
         run: |
