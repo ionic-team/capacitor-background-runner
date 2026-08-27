@@ -1,5 +1,11 @@
 # Change Log
 
+## 3.1.0
+
+### Minor Changes
+
+- 05fc2ac: (Android): Replaces the default proguard file proguard-android.txt with proguard-android-optimize.txt which allows proguard optimizations
+
 ## 3.0.0
 
 ### Major Changes
