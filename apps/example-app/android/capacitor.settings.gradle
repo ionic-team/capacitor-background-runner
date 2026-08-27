@@ -10,10 +10,10 @@ include ':capacitor-background-runner'
 project(':capacitor-background-runner').projectDir = new File('../../../packages/capacitor-plugin/android')
 
 include ':capacitor-haptics'
-project(':capacitor-haptics').projectDir = new File('../../../node_modules/.pnpm/@capacitor+haptics@8.0.0-next.3_@capacitor+core@9.0.0-alpha.6/node_modules/@capacitor/haptics/android')
+project(':capacitor-haptics').projectDir = new File('../../../node_modules/.pnpm/@capacitor+haptics@9.0.0-next.1_@capacitor+core@9.0.0-alpha.6/node_modules/@capacitor/haptics/android')
 
 include ':capacitor-keyboard'
-project(':capacitor-keyboard').projectDir = new File('../../../node_modules/.pnpm/@capacitor+keyboard@8.0.0-next.4_@capacitor+core@9.0.0-alpha.6/node_modules/@capacitor/keyboard/android')
+project(':capacitor-keyboard').projectDir = new File('../../../node_modules/.pnpm/@capacitor+keyboard@9.0.0-next.1_@capacitor+core@9.0.0-alpha.6/node_modules/@capacitor/keyboard/android')
 
 include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../../../node_modules/.pnpm/@capacitor+status-bar@9.0.0-alpha.2_@capacitor+core@9.0.0-alpha.6/node_modules/@capacitor/status-bar/android')
