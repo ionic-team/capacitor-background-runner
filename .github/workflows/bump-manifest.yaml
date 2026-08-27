@@ -1,0 +1,39 @@
+name: "Bump Next Manifest"
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to seed the next branch manifest with"
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  bump-next-manifest:
+    if: github.event_name == 'workflow_dispatch' || github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: next
+          token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
+
+      - name: Update manifest
+        run: |
+          VERSION="${{ inputs.version || github.event.release.tag_name }}"
+          jq --arg v "$VERSION" '."packages/capacitor-plugin" = $v' \
+            .release-please-manifest.json > .release-please-manifest.json.tmp
+          mv .release-please-manifest.json.tmp .release-please-manifest.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .release-please-manifest.json
+          git diff --cached --quiet && { echo "No manifest change needed"; exit 0; }
+          git commit -m "chore: sync next branch manifest after stable release"
+          git push origin next
