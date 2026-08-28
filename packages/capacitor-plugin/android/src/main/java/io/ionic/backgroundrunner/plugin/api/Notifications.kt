@@ -14,6 +14,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.getcapacitor.CapConfig
+import com.getcapacitor.PluginConfig
 import com.getcapacitor.plugin.util.AssetUtil
 import io.ionic.android_js_engine.capacitor_api.NotificationsAPI
 import org.json.JSONArray
@@ -23,7 +24,8 @@ import org.json.JSONObject
 class Notifications(context: Context) : NotificationsAPI {
     private val manager: NotificationManagerCompat
     private val context: Context
-    private val config: CapConfig
+    private val capConfig: CapConfig
+    private val config: PluginConfig
 
     var defaultSmallIconID = AssetUtil.RESOURCE_ID_ZERO_VALUE
     var defaultSoundID = AssetUtil.RESOURCE_ID_ZERO_VALUE
@@ -31,8 +33,8 @@ class Notifications(context: Context) : NotificationsAPI {
     init {
         this.context = context
         this.manager = NotificationManagerCompat.from(context)
-        this.config = CapConfig.loadDefault(context)
-
+        this.capConfig = CapConfig.loadDefault(context)
+        this.config = capConfig.getPluginConfiguration("LocalNotifications")
         this.createNotificationChannel()
         this.createBadgeNotificationChannel()
     }
