@@ -8,8 +8,8 @@
     "nx": "^22.1.1"
   },
   "engines": {
-    "node": ">=18",
-    "pnpm": ">=8"
+    "node": ">=24",
+    "pnpm": ">=10"
   },
   "scripts": {
     "build": "nx run-many --target=build && nx run-many --target=build-docs",
