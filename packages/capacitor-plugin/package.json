@@ -43,7 +43,7 @@
     "docgen": "docgen --api BackgroundRunnerPlugin --output-readme README.md --output-json dist/docs.json",
     "docgen-api": "docgen --api CapacitorAPI --output-readme API.md --output-json dist/docs-api.json && node ./scripts/combine_docs.js",
     "build-sdk": "./scripts/build-native-sdks.sh",
-    "build": "npm run clean && npm run docgen && npm run docgen-api && tsc && rollup -c rollup.config.js --bundleConfigAsCjs && npm run build-sdk && ./scripts/copy-native-sdks.sh && pnpm pack && mv ./capacitor-background-runner-*.tgz ../../ && ./scripts/copy-readme.sh",
+    "build": "npm run clean && npm run docgen && npm run docgen-api && tsc && rollup -c rollup.config.mjs --bundleConfigAsCjs && npm run build-sdk && ./scripts/copy-native-sdks.sh && pnpm pack && mv ./capacitor-background-runner-*.tgz ../../ && ./scripts/copy-readme.sh",
     "pack": "npm run build && ./scripts/copy-native-sdks.sh && pnpm pack && mv ./capacitor-background-runner-*.tgz ../../",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
@@ -51,24 +51,24 @@
     "postinstall": "node ./scripts/install_libs.js"
   },
   "devDependencies": {
-    "@capacitor/android": "^8.0.0",
-    "@capacitor/cli": "^8.0.0",
-    "@capacitor/core": "^8.0.0",
-    "@capacitor/docgen": "^0.3.0",
-    "@capacitor/ios": "^8.0.0",
+    "@capacitor/android": "next",
+    "@capacitor/cli": "next",
+    "@capacitor/core": "next",
+    "@capacitor/docgen": "^0.3.1",
+    "@capacitor/ios": "next",
     "@ionic/eslint-config": "^0.4.0",
     "@ionic/prettier-config": "^4.0.0",
     "@ionic/swiftlint-config": "^2.0.0",
     "eslint": "^8.57.1",
     "prettier": "^3.6.2",
     "prettier-plugin-java": "^2.7.7",
-    "rimraf": "^6.1.2",
-    "rollup": "^4.53.3",
+    "rimraf": "^6.1.0",
+    "rollup": "^4.53.2",
     "swiftlint": "^2.0.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {
-    "@capacitor/core": ">=8.0.0"
+    "@capacitor/core": ">=9.0.0-alpha.5"
   },
   "prettier": "@ionic/prettier-config",
   "swiftlint": "@ionic/swiftlint-config",
