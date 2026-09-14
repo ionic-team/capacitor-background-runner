@@ -1,5 +1,26 @@
 # Change Log
 
+## [4.0.0-rc](https://github.com/ionic-team/capacitor-background-runner/compare/3.1.0...4.0.0-rc) (2026-09-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **android:** allow offline background execution ([#159](https://github.com/ionic-team/capacitor-background-runner/issues/159))
+* align plugin baselines with core ([#162](https://github.com/ionic-team/capacitor-background-runner/issues/162))
+* **local-notifications:** plugin now uses local-notifications plugin configuration for smallIcon and sound
+
+### Features
+
+* align plugin baselines with core ([#162](https://github.com/ionic-team/capacitor-background-runner/issues/162)) ([f54a32c](https://github.com/ionic-team/capacitor-background-runner/commit/f54a32c0fb163df5dde17673e13817298b47d32a))
+
+
+### Bug Fixes
+
+* **android:** allow offline background execution ([#159](https://github.com/ionic-team/capacitor-background-runner/issues/159)) ([a0c6556](https://github.com/ionic-team/capacitor-background-runner/commit/a0c6556222b804962fa5670de938276679f92a99))
+* **ios:** remove usage of APIs deprecated in iOS 14 and iOS 15 ([8981234](https://github.com/ionic-team/capacitor-background-runner/commit/8981234bcdad85b582339e61a4d289bc97bd709b))
+* **ios:** remove usage of APIs deprecated in iOS 14 and iOS 15 ([6b73444](https://github.com/ionic-team/capacitor-background-runner/commit/6b734447c459a5d76a00d1f0140fcc6e971165f6))
+* **local-notifications:** read config from LocalNotifications plugin object ([#170](https://github.com/ionic-team/capacitor-background-runner/issues/170)) ([be5a78e](https://github.com/ionic-team/capacitor-background-runner/commit/be5a78ec232b1389ec17d090f3ef7bd3311dcb44))
+
 ## 3.1.0
 
 ### Minor Changes
