@@ -22,18 +22,43 @@ if (!fs.existsSync(androidGradlePath)) {
   return;
 }
 
-const searchText = "dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'";
-const insertText = "\n\t\tdirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'";
+const startMarker = '// BEGIN @capacitor/background-runner';
+const endMarker = '// END @capacitor/background-runner';
+const legacyDirsLine = /^.*dirs\s+'[^']*@capacitor\/background-runner\/android\/src\/main\/libs'.*\r?\n/gm;
 
-let gradleFile = fs.readFileSync(androidGradlePath).toString('utf-8');
-if (gradleFile.indexOf(insertText) != -1) {
+const libsPath = path.resolve(__dirname, '../android/src/main/libs');
+
+if (!fs.existsSync(libsPath)) {
+  console.warn(`${msgPrefix} android libs directory not found at ${libsPath}`);
   return;
 }
 
-let insertIndex = gradleFile.indexOf(searchText) + searchText.length;
-gradleFile = gradleFile.substring(0, insertIndex) + insertText + gradleFile.substring(insertIndex);
+const libsDir = path
+  .relative(path.dirname(path.resolve(androidGradlePath)), libsPath)
+  .split(path.sep)
+  .join('/');
 
-fs.writeFileSync(androidGradlePath, gradleFile);
+let gradleFile = fs.readFileSync(androidGradlePath).toString('utf-8');
+
+const blockStart = gradleFile.indexOf(startMarker);
+const blockEnd = gradleFile.indexOf(endMarker);
+if (blockStart !== -1 && blockEnd > blockStart) {
+  gradleFile = gradleFile.substring(0, blockStart) + gradleFile.substring(blockEnd + endMarker.length);
+}
+
+gradleFile = gradleFile.replace(legacyDirsLine, '');
+
+const block = [
+  startMarker,
+  'repositories {',
+  '    flatDir {',
+  `        dirs '${libsDir}'`,
+  '    }',
+  '}',
+  endMarker,
+].join('\n');
+
+fs.writeFileSync(androidGradlePath, `${gradleFile.trimEnd()}\n\n${block}\n`);
 
 // remove old version of aar
 const oldReleaseAARPath = path.join(workingDir, 'android/src/main/libs/android-js-engine-release.aar');
