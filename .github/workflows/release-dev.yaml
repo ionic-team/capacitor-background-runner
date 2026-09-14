@@ -1,0 +1,38 @@
+name: "Release Dev"
+
+on:
+  push:
+    branches:
+      - next
+  workflow_dispatch:
+
+concurrency:
+  group: release-dev
+  cancel-in-progress: true
+
+jobs:
+  publish-dev:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (!contains(github.event.head_commit.message, 'chore(next): release') &&
+       !contains(github.event.head_commit.message, 'sync root CHANGELOG.md'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: "Setup Tools"
+        uses: ./.github/actions/setup-tools
+
+      - name: "NPM Identity"
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" >> ~/.npmrc
+          npm whoami
+
+      - name: "Publish dev prerelease"
+        working-directory: packages/capacitor-plugin
+        run: |
+          BASE_VERSION=$(node -p "require('./package.json').version.split('-')[0]")
+          DEV_VERSION="${BASE_VERSION}-dev.$(date +%Y%m%dT%H%M%S)"
+          pnpm version "$DEV_VERSION" --no-git-tag-version
+          pnpm publish --no-git-checks --access public --tag dev

@@ -1,0 +1,69 @@
+name: "Release"
+
+on:
+  push:
+    branches:
+      - main
+      - next
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs['packages/capacitor-plugin--release_created'] }}
+      tag_name: ${{ steps.release.outputs['packages/capacitor-plugin--tag_name'] }}
+    steps:
+      - uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
+          target-branch: ${{ github.ref_name }}
+          config-file: ${{ github.ref_name == 'next' && 'release-please-config-next.json' || 'release-please-config.json' }}
+          manifest-file: .release-please-manifest.json
+
+  publish-npm:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+          fetch-depth: 0
+          token: ${{ secrets.CAP_GH_RELEASE_TOKEN }}
+
+      - name: "Setup Tools"
+        uses: ./.github/actions/setup-tools
+
+      - name: "NPM Identity"
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" >> ~/.npmrc
+          npm whoami
+
+      - name: "Publish to npm"
+        working-directory: packages/capacitor-plugin
+        run: |
+          pnpm publish --no-git-checks --access public \
+            --tag ${{ github.ref_name == 'next' && 'next' || 'latest' }}
+
+      - name: "Sync root CHANGELOG.md"
+        run: |
+          cp packages/capacitor-plugin/CHANGELOG.md CHANGELOG.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          if git diff --cached --quiet; then
+            echo "CHANGELOG.md already in sync"
+          else
+            git commit -m "chore: sync root CHANGELOG.md"
+            git push origin HEAD:${{ github.ref_name }}
+          fi

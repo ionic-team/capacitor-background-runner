@@ -30,8 +30,6 @@ struct NotificationOption {
     let actionTypeId: String?
     let extra: [String: Any]?
     let threadIdentifier: String?
-    let summaryArgument: String?
-    let groupSummary: String?
 
     init(from dict: [String: Any?]) throws {
         guard let id = dict["id"] as? Int else {
@@ -58,8 +56,6 @@ struct NotificationOption {
         self.sound = dict["sound"] as? String
         self.actionTypeId = dict["actionTypeId"] as? String
         self.extra = dict["extra"] as? [String: Any]
-        self.summaryArgument = dict["summaryArgument"] as? String
-        self.groupSummary = dict["groupSummary"] as? String
     }
 }
 
@@ -149,10 +145,6 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
 
                     if let threadIdentifier = notificationOption.threadIdentifier {
                         content.threadIdentifier = threadIdentifier
-                    }
-
-                    if let summaryArgument = notificationOption.summaryArgument {
-                        content.summaryArgument = summaryArgument
                     }
 
                     if let sound = notificationOption.sound {

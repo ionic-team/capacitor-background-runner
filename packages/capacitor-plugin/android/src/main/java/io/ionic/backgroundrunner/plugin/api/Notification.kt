@@ -5,7 +5,6 @@ import com.getcapacitor.plugin.util.AssetUtil
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.TimeZone
 
 @SuppressLint("SimpleDateFormat")
 class Notification(jsonObject: JSONObject) {
@@ -26,7 +25,7 @@ class Notification(jsonObject: JSONObject) {
     var groupSummary: String? = null
     var channelId: String? = null
 
-    private val jsDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private val jsDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     init {
         id = jsonObject.optInt("id", -1)
@@ -35,7 +34,7 @@ class Notification(jsonObject: JSONObject) {
         smallIcon = jsonObject.optString("smallIcon", "")
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
-        actionTypeId = jsonObject.optString("actionTypeId", null)
+        actionTypeId = jsonObject.optString("actionTypeId")
 
         val scheduleDateString = jsonObject.optString("scheduleAt", "")
         if (scheduleDateString.isNotEmpty()) {

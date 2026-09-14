@@ -18,6 +18,8 @@ enum CapacitorGeolocationErrors: Error, Equatable {
 }
 
 class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationManagerDelegate {
+    private static let permissionManager = CLLocationManager()
+
     private weak var context: Context?
     private var pendingCurrentLocationCalls: [Int: (Result<CLLocation?, Error>) -> Void] = [:]
     private var isWatchingLocation: Bool = false
@@ -36,7 +38,7 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
         self.context = context
         self.locationManager.delegate = self
 
-        if CLLocationManager.authorizationStatus() == .authorizedAlways {
+        if self.locationManager.authorizationStatus == .authorizedAlways {
             self.locationManager.allowsBackgroundLocationUpdates = true
             self.locationManager.desiredAccuracy = kCLLocationAccuracyKilometer
             self.locationManager.pausesLocationUpdatesAutomatically = false
@@ -55,8 +57,8 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
 
         var permission: String = "prompt"
 
-        switch CLLocationManager.authorizationStatus() {
-        case .authorized, .authorizedWhenInUse, .authorizedAlways:
+        switch permissionManager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
             permission = "granted"
         case .notDetermined:
             permission = "prompt"
@@ -74,7 +76,7 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
             return
         }
 
-        if CLLocationManager.authorizationStatus() != .notDetermined {
+        if self.locationManager.authorizationStatus != .notDetermined {
             return
         }
 
