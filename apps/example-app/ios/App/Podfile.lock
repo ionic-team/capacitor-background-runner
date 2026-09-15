@@ -2,7 +2,7 @@ PODS:
   - Capacitor (9.0.0-alpha.6)
   - CapacitorApp (9.0.0-alpha.2):
     - Capacitor
-  - CapacitorBackgroundRunner (3.0.0):
+  - CapacitorBackgroundRunner (3.1.0):
     - Capacitor
   - CapacitorHaptics (9.0.0-next.1):
     - Capacitor
@@ -36,7 +36,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Capacitor: b5cc4a2eadcd1184d4a581b4c631dd8ef7bb34b1
   CapacitorApp: 1d870da64e84d2e7bba00c28a12ccf0208a17ee3
-  CapacitorBackgroundRunner: 7f0f9b9a1bfe43fd69874ddf7c533092243dd61b
+  CapacitorBackgroundRunner: a12a37bb77f4e2c8a113a3bdf250f88f4eced78c
   CapacitorHaptics: cf461bf71051a548bb99107554563ab05c4f3a06
   CapacitorKeyboard: 222ced64b88632400503c87e0b188952f3ce8265
   CapacitorStatusBar: 838088db4185b93e8168e69e3b1dcf1f093a305f

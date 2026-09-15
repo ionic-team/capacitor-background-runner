@@ -20,11 +20,11 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 10
+          version: 11
       - name: Set up Node
         uses: actions/setup-node@v7
         with:
-          node-version: "22"
+          node-version: "24"
       - name: Install commitlint
         run: pnpm add --workspace-root --save-dev @commitlint/cli@19 @commitlint/config-conventional@19
       - name: Validate PR title
