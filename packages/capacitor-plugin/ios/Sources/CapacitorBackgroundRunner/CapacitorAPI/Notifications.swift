@@ -189,11 +189,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             let badgeOptions = SetBadgeOption(from: jsonDict)
 
             DispatchQueue.main.async {
-                if #available(iOS 16.0, *) {
-                    UNUserNotificationCenter.current().setBadgeCount(badgeOptions.count)
-                } else {
-                    UIApplication.shared.applicationIconBadgeNumber = badgeOptions.count
-                }
+                UNUserNotificationCenter.current().setBadgeCount(badgeOptions.count)
             }
         } catch {
             JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())
@@ -207,11 +203,7 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
             }
 
             DispatchQueue.main.async {
-                if #available(iOS 16.0, *) {
-                    UNUserNotificationCenter.current().setBadgeCount(0)
-                } else {
-                    UIApplication.shared.applicationIconBadgeNumber = 0
-                }
+                UNUserNotificationCenter.current().setBadgeCount(0)
             }
         } catch {
             JSContext.current().exception = JSValue(newErrorFromMessage: "\(error)", in: JSContext.current())

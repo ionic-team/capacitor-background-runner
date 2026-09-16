@@ -3,7 +3,7 @@ import BackgroundTasks
 import Capacitor
 import CapacitorBackgroundRunner
 
-@UIApplicationMain
+@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
