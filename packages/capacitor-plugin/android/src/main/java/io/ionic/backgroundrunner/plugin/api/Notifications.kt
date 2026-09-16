@@ -125,42 +125,38 @@ class Notifications(context: Context) : NotificationsAPI {
     }
 
     private fun createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name: CharSequence = "Default"
-            val description = "Default"
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(defaultNotificationChannelID, name, importance)
-            channel.description = description
-            val audioAttributes = AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setUsage(AudioAttributes.USAGE_ALARM)
-                .build()
-            val soundUri = this.getDefaultSoundUrl(context)
-            if (soundUri != null) {
-                channel.setSound(soundUri, audioAttributes)
-            }
-
-            val notificationManager = context.getSystemService(
-                NotificationManager::class.java
-            )
-            notificationManager.createNotificationChannel(channel)
+        val name: CharSequence = "Default"
+        val description = "Default"
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(defaultNotificationChannelID, name, importance)
+        channel.description = description
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .setUsage(AudioAttributes.USAGE_ALARM)
+            .build()
+        val soundUri = this.getDefaultSoundUrl(context)
+        if (soundUri != null) {
+            channel.setSound(soundUri, audioAttributes)
         }
+
+        val notificationManager = context.getSystemService(
+            NotificationManager::class.java
+        )
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun createBadgeNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name: CharSequence = "Badge"
-            val description = "Badge"
-            val importance = NotificationManager.IMPORTANCE_LOW
-            val channel = NotificationChannel(defaultBadgeNotificationChannelID, name, importance)
-            channel.description = description
-            channel.setShowBadge(true)
+        val name: CharSequence = "Badge"
+        val description = "Badge"
+        val importance = NotificationManager.IMPORTANCE_LOW
+        val channel = NotificationChannel(defaultBadgeNotificationChannelID, name, importance)
+        channel.description = description
+        channel.setShowBadge(true)
 
-            val notificationManager = context.getSystemService(
-                NotificationManager::class.java
-            )
-            notificationManager.createNotificationChannel(channel)
-        }
+        val notificationManager = context.getSystemService(
+            NotificationManager::class.java
+        )
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun getDefaultSoundUrl(context: Context): Uri? {
