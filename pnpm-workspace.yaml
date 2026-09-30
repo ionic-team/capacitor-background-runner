@@ -6,3 +6,4 @@ allowBuilds:
   core-js-pure: true
   nx: true
   swiftlint: true
+  unrs-resolver: true
