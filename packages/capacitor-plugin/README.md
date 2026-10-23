@@ -79,22 +79,12 @@ Apple requires privacy descriptions to be specified in `Info.plist` for location
 
 ## Android
 
-Insert the following line to `android/app/build.gradle`:
+No additional setup is required.
 
-```diff
-...
+If you are upgrading an existing Android project, the following leftovers from earlier versions are no longer used and can be deleted:
 
-repositories {
-    flatDir{
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-+		dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'
-    }
-}
-...
-
-```
-
-If you are upgrading from 1.0.5 with an existing Android project, be sure to delete the `android-js-engine-release.aar` from `android/src/main/libs`.
+- in `android/app/build.gradle`, the `dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'` line inside the `flatDir` block
+- `android/src/main/libs/android-js-engine-release.aar`, if you upgraded from 1.0.5 or earlier
 
 ### Geolocation
 
