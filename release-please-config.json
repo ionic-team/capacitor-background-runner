@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "bootstrap-sha": "0d5f351f2738b9a3a763922e2b066357a1c39240",
+  "packages": {
+    "packages/capacitor-plugin": {
+      "release-type": "node",
+      "package-name": "@capacitor/background-runner",
+      "include-component-in-tag": false,
+      "include-v-in-tag": false,
+      "changelog-path": "CHANGELOG.md"
+    }
+  }
+}

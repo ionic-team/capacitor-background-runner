@@ -6,7 +6,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.TimeZone
 
 /** Null when the key is missing or JSON null; any other non-string value is an error. */
 private fun JSONObject.getStringOrNull(name: String): String? =
@@ -35,7 +34,7 @@ class Notification(jsonObject: JSONObject) {
     var groupSummary: String? = null
     var channelId: String? = null
 
-    private val jsDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+    private val jsDateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     init {
         id = jsonObject.optInt("id", -1)
@@ -44,7 +43,7 @@ class Notification(jsonObject: JSONObject) {
         smallIcon = jsonObject.optString("smallIcon", "")
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
-        actionTypeId = jsonObject.optString("actionTypeId", null)
+        actionTypeId = jsonObject.getStringOrNull("actionTypeId")
         channelId = jsonObject.getStringOrNull("channelId")
 
         val scheduleDateString = jsonObject.optString("scheduleAt", "")

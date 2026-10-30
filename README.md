@@ -79,22 +79,12 @@ Apple requires privacy descriptions to be specified in `Info.plist` for location
 
 ## Android
 
-Insert the following line to `android/app/build.gradle`:
+No additional setup is required.
 
-```diff
-...
+If you are upgrading an existing Android project, the following leftovers from earlier versions are no longer used and can be deleted:
 
-repositories {
-    flatDir{
-        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-+		dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'
-    }
-}
-...
-
-```
-
-If you are upgrading from 1.0.5 with an existing Android project, be sure to delete the `android-js-engine-release.aar` from `android/src/main/libs`.
+- in `android/app/build.gradle`, the `dirs '../../node_modules/@capacitor/background-runner/android/src/main/libs', 'libs'` line inside the `flatDir` block
+- `android/src/main/libs/android-js-engine-release.aar`, if you upgraded from 1.0.5 or earlier
 
 ### Geolocation
 
@@ -521,7 +511,7 @@ Send basic local notifications.
 | **`sound`**            | <code>string</code>  | Name of the audio file to play when this notification is displayed. Include the file extension with the filename. On iOS, the file should be in the app bundle. On Android, the file should be in res/raw folder. Recommended format is `.wav` because is supported by both iOS and Android. Only available for iOS and Android &lt; 26. For Android 26+ use channelId of a channel configured with the desired sound. If the sound file is not found, (i.e. empty string or wrong name) the default system notification sound will be used. If not provided, it will produce the default sound on Android and no sound on iOS. | 1.0.0 |
 | **`actionTypeId`**     | <code>string</code>  | Associate an action type with this notification.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | 1.0.0 |
 | **`threadIdentifier`** | <code>string</code>  | Used to group multiple notifications. Sets `threadIdentifier` on the [`UNMutableNotificationContent`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent). Only available for iOS.                                                                                                                                                                                                                                                                                                                                                                                                        | 1.0.0 |
-| **`summaryArgument`**  | <code>string</code>  | The string this notification adds to the category's summary format string. Sets `summaryArgument` on the [`UNMutableNotificationContent`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent). Only available for iOS.                                                                                                                                                                                                                                                                                                                                                                    | 1.0.0 |
+| **`summaryArgument`**  | <code>string</code>  | The string this notification adds to the category's summary format string. Only available for iOS. **This option has no effect.** `summaryArgument` on [`UNMutableNotificationContent`](https://developer.apple.com/documentation/usernotifications/unmutablenotificationcontent) is deprecated since iOS 15 and the value is ignored by the system, so it is no longer set on the notification content.                                                                                                                                                                                                                        | 1.0.0 |
 | **`group`**            | <code>string</code>  | Used to group multiple notifications. Calls `setGroup()` on [`NotificationCompat.Builder`](https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder) with the provided value. Only available for Android.                                                                                                                                                                                                                                                                                                                                                                                           | 1.0.0 |
 | **`groupSummary`**     | <code>string</code>  | If true, this notification becomes the summary for a group of notifications. Calls `setGroupSummary()` on [`NotificationCompat.Builder`](https://developer.android.com/reference/androidx/core/app/NotificationCompat.Builder) with the provided value. Only available for Android when using `group`.                                                                                                                                                                                                                                                                                                                          | 1.0.0 |
 | **`extra`**            | <code>any</code>     | Set extra data to store within this notification.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | 1.0.0 |

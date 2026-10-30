@@ -35,6 +35,8 @@ Build and validate the web and native projects.
 
 This is useful to run in CI to verify that the plugin builds for all platforms.
 
+> **Note**: On Android, the plugin's Gradle module cannot be assembled into an AAR, because it depends on the JS engine through a local `.aar` file and the Android Gradle Plugin rejects direct local `.aar` dependencies when building an AAR. `verify:android` therefore runs `test`, `lint`, and `compileReleaseKotlin` instead of `build`. This is not a limitation in practice: the plugin is consumed as a Gradle source module (`project(':capacitor-background-runner')`), never as a published AAR. To validate Android packaging end to end, build a consuming app — for example `apps/example-app/android` — which exercises manifest merging, resource merging, and native library packaging.
+
 #### `pnpm run lint` / `pnpm run fmt`
 
 Check formatting and code quality, autoformat/autofix if possible.

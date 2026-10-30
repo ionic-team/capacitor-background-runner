@@ -1,3 +1,9 @@
 packages:
   - 'packages/*'
   - 'apps/*'
+allowBuilds:
+  core-js: true
+  core-js-pure: true
+  nx: true
+  swiftlint: true
+  unrs-resolver: true
