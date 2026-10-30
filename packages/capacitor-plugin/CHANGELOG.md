@@ -1,5 +1,30 @@
 # Change Log
 
+## [4.0.0](https://github.com/ionic-team/capacitor-background-runner/compare/3.1.0...4.0.0) (2026-10-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* **android:** allow offline background execution ([#159](https://github.com/ionic-team/capacitor-background-runner/issues/159))
+* align plugin baselines with core ([#162](https://github.com/ionic-team/capacitor-background-runner/issues/162))
+* **local-notifications:** plugin now uses local-notifications plugin configuration for smallIcon and sound
+
+### Features
+
+* align plugin baselines with core ([#162](https://github.com/ionic-team/capacitor-background-runner/issues/162)) ([f54a32c](https://github.com/ionic-team/capacitor-background-runner/commit/f54a32c0fb163df5dde17673e13817298b47d32a))
+
+
+### Bug Fixes
+
+* **android:** allow offline background execution ([#159](https://github.com/ionic-team/capacitor-background-runner/issues/159)) ([a0c6556](https://github.com/ionic-team/capacitor-background-runner/commit/a0c6556222b804962fa5670de938276679f92a99))
+* **android:** keep JS engine classes from R8 ([5b267eb](https://github.com/ionic-team/capacitor-background-runner/commit/5b267eb04c4bf31283253b55685feff4c2bbfa4e))
+* **android:** making install_libs script more robust ([#172](https://github.com/ionic-team/capacitor-background-runner/issues/172)) ([a382cf2](https://github.com/ionic-team/capacitor-background-runner/commit/a382cf23f0ef0a71c39ae5f9a5e5ed53aa983b1b))
+* **android:** Pass channelId to Notification ([#175](https://github.com/ionic-team/capacitor-background-runner/issues/175)) ([#176](https://github.com/ionic-team/capacitor-background-runner/issues/176)) ([b0f3a65](https://github.com/ionic-team/capacitor-background-runner/commit/b0f3a65247f0f263259657e2b479c439c749fffc))
+* **android:** resolve the JS engine AAR without a postinstall script ([#177](https://github.com/ionic-team/capacitor-background-runner/issues/177)) ([3b7c73d](https://github.com/ionic-team/capacitor-background-runner/commit/3b7c73d68b2430ed24e48a423bc35f2a4d65883d))
+* **ios:** remove usage of APIs deprecated in iOS 14 and iOS 15 ([6b73444](https://github.com/ionic-team/capacitor-background-runner/commit/6b734447c459a5d76a00d1f0140fcc6e971165f6))
+* **ios:** resolve requestPermissions for geolocation once the user answers ([#183](https://github.com/ionic-team/capacitor-background-runner/issues/183)) ([7d5f204](https://github.com/ionic-team/capacitor-background-runner/commit/7d5f204e61a3e20612e444b37cb9f6753131d899))
+* **local-notifications:** read config from LocalNotifications plugin object ([#170](https://github.com/ionic-team/capacitor-background-runner/issues/170)) ([be5a78e](https://github.com/ionic-team/capacitor-background-runner/commit/be5a78ec232b1389ec17d090f3ef7bd3311dcb44))
+
 ## 3.1.0
 
 ### Minor Changes
