@@ -26,6 +26,7 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
     private let locationManager: CLLocationManager
 
     private var permissionContinuation: CheckedContinuation<Void, Error>?
+    private var permissionLocationManager: CLLocationManager?
 
     var isWatchingPosition: Bool {
         return isWatchingLocation
@@ -85,7 +86,12 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
             permissionContinuation = continuation
 
             DispatchQueue.main.async {
-                self.locationManager.requestAlwaysAuthorization()
+                // Core Location delivers delegate callbacks on the run loop of the thread that created
+                // the manager, and this may run off the main thread, so ask through a main-thread manager.
+                let manager = CLLocationManager()
+                manager.delegate = self
+                self.permissionLocationManager = manager
+                manager.requestAlwaysAuthorization()
             }
         })
     }
@@ -166,6 +172,7 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
         if let continuation = permissionContinuation {
             continuation.resume(throwing: error)
             permissionContinuation = nil
+            permissionLocationManager = nil
         }
 
         if let context = context, self.isWatchingLocation {
@@ -183,10 +190,13 @@ class CapacitorGeolocation: NSObject, CapacitorGeolocationExports, CLLocationMan
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if let continuation = permissionContinuation {
-            continuation.resume()
-            permissionContinuation = nil
+        // Also called as soon as the delegate is set, while still undetermined: wait for the user's answer.
+        guard manager.authorizationStatus != .notDetermined, let continuation = permissionContinuation else {
+            return
         }
+        continuation.resume()
+        permissionContinuation = nil
+        permissionLocationManager = nil
     }
 
     private func buildLocationDict(location: CLLocation) -> [String: Any] {

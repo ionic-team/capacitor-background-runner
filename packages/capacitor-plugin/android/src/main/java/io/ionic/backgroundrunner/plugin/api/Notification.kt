@@ -2,9 +2,18 @@ package io.ionic.backgroundrunner.plugin.api
 
 import android.annotation.SuppressLint
 import com.getcapacitor.plugin.util.AssetUtil
+import org.json.JSONException
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Date
+
+/** Null when the key is missing or JSON null; any other non-string value is an error. */
+private fun JSONObject.getStringOrNull(name: String): String? =
+    when (val value = opt(name)) {
+        null, JSONObject.NULL -> null
+        is String -> value
+        else -> throw JSONException("$name must be a string")
+    }
 
 @SuppressLint("SimpleDateFormat")
 class Notification(jsonObject: JSONObject) {
@@ -34,7 +43,8 @@ class Notification(jsonObject: JSONObject) {
         smallIcon = jsonObject.optString("smallIcon", "")
         ongoing = jsonObject.optBoolean("ongoing", false)
         autoCancel = jsonObject.optBoolean("autoCancel", false)
-        actionTypeId = jsonObject.optString("actionTypeId")
+        actionTypeId = jsonObject.getStringOrNull("actionTypeId")
+        channelId = jsonObject.getStringOrNull("channelId")
 
         val scheduleDateString = jsonObject.optString("scheduleAt", "")
         if (scheduleDateString.isNotEmpty()) {
