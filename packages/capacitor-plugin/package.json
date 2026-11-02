@@ -8,6 +8,7 @@
   "types": "dist/esm/index.d.ts",
   "unpkg": "dist/plugin.js",
   "files": [
+    "CHANGELOG.md",
     "android/src/main/",
     "android/build.gradle",
     "dist/",
