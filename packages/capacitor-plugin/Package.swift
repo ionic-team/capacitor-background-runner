@@ -14,7 +14,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/ionic-team/capacitor.git", from: "9.0.0-alpha.7")
+        .package(url: "https://github.com/ionic-team/capacitor.git", from: "9.0.0-beta.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
