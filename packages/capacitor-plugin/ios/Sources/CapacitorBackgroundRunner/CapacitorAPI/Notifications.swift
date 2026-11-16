@@ -25,7 +25,7 @@ struct NotificationOption {
     let id: Int
     let title: String
     let body: String
-    let scheduleAt: Date
+    let scheduleAt: Date?
     let sound: String?
     let actionTypeId: String?
     let extra: [String: Any]?
@@ -44,14 +44,10 @@ struct NotificationOption {
             throw CapacitorNotificationsErrors.invalidOptions(reason: "notification body is required")
         }
 
-        guard let scheduleAt = dict["scheduleAt"] as? Date else {
-            throw CapacitorNotificationsErrors.invalidOptions(reason: "notification schedule date is required")
-        }
-
         self.id = id
         self.title = title
         self.body = body
-        self.scheduleAt = scheduleAt
+        self.scheduleAt = dict["scheduleAt"] as? Date
         self.threadIdentifier = dict["threadIdentifier"] as? String
         self.sound = dict["sound"] as? String
         self.actionTypeId = dict["actionTypeId"] as? String
@@ -151,17 +147,10 @@ class CapacitorNotifications: NSObject, CapacitorNotificationsExports {
                         content.sound = UNNotificationSound(named: UNNotificationSoundName(sound))
                     }
 
-                    var notificationDate = notificationOption.scheduleAt
-
-                    if notificationDate < Date() {
-                        notificationDate = Date()
+                    var trigger: UNNotificationTrigger?
+                    if let interval = notificationOption.scheduleAt?.timeIntervalSinceNow, interval > 0 {
+                        trigger = UNTimeIntervalNotificationTrigger(timeInterval: interval, repeats: false)
                     }
-
-                    let dateInfo = Calendar.current.dateComponents(in: TimeZone.current, from: notificationDate)
-                    // swiftlint:disable:next force_unwrapping
-                    let dateInterval = DateInterval(start: Date(), end: dateInfo.date!)
-
-                    let trigger = UNTimeIntervalNotificationTrigger(timeInterval: dateInterval.duration, repeats: false)
                     let request = UNNotificationRequest(identifier: "\(notificationOption.id)", content: content, trigger: trigger)
 
                     UNUserNotificationCenter.current().add(request)
